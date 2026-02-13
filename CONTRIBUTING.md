@@ -19,28 +19,47 @@ Bir işe başlamadan önce işin türü (\<tür>) aşağıdaki kurallara göre b
 `revert`: Commit geri almak istiyorsak (Bu çok nadir olmalı)
 
 
-Github'dan diğer üyelerin yaptığı değişiklikler çekilir, branch açılır ve o branch'e geçilir:
+---
+
+
+Github'dan branch için değişiklikler çekilir, yeni branch açılır ve o branch'e geçilir:
 ```bash
-git pull  # main branch'te iken
-git checkout -b <tür>/görev-adı  # örneğin feat/login-sayfası, docs/readme-typo
+git pull origin main  # main branch'te iken
+git checkout -b <tür>/görev-adı # örneğin feat/login-sayfası, docs/readme-typo
 ```
 >Not: Eğer bir issue ile ilişkili branch açıyorsanız issue numarası \<No> olmak üzere
 > branch adını `<tür>/<No>-görev-adı` yapabilirsiniz. Pull Request'te de Closes #\<No> yazarsanız
 > PR merge edildiğinde issue otomatik olarak kapanır.
 
+---
+
+Uzak depodan bir branch’i local bilgisayarınıza almak için:
+```bash
+git fetch origin
+git checkout -b <branch-adı> origin/<branch-adı>
+```
+
+---
+
 Değişiklikler commit'ler ile yapılır. Commit atarken:
 ```bash
 git add .   # Değişiklikleri al
-git commit -m "<tür>: commit'te yapılan işi emir kipi (imperative mood) ile belirt"
-# örnek commit mesajı "feat: login sayfası ekle" veya "docs: README.md dosyasında typo düzelt"
-git push origin <tür>/görev-adı # branch adı ile push ettik
+git commit -m "<tür>: <commit-mesajı>"
+# <commit-mesajı>: commit'te yapılan işi emir kipi (imperative mood) ile belirt
+
+# örnek commit mesajı:
+# "feat: login sayfası ekle" veya "docs: README.md dosyasında typo düzelt"
+
+git push -u origin <branch-adı>
+#  -u flagi ile branch'teki ilk push isleminden
+#+ sonra sadece git push kullanılabilir
 ```
 
 İlgili branch için tüm commit'leri attığınızı düşünüyorsanız Github'a girip o branch için bir Pull Request oluşturursunuz.
-Pull Request'iniz kabul edilmeden önce yorumları kontrol ederseniz değişiklik hakkında diğer üyelerin fikirleri ile yaptıklarınızda değiştirmeler yapabilirsiniz.
+Pull Request'iniz _merge_ edilmeden önce yorumları kontrol ederseniz değişiklik hakkında diğer üyelerin fikirleri ile yaptıklarınızda değiştirmeler yapabilirsiniz.
 
->Not: commit mesajı kısa, direkt ve yapılan işi açıklar şekilde olmalıdır. Detayların belirtilmesi için iki alt satıra geçip
-> ifade başına `-` karakteri koyarak detay ifadelerini girebilirsiniz. Detay belirtmeniz önemlidir ve önerilir.
+>Not: commit mesajı kısa, direkt ve yapılan işi açıklar şekilde olmalıdır. Detayların belirtilmesi için commit mesajının
+> alt satırlarında düzenlice değişikliklerin detayı verilir. Detay belirtmeniz önemlidir ve önerilir.
 > Örnek:
 >
 > feat: login sayfası ekle
@@ -53,4 +72,4 @@ Pull Request'iniz kabul edilmeden önce yorumları kontrol ederseniz değişikli
 
 - main branch'e doğrudan commit atılmaz.
 - Tüm değişiklikler Pull Request üzerinden yapılır.
-- Merge işlemini tek bir üye yaparsa çakışmalar ve bozulmalar minimuma iner.
+- Açılan Pull Request'ler diğer ekip üyelerinin inceleyebilmesi için hemen merge edilmez.
