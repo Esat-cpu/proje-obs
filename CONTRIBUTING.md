@@ -31,6 +31,16 @@ git checkout -b <tür>/görev-adı # örneğin feat/login-sayfası, docs/readme-
 > branch adını `<tür>/<No>-görev-adı` yapabilirsiniz. Pull Request'te de Closes #\<No> yazarsanız
 > PR merge edildiğinde issue otomatik olarak kapanır.
 
+---
+
+Uzak depodan bir branch’i local bilgisayarınıza almak için:
+```bash
+git fetch origin
+git checkout -b <branch-adı> origin/<branch-adı>
+```
+
+---
+
 Değişiklikler commit'ler ile yapılır. Commit atarken:
 ```bash
 git add .   # Değişiklikleri al
