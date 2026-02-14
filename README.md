@@ -36,6 +36,13 @@ Proje dizininde bulunan `.env.example` dosyasını `.env` olarak kopyalayın ve 
 1.Python bağımlılıklarını kurun:
 
 ```bash
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+# Linux/Unix
+source .venv/bin/activate
+
 pip install -r src/backend/requirements.txt
 ```
 
