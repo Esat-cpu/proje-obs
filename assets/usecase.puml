@@ -1,0 +1,69 @@
+@startuml OBS Use Case
+
+left to right direction
+
+actor "Kullanıcı" as User
+actor Öğrenci
+actor Akademisyen
+actor Yönetici
+
+Öğrenci --|> User
+Akademisyen --|> User
+Yönetici --|> User
+
+
+rectangle "OBS Sistemi" {
+
+  usecase "Giriş Yap" as Login
+  usecase "Çıkış Yap" as Logout
+
+  ' Öğrenci
+  usecase "Ders Kaydı Yap" as RegisterForCourse
+  usecase "Alınan Dersleri ve Notlarını Gör" as ViewCoursesAndGrades
+  usecase "Transkript Gör" as ViewTranscript
+  usecase "Transkript İndir" as DownloadTranscript
+
+  ' Akademisyen
+  usecase "Verilen Dersleri Gör" as ViewTeachingCourses
+  usecase "Öğrenci Notlarını Gör ve Düzenle" as ManageGrades
+  usecase "Öğrenci Ders Kaydını Onayla" as ApproveCourseReg
+
+  ' Yönetici
+  usecase "Öğrenci Kaydı" as RegisterStudent
+  usecase "Akademisyen Kaydı" as RegisterAcademic
+  usecase "Ders Oluştur" as CreateCourse
+  usecase "Ders Güncelle" as UpdateCourse
+  usecase "Ders Sil" as DeleteCourse
+}
+
+User --> Login
+User --> Logout
+
+
+' Öğrenci
+Öğrenci --> RegisterForCourse
+Öğrenci --> ViewCoursesAndGrades
+Öğrenci --> ViewTranscript
+Öğrenci --> DownloadTranscript
+
+
+' Akademisyen
+Akademisyen --> ViewTeachingCourses
+Akademisyen --> ManageGrades
+Akademisyen --> ApproveCourseReg
+
+
+' Yönetici
+Yönetici --> RegisterStudent
+Yönetici --> RegisterAcademic
+Yönetici --> CreateCourse
+Yönetici --> UpdateCourse
+Yönetici --> DeleteCourse
+
+
+' Diğer İlişkiler
+ManageGrades ..> ViewTeachingCourses : <<include>>
+DownloadTranscript ..> ViewTranscript : <<extend>>
+
+
+@enduml
