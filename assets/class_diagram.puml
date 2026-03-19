@@ -71,6 +71,12 @@ class DersKaydi {
   harf_notu_atama()
 }
 
+class DersKayitDonemi {
+    baslangic : datetime
+    bitis : datetime
+}
+
+
 ' --- RELATIONSHIPS ---
 
 User <|-- Ogrenci
