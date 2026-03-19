@@ -29,11 +29,19 @@ rectangle "OBS Sistemi" {
   usecase "Öğrenci Ders Kaydını Onayla" as ApproveCourseReg
 
   ' Yönetici
-  usecase "Öğrenci Kaydı" as RegisterStudent
-  usecase "Akademisyen Kaydı" as RegisterAcademic
+  usecase "Öğrencileri Listele" as ViewStudent
+  usecase "Manuel Öğrenci Kaydı Yap" as RegisterStudent
+  usecase "Toplu Öğrenci Kaydı Yap" as RegisterManyStudents
+
+  usecase "Akademisyenleri Listele" as ViewAcademic
+  usecase "Akademisyen Kaydı Yap" as RegisterAcademic
+
+  usecase "Dersleri Listele" as ViewCourse
   usecase "Ders Oluştur" as CreateCourse
   usecase "Ders Güncelle" as UpdateCourse
   usecase "Ders Sil" as DeleteCourse
+
+  usecase "Ders Kayıt Dönemi Ayarla" as ManageRegisterPeriod
 }
 
 User --> Login
@@ -54,16 +62,29 @@ Akademisyen --> ApproveCourseReg
 
 
 ' Yönetici
+Yönetici --> ViewStudent
 Yönetici --> RegisterStudent
+Yönetici --> RegisterManyStudents
+Yönetici --> ViewAcademic
 Yönetici --> RegisterAcademic
+Yönetici --> ViewCourse
 Yönetici --> CreateCourse
 Yönetici --> UpdateCourse
 Yönetici --> DeleteCourse
+Yönetici --> ManageRegisterPeriod
 
 
-' Diğer İlişkiler
+' Use Case Arası İlişkiler
 ManageGrades ..> ViewTeachingCourses : <<include>>
+
 DownloadTranscript ..> ViewTranscript : <<extend>>
+
+RegisterManyStudents ..> ViewStudent : <<include>>
+RegisterStudent ..> ViewStudent : <<include>>
+RegisterAcademic ..> ViewAcademic : <<include>>
+CreateCourse ..> ViewCourse : <<include>>
+UpdateCourse ..> ViewCourse : <<include>>
+DeleteCourse ..> ViewCourse : <<include>>
 
 
 @enduml
