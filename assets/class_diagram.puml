@@ -51,6 +51,7 @@ class Ders {
   ders_kodu : str
   ad : str
   kredi : int
+  sinif : int
 }
 
 class DonemDersi {
@@ -72,6 +73,7 @@ class DersKaydi {
 }
 
 class DersKayitDonemi {
+    donem : str
     baslangic : datetime
     bitis : datetime
 }
