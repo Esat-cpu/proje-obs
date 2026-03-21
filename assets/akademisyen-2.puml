@@ -1,0 +1,23 @@
+@startuml
+title Akademisyen - Ders Kaydi Onaylama
+
+start
+: Ders kayit taleplerini goruntule;
+
+if (Talep var mi?) then (Evet)
+  : Talebi incele;
+  
+  if (Onayliyor mu?) then (Evet)
+    : Onayla;
+    stop
+  else (Hayir)
+    : Reddet;
+    stop
+  endif
+  
+else (Hayir)
+  : "Talep yok" mesaji goster;
+  stop
+endif
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title Akademisyen - Not Gor ve Duzenle
+
+start
+: Verilen dersleri listele;
+: Ders sec;
+: Ogrencileri listele;
+: Ogrenci sec;
+: Vize notu gir veya guncelle;
+: Final notu gir veya guncelle;
+: Ortalama hesapla;
+: Harf notunu hesapla;
+: Degisiklikleri kaydet;
+stop
+
+@enduml
