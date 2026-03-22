@@ -1,0 +1,28 @@
+@startuml
+actor Kullanıcı
+
+participant "User" as User
+participant "Ogrenci" as Ogrenci
+participant "Akademisyen" as Akademisyen
+participant "Yonetici" as Yonetici
+
+Kullanıcı -> User : login(username, sifre)
+User -> User : kimlik dogrula, rol belirle
+
+alt [rol == Ogrenci]
+    User --> Ogrenci : Ogrenci nesnesi donus
+    Ogrenci --> Kullanıcı : Ogrenci paneli goster
+
+else [rol == Akademisyen]
+    User --> Akademisyen : Akademisyen nesnesi donus
+    Akademisyen --> Kullanıcı : Akademisyen paneli goster
+
+else [rol == Yonetici]
+    User --> Yonetici : Yonetici nesnesi donus
+    Yonetici --> Kullanıcı : Yonetici paneli goster
+
+else [Kimlik Hatali]
+    User --> Kullanıcı : Hata mesaji goster
+end
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+actor Yönetici
+
+participant "Yonetici" as YoneticiClass
+participant "Bolum" as Bolum
+participant "Ogrenci" as Ogrenci
+
+Yönetici -> YoneticiClass : ogrenci_kaydi_excel(dosya)
+YoneticiClass -> YoneticiClass : Excel dosyasini parse et (ad, soyad, bolum_kodu)
+
+loop [Her satir icin]
+    YoneticiClass -> Bolum : bolum_kodu ile sorgula
+    Bolum --> YoneticiClass : Bolum nesnesi (ad, bolum_kodu)
+    YoneticiClass -> Ogrenci : olustur(ad, soyad, bolum)
+    Ogrenci -> Ogrenci : ogr_no uret (benzersiz)
+    Ogrenci --> YoneticiClass : Ogrenci nesnesi kaydedildi
+end
+
+YoneticiClass --> Yönetici : Ozet rapor (basarili, hatali kayit sayisi)
+
+@enduml

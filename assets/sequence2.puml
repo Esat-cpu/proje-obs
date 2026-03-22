@@ -1,0 +1,44 @@
+@startuml
+actor Öğrenci
+actor Akademisyen
+
+participant "Ogrenci" as Ogrenci
+participant "DersKayitDonemi" as DersKayitDonemi
+participant "Ders" as Ders
+participant "DonemDersi" as DonemDersi
+participant "DersKaydi" as DersKaydi
+
+Öğrenci -> Ogrenci : ders_kaydi_yap()
+Ogrenci -> DersKayitDonemi : baslangic ve bitis tarihlerini kontrol et
+
+alt [Simdi < baslangic veya Simdi > bitis]
+    DersKayitDonemi --> Ogrenci : Kayit donemi disinda
+    Ogrenci --> Öğrenci : Kayit donemi kapali uyarisi
+
+else [baslangic <= Simdi <= bitis]
+    DersKayitDonemi --> Ogrenci : Kayit donemi aktif
+    Ogrenci -> Ders : listele(sinif=self.sinif)
+    Ders --> Ogrenci : Ders listesi (ders_kodu, ad, kredi, sinif)
+    Ogrenci -> DonemDersi : listele(ders, donem, aktiflik_durumu=True)
+    DonemDersi --> Ogrenci : DonemDersi listesi
+    Ogrenci --> Öğrenci : Ders listesini goster
+    Öğrenci -> Ogrenci : Dersleri sec ve onayla
+    Ogrenci -> Ogrenci : kredi ve ders limiti kontrol et
+end
+
+alt [Limit Asildi]
+    Ogrenci --> Öğrenci : Limit asimi uyarisi
+
+else [Limit Uygun]
+    Ogrenci -> DersKaydi : olustur(onay_durumu=beklemede)
+    DersKaydi --> Ogrenci : DersKaydi nesnesi olusturuldu
+    Ogrenci --> Öğrenci : Talep gonderildi
+end
+
+Akademisyen -> Akademisyen : ders_kaydi_onayla()
+Akademisyen -> DersKaydi : listele(onay_durumu=beklemede)
+DersKaydi --> Akademisyen : Bekleyen DersKaydi listesi
+Akademisyen -> DersKaydi : onay_durumu = onaylandi / reddedildi
+DersKaydi --> Akademisyen : Guncellendi
+
+@enduml
