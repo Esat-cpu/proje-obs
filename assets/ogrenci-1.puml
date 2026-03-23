@@ -1,0 +1,14 @@
+@startuml
+title Ogrenci - Ders ve Not Goruntuleme
+
+start
+: Ders ve not sayfasina git;
+: Alinan dersleri listele;
+: Ders sec;
+: Vize notunu goster;
+: Final notunu goster;
+: Ortalama hesapla;
+: Harf notunu goster;
+stop
+
+@enduml

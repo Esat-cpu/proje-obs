@@ -1,0 +1,100 @@
+@startuml
+
+' --- CLASSES ---
+
+class User {
+  username : str
+  sifre : str
+  email : str
+  ad : str
+  soyad : str
+  login()
+  logout()
+}
+
+class Yonetici {
+  yonetici_id : str
+  ogrenci_kaydi_excel(dosya: Any)
+  akademisyen_kaydi_manuel()
+  ders_olustur()
+  ders_guncelle()
+  ders_sil()
+  kullanici_yonetimi()
+}
+
+class Ogrenci {
+  ogr_no : str
+  bolum : str
+  sinif : int
+  gpa : float
+  ders_kaydi_yap()
+  ders_ve_not_goruntule()
+  transkript_goruntule()
+  transkript_indir_pdf()
+}
+
+class Akademisyen {
+  personel_id : str
+  unvan : str
+  verilen_dersleri_listele()
+  ogrenci_listesi_goruntule()
+  not_gir_guncelle()
+  ders_kaydi_onayla()
+}
+
+class Bolum {
+  ad : str
+  bolum_kodu : str
+}
+
+class Ders {
+  ders_kodu : str
+  ad : str
+  kredi : int
+  sinif : int
+}
+
+class DonemDersi {
+  dersin_hocasi : str
+  yil : int
+  donem : str
+  kontenjan : int
+  aktiflik_durumu : bool
+}
+
+class DersKaydi {
+  vize_notu : float
+  final_notu : float
+  ortalama : float
+  harf_notu : str
+  onay_durumu : bool
+  ortalama_hesapla()
+  harf_notu_atama()
+}
+
+class DersKayitDonemi {
+    donem : str
+    baslangic : datetime
+    bitis : datetime
+}
+
+
+' --- RELATIONSHIPS ---
+
+User <|-- Ogrenci
+User <|-- Akademisyen
+User <|-- Yonetici
+
+Bolum "1" *-- "*" Ogrenci
+Bolum "1" *-- "*" Akademisyen
+Bolum "1" *-- "*" Ders
+
+' Yeni Zincir: Ogrenci -> DersKaydi -> DonemDersi -> Akademisyen
+Ogrenci "1" -- "*" DersKaydi
+DersKaydi "*" -- "1" DonemDersi
+DonemDersi "*" -- "1" Akademisyen : dersi verir
+
+' DonemDersi ve Genel Ders Tanımı İlişkisi
+DonemDersi "*" -- "1" Ders : referans alır
+
+@enduml

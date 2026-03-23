@@ -1,0 +1,26 @@
+@startuml
+actor Akademisyen
+
+participant "Akademisyen" as AkademisyenClass
+participant "DonemDersi" as DonemDersi
+participant "DersKaydi" as DersKaydi
+
+Akademisyen -> AkademisyenClass : verilen_dersleri_listele()
+AkademisyenClass -> DonemDersi : listele(dersin_hocasi=self)
+DonemDersi --> AkademisyenClass : DonemDersi listesi
+AkademisyenClass --> Akademisyen : Ders listesi goster
+
+Akademisyen -> AkademisyenClass : ogrenci_listesi_goruntule(donem_dersi)
+AkademisyenClass -> DersKaydi : listele(donem_dersi)
+DersKaydi --> AkademisyenClass : DersKaydi listesi
+AkademisyenClass --> Akademisyen : Ogrenci-not tablosu goster
+
+Akademisyen -> AkademisyenClass : not_gir_guncelle(kayit_id, vize_notu, final_notu)
+AkademisyenClass -> DersKaydi : vize_notu ve final_notu guncelle
+DersKaydi -> DersKaydi : ortalama_hesapla()
+note right : (vize x 0.4) + (final x 0.6)
+DersKaydi -> DersKaydi : harf_notu_atama()
+DersKaydi --> AkademisyenClass : ortalama, harf_notu
+AkademisyenClass --> Akademisyen : Hesaplanan degerler goster
+
+@enduml

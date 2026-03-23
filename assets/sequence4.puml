@@ -1,0 +1,17 @@
+@startuml
+actor Öğrenci
+
+participant "Ogrenci" as Ogrenci
+participant "DersKaydi" as DersKaydi
+
+Öğrenci -> Ogrenci : transkript_goruntule()
+Ogrenci -> DersKaydi : listele(ogrenci=self, tum_donemler=True)
+DersKaydi --> Ogrenci : Tum donem DersKaydi listesi
+Ogrenci -> Ogrenci : gpa hesapla
+Ogrenci --> Öğrenci : Transkript ve gpa goster
+
+Öğrenci -> Ogrenci : transkript_indir_pdf()
+Ogrenci -> Ogrenci : Gosterilen transkriptten PDF olustur
+Ogrenci --> Öğrenci : PDF indirilir
+
+@enduml

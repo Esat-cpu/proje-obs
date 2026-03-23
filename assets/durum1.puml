@@ -1,0 +1,24 @@
+@startuml
+title SD-1: DersKaydi Durum Diyagramı
+
+[*] --> Beklemede : Öğrenci ders kaydı yapar
+
+state Beklemede
+Beklemede : Ders kaydı oluşturulmuş
+Beklemede : Akademisyen onayı bekleniyor
+
+state Onaylandı
+Onaylandı : Akademisyen kaydı onaylamış
+Onaylandı : Öğrenci derse kayıtlı
+
+state Reddedildi
+Reddedildi : Akademisyen kaydı reddetmiş
+Reddedildi : Kayıt geçersiz
+
+Beklemede --> Onaylandı : Akademisyen onaylar
+Beklemede --> Reddedildi : Akademisyen reddeder
+
+Onaylandı --> [*]
+Reddedildi --> [*]
+
+@enduml

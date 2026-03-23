@@ -1,0 +1,25 @@
+@startuml
+title Ogrenci - Ders Kaydi
+
+start
+: Ders kayit sayfasini ac;
+
+if (Kayit donemi acik mi?) then (Evet)
+  : Dersleri listele;
+  : Ders sec;
+  
+  if (Kredi limiti uygun mu?) then (Evet)
+    : Secimi onayla;
+    : Akademisyene gonder;
+    stop
+  else (Hayir)
+    : "Limit asildi" mesaji goster;
+    stop
+  endif
+  
+else (Hayir)
+  : "Kayit donemi kapali" mesaji goster;
+  stop
+endif
+
+@enduml

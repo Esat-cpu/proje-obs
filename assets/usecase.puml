@@ -1,0 +1,90 @@
+@startuml OBS Use Case
+
+left to right direction
+
+actor "Kullanıcı" as User
+actor Öğrenci
+actor Akademisyen
+actor Yönetici
+
+Öğrenci --|> User
+Akademisyen --|> User
+Yönetici --|> User
+
+
+rectangle "OBS Sistemi" {
+
+  usecase "Giriş Yap" as Login
+  usecase "Çıkış Yap" as Logout
+
+  ' Öğrenci
+  usecase "Ders Kaydı Yap" as RegisterForCourse
+  usecase "Alınan Dersleri ve Notlarını Gör" as ViewCoursesAndGrades
+  usecase "Transkript Gör" as ViewTranscript
+  usecase "Transkript İndir" as DownloadTranscript
+
+  ' Akademisyen
+  usecase "Verilen Dersleri Gör" as ViewTeachingCourses
+  usecase "Öğrenci Notlarını Gör ve Düzenle" as ManageGrades
+  usecase "Öğrenci Ders Kaydını Onayla" as ApproveCourseReg
+
+  ' Yönetici
+  usecase "Öğrencileri Listele" as ViewStudent
+  usecase "Manuel Öğrenci Kaydı Yap" as RegisterStudent
+  usecase "Toplu Öğrenci Kaydı Yap" as RegisterManyStudents
+
+  usecase "Akademisyenleri Listele" as ViewAcademic
+  usecase "Akademisyen Kaydı Yap" as RegisterAcademic
+
+  usecase "Dersleri Listele" as ViewCourse
+  usecase "Ders Oluştur" as CreateCourse
+  usecase "Ders Güncelle" as UpdateCourse
+  usecase "Ders Sil" as DeleteCourse
+
+  usecase "Ders Kayıt Dönemi Ayarla" as ManageRegisterPeriod
+}
+
+User --> Login
+User --> Logout
+
+
+' Öğrenci
+Öğrenci --> RegisterForCourse
+Öğrenci --> ViewCoursesAndGrades
+Öğrenci --> ViewTranscript
+Öğrenci --> DownloadTranscript
+
+
+' Akademisyen
+Akademisyen --> ViewTeachingCourses
+Akademisyen --> ManageGrades
+Akademisyen --> ApproveCourseReg
+
+
+' Yönetici
+Yönetici --> ViewStudent
+Yönetici --> RegisterStudent
+Yönetici --> RegisterManyStudents
+Yönetici --> ViewAcademic
+Yönetici --> RegisterAcademic
+Yönetici --> ViewCourse
+Yönetici --> CreateCourse
+Yönetici --> UpdateCourse
+Yönetici --> DeleteCourse
+Yönetici --> ManageRegisterPeriod
+
+
+' Use Case Arası İlişkiler
+ManageGrades ..> ViewTeachingCourses : <<include>>
+
+DownloadTranscript ..> ViewTranscript : <<extend>>
+
+RegisterManyStudents ..> ViewStudent : <<include>>
+RegisterStudent ..> ViewStudent : <<include>>
+RegisterAcademic ..> ViewAcademic : <<include>>
+CreateCourse ..> ViewCourse : <<include>>
+UpdateCourse ..> ViewCourse : <<include>>
+DeleteCourse ..> ViewCourse : <<include>>
+
+
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+skinparam handwritten false
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam defaultFontName Arial
+skinparam shadowing false
+
+title UC-2: Ders Kaydı Yap - Aktivite Diyagramı
+
+|Öğrenci|
+start
+:Sisteme Giriş Yap;
+|Sistem|
+:Alınabilecek Dersleri Listele\n(dersleri_getir);
+
+|Öğrenci|
+repeat
+  :Ders Seçimi Yap\n(ders_sec);
+  |Sistem|
+  if (Kontenjan ve Kredi\nLimitleri Uygun mu?) then (Evet)
+    :Dersi Geçici Listeye Ekle;
+  else (Hayır)
+    :Hata Mesajı Göster (E1);
+  endif
+|Öğrenci|
+repeat while (Başka Ders Seçilecek mi?) is (Evet)
+->Hayır;
+
+:Ders Programını Onaya Gönder\n(kaydi_onaya_gonder);
+
+|Akademisyen (Danışman)|
+:Bekleyen Kayıtları İncele\n(kayitlari_goruntule);
+
+if (Program Akademik Kurallara\nUygun mu?) then (Evet)
+  :Ders Kaydını Onayla\n(ders_kaydi_onayla);
+  |Sistem|
+  :Öğrenci Durumunu Güncelle;
+  :Veritabanı Kaydını Tamamla;
+  |Akademisyen (Danışman)|
+else (Hayır)
+  :Reddet ve Düzeltme İste\n(reddet_ve_bildir);
+  |Öğrenci|
+  :Ders Programını Yeniden Düzenle;
+  detach
+endif
+
+|Sistem|
+:İşlem Sonucu Bildirimi Gönder;
+stop
+@enduml
