@@ -1,0 +1,19 @@
+@startuml
+title SD-3: User Oturum Durum Diyagramı
+
+[*] --> Çıkış : Kullanıcı henüz giriş yapmamış
+
+state Çıkış
+Çıkış : Kullanıcı sisteme giriş yapmamış
+Çıkış : Sadece giriş sayfası erişilebilir
+
+state Giriş
+Giriş : Kullanıcı sisteme giriş yapmış
+Giriş : Rolüne göre sayfalar erişilebilir
+
+Çıkış --> Giriş : Kimlik bilgileri doğru
+Giriş --> Çıkış : Kullanıcı çıkış yapar
+Giriş --> Çıkış : Oturum süresi dolar
+Çıkış --> Çıkış : Kimlik bilgileri hatalı
+
+@enduml

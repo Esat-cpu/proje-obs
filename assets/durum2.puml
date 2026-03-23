@@ -1,0 +1,29 @@
+@startuml
+title SD-2: DonemDersi Durum Diyagramı
+
+[*] --> Pasif : Yönetici ders oluşturur
+
+state Pasif
+Pasif : Ders oluşturulmuş
+Pasif : Öğrenci kaydına kapalı
+
+state Aktif
+Aktif : Ders açık
+Aktif : Öğrenciler kayıt yapabilir
+
+state Kapalı
+Kapalı : Dönem bitmiş
+Kapalı : Hiçbir işlem yapılamaz
+
+state Silinmiş
+Silinmiş : Ders sistemden kaldırılmış
+
+Pasif --> Aktif : Yönetici dersi aktif eder
+Aktif --> Pasif : Yönetici dersi pasif eder
+Aktif --> Kapalı : Dönem sona erer
+Pasif --> Silinmiş : Yönetici dersi siler
+
+Kapalı --> [*]
+Silinmiş --> [*]
+
+@enduml
