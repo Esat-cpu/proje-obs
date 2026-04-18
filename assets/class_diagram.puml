@@ -3,17 +3,18 @@
 ' --- CLASSES ---
 
 class User {
+  id : int
   username : str
   sifre : str
   email : str
   ad : str
   soyad : str
+  role : Role
   login()
   logout()
 }
 
 class Yonetici {
-  yonetici_id : str
   ogrenci_kaydi_excel(dosya: Any)
   akademisyen_kaydi_manuel()
   ders_olustur()
@@ -24,9 +25,8 @@ class Yonetici {
 
 class Ogrenci {
   ogr_no : str
-  bolum : str
   sinif : int
-  gpa : float
+  gpa : decimal
   ders_kaydi_yap()
   ders_ve_not_goruntule()
   transkript_goruntule()
@@ -34,8 +34,7 @@ class Ogrenci {
 }
 
 class Akademisyen {
-  personel_id : str
-  unvan : str
+  unvan : Unvan
   verilen_dersleri_listele()
   ogrenci_listesi_goruntule()
   not_gir_guncelle()
@@ -51,29 +50,29 @@ class Ders {
   ders_kodu : str
   ad : str
   kredi : int
-  sinif : int
+  min_sinif : int
 }
 
 class DonemDersi {
-  dersin_hocasi : str
   yil : int
-  donem : str
+  donem : Donem
   kontenjan : int
   aktiflik_durumu : bool
 }
 
 class DersKaydi {
-  vize_notu : float
-  final_notu : float
-  ortalama : float
-  harf_notu : str
+  vize_notu : int
+  final_notu : int
+  ortalama : decimal
+  harf_notu : HarfNotu
   onay_durumu : bool
   ortalama_hesapla()
   harf_notu_atama()
 }
 
 class DersKayitDonemi {
-    donem : str
+    yil : int
+    donem : Donem
     baslangic : datetime
     bitis : datetime
 }
