@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Ders, DonemDersi
 
-# Register your models here.
+admin.site.register(Ders)
+admin.site.register(DonemDersi)
