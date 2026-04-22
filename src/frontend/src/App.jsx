@@ -15,7 +15,7 @@ function App() {
       <Route path="/" element={<AnaSayfa />} />
       <Route path="/login/student" element={<OgrenciGiris />} />
       <Route path="/login/academician" element={<EgitmenGiris />} />
-      <Route path="/ogrenci/*" element={<OgrenciPaneli />} />
+      <Route path="/student/*" element={<OgrenciPaneli />} />
       <Route path="/academician/*" element={<EgitmenPaneli />} />
       {/* Hiçbir route eşleşmezse NotFound bileşeni çalışır */}
       <Route path="*" element={<NotFound />} />
