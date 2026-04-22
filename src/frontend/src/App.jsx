@@ -1,35 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from 'react-router-dom';
+import OgrenciPaneli from './pages/OgrenciPaneli';
+import EgitmenPaneli from './pages/EgitmenPaneli';
+
+// Geçici (Boş/Mock) Sayfa Bileşenleri
+// Daha sonra bu bileşenleri daha önce oluşturduğunuz "pages/" klasörüne taşıyıp oradan import edebilirsiniz.
+const AnaSayfa = () => <div>Ana Sayfa</div>;
+const OgrenciGiris = () => <div>Öğrenci Giriş Sayfası</div>;
+const EgitmenGiris = () => <div>Akademisyen Giriş Sayfası</div>;
+const NotFound = () => <div>404 - Sayfa Bulunamadı</div>;
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      <Route path="/" element={<AnaSayfa />} />
+      <Route path="/login/student" element={<OgrenciGiris />} />
+      <Route path="/login/academician" element={<EgitmenGiris />} />
+      <Route path="/student/*" element={<OgrenciPaneli />} />
+      <Route path="/academician/*" element={<EgitmenPaneli />} />
+      {/* Hiçbir route eşleşmezse NotFound bileşeni çalışır */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
