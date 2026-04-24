@@ -1,0 +1,240 @@
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { GraduationCap, User, Users, Settings, Globe, Home } from 'lucide-react';
+ 
+const LoginHomePage = () => {
+  const { t, i18n } = useTranslation();
+ 
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'tr' ? 'en' : 'tr');
+  };
+ 
+  const portalCards = [
+    {
+      to: '/login/student',
+      icon: <User size={32} color="#3b6fd4" />,
+      iconBg: '#dce8fb',
+      title: t('portal.student', 'Öğrenci'),
+      description: t('portal.studentDesc', 'Ders seçimi, notlar ve dökümanlar'),
+    },
+    {
+      to: '/login/academician',
+      icon: <Users size={32} color="#2e9e6b" />,
+      iconBg: '#d4f0e4',
+      title: t('portal.academician', 'Akademisyen'),
+      description: t('portal.academicianDesc', 'Ders yönetimi ve not girişi'),
+    },
+    {
+      to: 'http://localhost:8000/admin/',
+      isExternal: true,
+      icon: <Settings size={32} color="#7c5cbf" />,
+      iconBg: '#ece6f8',
+      title: t('portal.admin', 'Yönetici'),
+      description: t('portal.adminDesc', 'Sistem ve kullanıcı yönetimi'),
+    },
+  ];
+ 
+  return (
+    <div style={styles.page}>
+      {/* Navbar */}
+      <nav style={styles.navbar}>
+        <div style={styles.navBrand}>
+          <Home size={22} color="#3b6fd4" />
+          <span style={styles.navBrandText}>{t('nav.home', 'Anasayfa')}</span>
+        </div>
+        <button onClick={toggleLanguage} style={styles.langButton}>
+          <Globe size={16} color="#3b6fd4" />
+          <span>{i18n.language === 'tr' ? 'English' : 'Türkçe'}</span>
+        </button>
+      </nav>
+ 
+      {/* Main content */}
+      <main style={styles.main}>
+        {/* Title */}
+        <div style={styles.titleBlock}>
+          <h1 style={styles.title}>{t('app.title', 'OBS - Öğrenci Bilgi Sistemi')}</h1>
+          <div style={styles.titleUnderline} />
+        </div>
+ 
+        {/* University Logo Card */}
+        <div style={styles.logoCard}>
+          <div style={styles.logoIconWrapper}>
+            <GraduationCap size={64} color="#3b6fd4" />
+          </div>
+          <p style={styles.logoLabel}>{t('app.universityLogo', 'Üniversite Logosu')}</p>
+        </div>
+ 
+        {/* Portal Cards */}
+        <div style={styles.cardsRow}>
+          {portalCards.map((card) => {
+            const cardContent = (
+              <div style={styles.card}>
+                <div style={{ ...styles.cardIconWrapper, backgroundColor: card.iconBg }}>
+                  {card.icon}
+                </div>
+                <h2 style={styles.cardTitle}>{card.title}</h2>
+                <p style={styles.cardDesc}>{card.description}</p>
+              </div>
+            );
+
+            return card.isExternal ? (
+              <a key={card.to} href={card.to} style={styles.cardLink}>
+                {cardContent}
+              </a>
+            ) : (
+              <Link key={card.to} to={card.to} style={styles.cardLink}>
+                {cardContent}
+              </Link>
+            );
+          })}
+        </div>
+      </main>
+    </div>
+  );
+};
+ 
+const styles = {
+  page: {
+    minHeight: '100vh',
+    backgroundColor: '#edf1fb',
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  navbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '14px 28px',
+    backgroundColor: '#edf1fb',
+  },
+  navBrand: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    textDecoration: 'none',
+    color: '#222',
+    fontWeight: '600',
+    fontSize: '15px',
+  },
+  navBrandText: {
+    color: '#222',
+  },
+  langButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '7px 16px',
+    border: '1.5px solid #d0d7e8',
+    borderRadius: '20px',
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+    fontSize: '14px',
+    color: '#333',
+    fontWeight: '500',
+  },
+  main: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingTop: '36px',
+    paddingBottom: '48px',
+    gap: '32px',
+  },
+  titleBlock: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  title: {
+    fontSize: '28px',
+    fontWeight: '700',
+    color: '#1a1a2e',
+    margin: 0,
+    letterSpacing: '-0.3px',
+  },
+  titleUnderline: {
+    width: '48px',
+    height: '3px',
+    backgroundColor: '#3b6fd4',
+    borderRadius: '2px',
+  },
+  logoCard: {
+    backgroundColor: '#fff',
+    borderRadius: '16px',
+    padding: '32px 48px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '14px',
+    boxShadow: '0 2px 12px rgba(59,111,212,0.07)',
+    width: '220px',
+  },
+  logoIconWrapper: {
+    width: '100px',
+    height: '100px',
+    backgroundColor: '#dce8fb',
+    borderRadius: '14px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoLabel: {
+    margin: 0,
+    fontSize: '13px',
+    color: '#666',
+    fontWeight: '500',
+  },
+  cardsRow: {
+    display: 'flex',
+    gap: '20px',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'stretch',
+  },
+  cardLink: {
+    textDecoration: 'none',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: '16px',
+    padding: '32px 28px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '10px',
+    width: '200px',
+    boxShadow: '0 2px 12px rgba(59,111,212,0.07)',
+    cursor: 'pointer',
+    transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+    flex: 1,
+  },
+  cardIconWrapper: {
+    width: '64px',
+    height: '64px',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '4px',
+  },
+  cardTitle: {
+    margin: 0,
+    fontSize: '16px',
+    fontWeight: '700',
+    color: '#1a1a2e',
+  },
+  cardDesc: {
+    margin: 0,
+    fontSize: '12px',
+    color: '#888',
+    textAlign: 'center',
+    lineHeight: '1.5',
+  },
+};
+ 
+export default LoginHomePage;

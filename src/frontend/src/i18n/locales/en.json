@@ -1,0 +1,46 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "An unexpected error occurred.",
+    "success": "Operation completed successfully."
+  },
+  "auth": {
+    "loginTitle": "OBS Login",
+    "loginButton": "Login",
+    "logoutButton": "Logout",
+    "usernamePlaceholder": "Student/Staff ID",
+    "passwordPlaceholder": "Password",
+    "invalidCredentials": "Invalid ID or password."
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "courses": "Course Selection",
+    "grades": "Grades",
+    "schedule": "Schedule",
+    "transcript": "Transcript",
+    "profile": "Profile"
+  },
+  "dashboard": {
+    "welcomeMessage": "Welcome to the Student Information System, {{name}}",
+    "announcementsTitle": "Current Announcements"
+  },
+  "nav": {
+    "home": "Home"
+  },
+  "app": {
+    "title": "SIS - Student Information System",
+    "universityLogo": "University Logo"
+  },
+  "portal": {
+    "student": "Student",
+    "studentDesc": "Course selection, grades and documents",
+    "academician": "Academician",
+    "academicianDesc": "Course management and grading",
+    "admin": "Admin",
+    "adminDesc": "System and user management"
+  }
+}

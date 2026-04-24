@@ -1,4 +1,4 @@
-const EgitmenPaneli = () => {
+const AkademisyenPaneli = () => {
   return (
     <div>
       <h1>Akademisyen Paneli</h1>
@@ -7,4 +7,4 @@ const EgitmenPaneli = () => {
   );
 };
 
-export default EgitmenPaneli;
+export default AkademisyenPaneli;

@@ -1,0 +1,46 @@
+{
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "loading": "Yükleniyor...",
+    "error": "Beklenmeyen bir hata oluştu.",
+    "success": "İşlem başarıyla tamamlandı."
+  },
+  "auth": {
+    "loginTitle": "OBS Giriş",
+    "loginButton": "Giriş Yap",
+    "logoutButton": "Çıkış Yap",
+    "usernamePlaceholder": "Öğrenci/Personel Numarası",
+    "passwordPlaceholder": "Şifre",
+    "invalidCredentials": "Girdiğiniz numara veya şifre hatalı."
+  },
+  "navigation": {
+    "dashboard": "Ana Sayfa",
+    "courses": "Ders Seçimi",
+    "grades": "Not Görüntüleme",
+    "schedule": "Ders Programı",
+    "transcript": "Transkript",
+    "profile": "Profil"
+  },
+  "dashboard": {
+    "welcomeMessage": "Öğrenci Bilgi Sistemine Hoş Geldiniz, {{name}}",
+    "announcementsTitle": "Güncel Duyurular"
+  },
+  "nav": {
+    "home": "Anasayfa"
+  },
+  "app": {
+    "title": "OBS - Öğrenci Bilgi Sistemi",
+    "universityLogo": "Üniversite Logosu"
+  },
+  "portal": {
+    "student": "Öğrenci",
+    "studentDesc": "Ders seçimi, notlar ve dökümanlar",
+    "academician": "Akademisyen",
+    "academicianDesc": "Ders yönetimi ve not girişi",
+    "admin": "Yönetici",
+    "adminDesc": "Sistem ve kullanıcı yönetimi"
+  }
+}
