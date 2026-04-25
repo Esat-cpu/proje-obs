@@ -61,7 +61,8 @@
   },
   "app": {
     "title": "SIS - Student Information System",
-    "universityLogo": "University Logo"
+    "universityLogo": "University Logo",
+    "notFound": "404 - Page Not Found"
   },
   "portal": {
     "student": "Student",
@@ -70,5 +71,17 @@
     "academicianDesc": "Course management and grading",
     "admin": "Admin",
     "adminDesc": "System and user management"
+  },
+  "studentPanel": {
+    "title": "Student Panel",
+    "desc": "Information such as student courses, grades, and attendance will be located here."
+  },
+  "academicianPanel": {
+    "title": "Academician Panel",
+    "desc": "Information such as assigned courses, grading, and student lists will be located here."
+  },
+  "login": {
+    "studentPage": "Student Login Page",
+    "academicianPage": "Academician Login Page"
   }
 }

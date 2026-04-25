@@ -9,42 +9,20 @@ const LanguageSwitcher = () => {
   };
 
   return (
-    <div style={styles.langContainer}>
-      <Globe size={16} color="#3b6fd4" />
+    <div className="lang-switcher">
+      <Globe size={16} color="var(--primary-blue)" />
       <select 
         id="language-select"
         name="language"
         value={i18n.language}
         onChange={handleLanguageChange}
         aria-label={t('nav.languageSelect', 'Dil Seçimi')}
-        style={styles.langSelect}
+        className="lang-select"
       >
-        <option value="tr">Türkçe</option>
-        <option value="en">English</option>
+        <option value="tr" className="lang-option">Türkçe</option>
+        <option value="en" className="lang-option">English</option>
       </select>
     </div>
   );
 };
-
-const styles = {
-  langContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '7px 16px',
-    border: '1.5px solid #d0d7e8',
-    borderRadius: '20px',
-    backgroundColor: '#fff',
-  },
-  langSelect: {
-    border: 'none',
-    backgroundColor: 'transparent',
-    fontSize: '14px',
-    color: '#333',
-    fontWeight: '500',
-    cursor: 'pointer',
-    outline: 'none',
-  },
-};
-
 export default LanguageSwitcher;

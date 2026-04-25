@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'; 
-import { User, Users, UserCog, Home, GraduationCap } from 'lucide-react'; /* ikonları getir */
-import TopBar from '../components/ui/TopBar';
+import { User, Users, UserCog, GraduationCap } from 'lucide-react'; /* ikonları getir */
 import ActionCard from '../components/ui/ActionCard';
 
 const LoginHomePage = () => {
@@ -9,7 +8,7 @@ const LoginHomePage = () => {
   const portalCards = [ /* 3'lü kart yapısı */
     {
       to: '/login/student',/* bu ilk karta basınca /login/student 'e yönlendir */
-      icon: <User size={32} color="#3b6fd4" />,
+      icon: <User size={32} color="var(--primary-blue)" />,
       iconBg: '#dce8fb',
       /* en.jsona gidip portal basligina bak eger student anahtarı yoksa Öğrenci kalsın*/
       title: t('portal.student', 'Öğrenci'),
@@ -33,37 +32,25 @@ const LoginHomePage = () => {
   ];
  
   return (
-    <div className="page-container">
-      
-      {/* Global Navbar Bileşeni */}
-      <TopBar 
-        leftContent={
-          <div style={styles.navBrand}>
-            <Home size={22} color="#3b6fd4" />
-            <span style={styles.navBrandText}>{t('nav.home', 'Anasayfa')}</span>
-          </div>
-        }
-        /* rightContent boş geçildiği için TopBar otomatik olarak LanguageSwitcher'ı gösterecektir */
-      />
- 
+    <>
       {/* Main content */}
-      <main style={styles.main}>
+      <main className="login-home-main">
         {/* Title */}
-        <div style={styles.titleBlock}>
-          <h1 style={styles.title}>{t('app.title', 'OBS - Öğrenci Bilgi Sistemi')}</h1>
+        <div className="login-home-title-block">
+          <h1 className="login-home-title">{t('app.title', 'OBS - Öğrenci Bilgi Sistemi')}</h1>
           <div className="title-underline" />
         </div>
  
         {/* UniversiteLogo Kartı */}
-        <div style={styles.logoCard}>
-          <div style={styles.logoIconWrapper}>
-            <GraduationCap size={64} color="#3b6fd4" />
+        <div className="university-logo-card">
+          <div className="logo-icon-wrapper">
+            <GraduationCap size={64} color="var(--primary-blue)" />
           </div>
-          <p style={styles.logoLabel}>{t('app.universityLogo', 'Üniversite Logosu')}</p>
+          <p className="logo-label">{t('app.universityLogo', 'Üniversite Logosu')}</p>
         </div>
  
         {/* Panel Giris Kartları */}
-        <div style={styles.cardsRow}>
+        <div className="cards-row">
           {portalCards.map((card) => (
             <ActionCard 
               key={card.to}
@@ -77,78 +64,8 @@ const LoginHomePage = () => {
           ))}
         </div>
       </main>
-    </div>
+    </>
   );
-};
- 
-const styles = {
-  navBrand: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    textDecoration: 'none',
-    color: '#222',
-    fontWeight: '600',
-    fontSize: '15px',
-  },
-  navBrandText: {
-    color: '#222',
-  },
-  main: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingTop: '36px',
-    paddingBottom: '48px',
-    gap: '32px',
-  },
-  titleBlock: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  title: {
-    fontSize: '28px',
-    fontWeight: '700',
-    color: '#1a1a2e',
-    margin: 0,
-    letterSpacing: '-0.3px',
-  },
-  logoCard: {
-    backgroundColor: '#fff',
-    borderRadius: '16px',
-    padding: '32px 48px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '14px',
-    boxShadow: '0 2px 12px rgba(59,111,212,0.07)',
-    width: '220px',
-  },
-  logoIconWrapper: {
-    width: '100px',
-    height: '100px',
-    backgroundColor: '#dce8fb',
-    borderRadius: '14px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoLabel: {
-    margin: 0,
-    fontSize: '13px',
-    color: '#666',
-    fontWeight: '500',
-  },
-  cardsRow: {
-    display: 'flex',
-    gap: '20px',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'stretch',
-  },
 };
  
 export default LoginHomePage;
