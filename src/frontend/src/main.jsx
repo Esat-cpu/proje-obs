@@ -1,13 +1,19 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import './global.css' /* global.css projenin ana stil dosyasıdır */
 import App from './App.jsx'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'/* BrowserRouter, yonlendirmeyi saglayan ana sarmalayicidir */
+import './i18n/i18n'
+import { ThemeProvider } from './context/ThemeContext.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BrowserRouter>
+/* React, HTML'deki root kutusunu bulur. Hata ayıklama modunu (StrictMode) ve yönlendirme sistemini (BrowserRouter) açar.
+    Son olarak tüm uygulamayı (<App />) alıp o kutunun içine çizerek projeyi başlatır.*/
+<StrictMode>
+  <BrowserRouter>
+    <ThemeProvider>
       <App />
-    </BrowserRouter>
-  </StrictMode>,
+    </ThemeProvider>
+  </BrowserRouter>
+</StrictMode>
 )

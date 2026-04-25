@@ -1,0 +1,184 @@
+/* CSS Değişkenleri (Global Renkler ve Fontlar) */
+:root {
+  color-scheme: light;
+  --bg-color: #edf1fb;
+  --primary-blue: #3b6fd4;
+  --text-main: #1a1a2e;
+  --text-muted: #666;
+  --card-bg: #ffffff;
+  --border-color: #d0d7e8;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Karanlık Tema Değişkenleri */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-color: #121212;
+  --primary-blue: #6395f9;
+  --text-main: #e4e4e7;
+  --text-muted: #a1a1aa;
+  --card-bg: #1e1e2d;
+  --border-color: #2b2b36;
+}
+
+/* Temel HTML Sıfırlamaları */
+* {
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tüm sayfalarda ortak kullanılacak ana kapsayıcı */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Başlıkların altındaki standart mavi çizgi */
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background-color: var(--primary-blue);
+  border-radius: 2px;
+}
+
+/* =========================================
+   UI BİLEŞENLERİ (Global Olarak Kullanılacaklar)
+   ========================================= */
+
+/* --- TopBar (Navbar) --- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background-color: var(--bg-color);
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* NavBrand (Anasayfa / Geri Dön Linki) */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Theme Toggle Butonu */
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+/* Dil Seçici (Language Switcher) */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 20px;
+  background-color: var(--card-bg);
+}
+.lang-select {
+  border: none;
+  background-color: transparent;
+  font-size: 14px;
+  color: var(--text-main);
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+}
+.lang-option {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+}
+
+/* Action Card (Ana sayfa ve benzeri giriş kartları) */
+.action-card-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+.action-card {
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 200px;
+  box-shadow: 0 2px 12px rgba(59,111,212,0.07);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.3s ease, color 0.3s ease;
+  flex: 1;
+}
+.action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(59,111,212,0.12);
+}
+.action-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.action-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.action-card-desc {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Panel İçerik Kapsayıcısı (Öğrenci, Akademisyen ve Diğer Paneller İçin Ortak) */
+.panel-container {
+  padding: 20px;
+  color: var(--text-main);
+  flex: 1;
+}
+
+/* =========================================
+   SAYFA SPESİFİK STİLLER (LoginHomePage)
+   ========================================= */
+.login-home-main { flex: 1; display: flex; flex-direction: column; align-items: center; padding-top: 36px; padding-bottom: 48px; gap: 32px; }
+.login-home-title-block { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.login-home-title { font-size: 28px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.3px; }
+.university-logo-card { background-color: var(--card-bg); border-radius: 16px; padding: 32px 48px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 2px 12px rgba(59,111,212,0.07); width: 220px; }
+.logo-icon-wrapper { width: 100px; height: 100px; background-color: #dce8fb; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+.logo-label { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+.cards-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: stretch; }
