@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css' /* index.css projenin global stil dosyasıdır */
+import './global.css' /* global.css projenin ana stil dosyasıdır */
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'/* BrowserRouter, yonlendirmeyi saglayan ana sarmalayicidir */
 import './i18n/i18n'

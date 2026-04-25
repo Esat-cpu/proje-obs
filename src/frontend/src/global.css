@@ -1,0 +1,36 @@
+/* CSS Değişkenleri (Global Renkler ve Fontlar) */
+:root {
+  --bg-color: #edf1fb;
+  --primary-blue: #3b6fd4;
+  --text-main: #1a1a2e;
+  --text-muted: #666;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Temel HTML Sıfırlamaları */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tüm sayfalarda ortak kullanılacak ana kapsayıcı */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Başlıkların altındaki standart mavi çizgi */
+.title-underline {
+  width: 48px;
+  height: 3px;
+  background-color: var(--primary-blue);
+  border-radius: 2px;
+}
