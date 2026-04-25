@@ -1,21 +1,22 @@
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { GraduationCap, User, Users, Settings, Globe, Home } from 'lucide-react';
- 
+import { Link } from 'react-router-dom'; /* link ile pürüzsüz geçiş */
+import { useTranslation } from 'react-i18next'; 
+import { GraduationCap, User, Users, UserCog, Globe } from 'lucide-react'; /* ikonları getir */
+
 const LoginHomePage = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(); /* useTranslation hook'u cagir nesne parcalamayla t ve i18n'i cekip al */
  
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'tr' ? 'en' : 'tr');
+  const handleLanguageChange = (e) => { /*  dil secici kutusunda e için degisiklik oldugunda (onChange={handleLanguageChange}) tetiklenmek üzere oraya baglanmıstır. */
+    i18n.changeLanguage(e.target.value); /* e(event)'nin degisikligini al i18.changeLanguage fonksiyonuna at */
   };
  
-  const portalCards = [
+  const portalCards = [ /* 3'lü kart yapısı */
     {
-      to: '/login/student',
+      to: '/login/student',/* bu ilk karta basınca /login/student 'e yönlendir */
       icon: <User size={32} color="#3b6fd4" />,
       iconBg: '#dce8fb',
+      /* en.jsona gidip portal basligina bak eger student anahtarı yoksa Öğrenci kalsın*/
       title: t('portal.student', 'Öğrenci'),
-      description: t('portal.studentDesc', 'Ders seçimi, notlar ve dökümanlar'),
+      description: t('portal.studentDesc', 'Ders seçimi, notlar ve Transkript'),
     },
     {
       to: '/login/academician',
@@ -26,8 +27,8 @@ const LoginHomePage = () => {
     },
     {
       to: 'http://localhost:8000/admin/',
-      isExternal: true,
-      icon: <Settings size={32} color="#7c5cbf" />,
+      isExternal: true,/* bu kart harici bir linke gidiyor */
+      icon: <UserCog size={32} color="#7c5cbf" />,
       iconBg: '#ece6f8',
       title: t('portal.admin', 'Yönetici'),
       description: t('portal.adminDesc', 'Sistem ve kullanıcı yönetimi'),
@@ -36,16 +37,28 @@ const LoginHomePage = () => {
  
   return (
     <div style={styles.page}>
-      {/* Navbar */}
+      
+      {/* Navbar --> anasayfa yazısı & sembolü ve dil secicinin oldugu kisim */}
       <nav style={styles.navbar}>
         <div style={styles.navBrand}>
-          <Home size={22} color="#3b6fd4" />
+          <GraduationCap size={22} color="#3b6fd4" />
           <span style={styles.navBrandText}>{t('nav.home', 'Anasayfa')}</span>
         </div>
-        <button onClick={toggleLanguage} style={styles.langButton}>
+        {/* dil secici tasarimini jsx ile yapılandır */}
+        <div style={styles.langContainer}>
           <Globe size={16} color="#3b6fd4" />
-          <span>{i18n.language === 'tr' ? 'English' : 'Türkçe'}</span>
-        </button>
+          <select 
+            id="language-select"
+            name="language"
+            value={i18n.language} /* varsayılan dili ayarla */
+            onChange={handleLanguageChange} /* tıklama ile degistirme fon. tetikler ve sayfa dili degisir*/
+            aria-label={t('nav.languageSelect', 'Dil Seçimi')} /* screen reader icin */
+            style={styles.langSelect}
+          >
+            <option value="tr">Türkçe</option>
+            <option value="en">English</option>
+          </select>
+        </div>
       </nav>
  
       {/* Main content */}
@@ -56,7 +69,7 @@ const LoginHomePage = () => {
           <div style={styles.titleUnderline} />
         </div>
  
-        {/* University Logo Card */}
+        {/* UniversiteLogo Kartı */}
         <div style={styles.logoCard}>
           <div style={styles.logoIconWrapper}>
             <GraduationCap size={64} color="#3b6fd4" />
@@ -64,9 +77,9 @@ const LoginHomePage = () => {
           <p style={styles.logoLabel}>{t('app.universityLogo', 'Üniversite Logosu')}</p>
         </div>
  
-        {/* Portal Cards */}
+        {/* Panel Giris Kartları */}
         <div style={styles.cardsRow}>
-          {portalCards.map((card) => {
+          {portalCards.map((card) => {/* portalCards dizisini (Ogrenci, Akademisyen ve Yönetici verilerini) alır ve kart olusum dongusune sokar. */
             const cardContent = (
               <div style={styles.card}>
                 <div style={{ ...styles.cardIconWrapper, backgroundColor: card.iconBg }}>
@@ -77,13 +90,16 @@ const LoginHomePage = () => {
               </div>
             );
 
-            return card.isExternal ? (
-              <a key={card.to} href={card.to} style={styles.cardLink}>
+            return card.isExternal ? 
+            ( /* isExternal true ise yani kart ile harici bir yönlendirmeye gidilecekse */
+              <a key={card.to} href={card.to} style={styles.cardLink}>{/* gidilecek linki html ile sar */}
                 {cardContent}
               </a>
-            ) : (
+            ) 
+            : 
+            ( /* isExternal false ise */
               <Link key={card.to} to={card.to} style={styles.cardLink}>
-                {cardContent}
+                {cardContent} {/* gidilecek router react ile sar bu sayede sayfa yenilenmeden hizlica diger arayuze gecis yap*/}
               </Link>
             );
           })}
@@ -120,7 +136,7 @@ const styles = {
   navBrandText: {
     color: '#222',
   },
-  langButton: {
+  langContainer: {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
@@ -128,10 +144,15 @@ const styles = {
     border: '1.5px solid #d0d7e8',
     borderRadius: '20px',
     backgroundColor: '#fff',
-    cursor: 'pointer',
+  },
+  langSelect: {
+    border: 'none',
+    backgroundColor: 'transparent',
     fontSize: '14px',
     color: '#333',
     fontWeight: '500',
+    cursor: 'pointer',
+    outline: 'none',
   },
   main: {
     flex: 1,

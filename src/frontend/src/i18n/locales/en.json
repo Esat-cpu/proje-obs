@@ -9,7 +9,7 @@
     "success": "Operation completed successfully."
   },
   "auth": {
-    "loginTitle": "OBS Login",
+    "loginTitle": "SIS Login",
     "loginButton": "Login",
     "logoutButton": "Logout",
     "usernamePlaceholder": "Student/Staff ID",
@@ -24,12 +24,40 @@
     "transcript": "Transcript",
     "profile": "Profile"
   },
+  "studentDashboard": {
+    "panelTitle": "Student Panel",
+    "welcome": "Welcome, {{name}}",
+    "tabs": {
+      "overview": "Overview",
+      "myCourses": "My Courses",
+      "courseRegistration": "Course Registration",
+      "transcript": "Transcript"
+    },
+    "stats": {
+      "activeCourses": "Active Courses",
+      "gpa": "GPA",
+      "credits": "Credits",
+      "semester": "Semester"
+    },
+    "active": {
+      "title": "Active Courses and Grades",
+      "credit": "Credits",
+      "midterm": "Midterm",
+      "final": "Final"
+    },
+    "past": {
+      "title": "Past Semester Grades",
+      "course": "Course",
+      "grade": "Grade",
+      "semesterGpa": "Semester GPA"
+    }
+  },
   "dashboard": {
-    "welcomeMessage": "Welcome to the Student Information System, {{name}}",
-    "announcementsTitle": "Current Announcements"
+    "welcomeMessage": "Welcome to the Student Information System, {{name}}"
   },
   "nav": {
-    "home": "Home"
+    "home": "Home",
+    "languageSelect": "Language Selection"
   },
   "app": {
     "title": "SIS - Student Information System",
@@ -37,7 +65,7 @@
   },
   "portal": {
     "student": "Student",
-    "studentDesc": "Course selection, grades and documents",
+    "studentDesc": "Course selection, grades and transcript",
     "academician": "Academician",
     "academicianDesc": "Course management and grading",
     "admin": "Admin",
