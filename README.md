@@ -50,7 +50,7 @@ pip install -r src/backend/requirements.txt
 2.Çalıştırmak için:
 ```bash
 python src/backend/manage.py migrate
-python src/backend/manage.py runserver
+python src/backend/manage.py runserver --insecure
 ```
 ### Frontend
 
