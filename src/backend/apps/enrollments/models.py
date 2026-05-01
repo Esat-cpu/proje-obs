@@ -26,6 +26,11 @@ class DersKayitDonemi(models.Model):
 
     def __str__(self):
         return f"{self.yil} {self.donem}"
+    
+    def is_active(self):
+        from django.utils import timezone
+        now = timezone.now()
+        return self.baslangic <= now <= self.bitis
 
 
 class DersKaydi(models.Model):
@@ -80,3 +85,5 @@ class DersKaydi(models.Model):
 
     def __str__(self):
         return f"{self.ogrenci} - {self.donem_dersi}"
+    
+    
