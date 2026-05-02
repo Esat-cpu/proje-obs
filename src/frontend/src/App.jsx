@@ -6,6 +6,8 @@ import AkademisyenPaneli from './pages/AkademisyenPaneli';
 import LoginHomePage from './pages/LoginHomePage';
 import TopBar from './components/ui/TopBar';
 import ProtectedRoute from './components/ProtectedRoute';
+import OgrenciGiris from './pages/OgrenciGiris';
+import AkademisyenGiris from './pages/AkademisyenGiris';
 
 const NotFound = () => {
   const { t } = useTranslation();
@@ -45,8 +47,8 @@ function App() {
       <TopBar leftContent={renderNavBrand()} />
       <Routes>
         <Route path="/" element={<LoginHomePage />} />
-        <Route path="/login/student" element={<LoginHomePage />} />
-        <Route path="/login/academician" element={<LoginHomePage />} />
+        <Route path="/login/student" element={<OgrenciGiris />} />
+        <Route path="/login/academician" element={<AkademisyenGiris />} />
         <Route path="/student" element={
           <ProtectedRoute allowedRoles={["Ogrenci"]}>
             <OgrenciPaneli />
