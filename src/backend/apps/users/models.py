@@ -12,9 +12,9 @@ class User(AbstractUser):
     soyad = models.CharField(max_length=100)
 
     class Role(models.TextChoices):
-        OGRENCI = "Öğrenci"
-        AKADEMISYEN = "Akademisyen"
-        YONETICI = "Yönetici"
+        OGRENCI = "OGRENCI", "Öğrenci"
+        AKADEMISYEN = "AKADEMISYEN", "Akademisyen"
+        YONETICI = "YONETICI", "Yönetici"
 
     role = models.CharField(
         max_length=15,
@@ -24,6 +24,18 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.ad} {self.soyad}) - {self.role}"
+    
+    def tam_ad(self):
+        return f"{self.ad} {self.soyad}"
+    
+    def is_ogrenci(self):
+        return self.role == self.Role.OGRENCI if self.role else False
+
+    def is_akademisyen(self):
+        return self.role == self.Role.AKADEMISYEN if self.role else False
+
+    def is_yonetici(self):
+        return self.role == self.Role.YONETICI if self.role else False
 
 
 class Ogrenci(models.Model):
@@ -38,7 +50,10 @@ class Ogrenci(models.Model):
         max_digits=3,
         decimal_places=2,
         default=Decimal("0.00"),
-        validators=[MinValueValidator(0), MaxValueValidator(4)]
+        validators=[
+            MinValueValidator(Decimal("0.00")),
+            MaxValueValidator(Decimal("4.00"))
+        ]
     )
 
     class Meta:
