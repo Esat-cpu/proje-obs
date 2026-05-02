@@ -10,28 +10,8 @@ User = get_user_model()
 class UserService:
 
     @staticmethod
-    def _validate_base(username, email, ad, soyad, password):
-        if not username or len(username) < 3:
-            return "Username en az 3 karakter olmalı"
-
-        if not email or "@" not in email:
-            return "Geçerli email girin"
-
-        if not ad or not soyad:
-            return "Ad ve soyad zorunlu"
-
-        if not password or len(password) < 6:
-            return "Şifre en az 6 karakter olmalı"
-
-        return None
-
-    @staticmethod
     @transaction.atomic
     def ogrenci_olustur(username, email, ad, soyad, bolum_id, ogr_no, password):
-
-        err = UserService._validate_base(username, email, ad, soyad, password)
-        if err:
-            return {"success": False, "message": err}
 
         if User.objects.filter(username=username).exists():
             return {"success": False, "message": "Username kullanılıyor"}
@@ -69,10 +49,6 @@ class UserService:
     @transaction.atomic
     def akademisyen_olustur(username, email, ad, soyad, bolum_id, unvan, password):
 
-        err = UserService._validate_base(username, email, ad, soyad, password)
-        if err:
-            return {"success": False, "message": err}
-
         if User.objects.filter(username=username).exists():
             return {"success": False, "message": "Username kullanılıyor"}
 
@@ -105,10 +81,6 @@ class UserService:
     @staticmethod
     @transaction.atomic
     def yonetici_olustur(username, email, ad, soyad, password):
-
-        err = UserService._validate_base(username, email, ad, soyad, password)
-        if err:
-            return {"success": False, "message": err}
 
         if User.objects.filter(username=username).exists():
             return {"success": False, "message": "Username kullanılıyor"}

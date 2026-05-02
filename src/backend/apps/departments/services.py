@@ -14,12 +14,7 @@ class DepartmentService:
     @transaction.atomic
     def bolum_olustur(ad, bolum_kodu):
 
-        if not ad or len(ad) < 3:
-            return _error("Bölüm adı en az 3 karakter")
-
-        if not bolum_kodu or len(bolum_kodu) < 2:
-            return _error("Bölüm kodu en az 2 karakter")
-
+        # serializerda da olabilir su iki if blogu ama burda birakiyorum
         if Bolum.objects.filter(bolum_kodu=bolum_kodu).exists():
             return _error("Bölüm kodu zaten var")
 
@@ -54,7 +49,7 @@ class DepartmentService:
 
         try:
             bolum = Bolum.objects.get(id=bolum_id)
-        except:
+        except Bolum.DoesNotExist:
             return _error("Bölüm bulunamadı")
 
         if Ogrenci.objects.filter(bolum=bolum).exists():

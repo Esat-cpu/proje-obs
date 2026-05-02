@@ -17,18 +17,6 @@ class CourseService:
     @staticmethod
     def ders_olustur(ders_kodu, ad, kredi, min_sinif):
 
-        if not ders_kodu or len(ders_kodu) < 2:
-            return _error("Ders kodu en az 2 karakter")
-
-        if not ad or len(ad) < 3:
-            return _error("Ders adı en az 3 karakter")
-
-        if kredi < 1 or kredi > 10:
-            return _error("Kredi 1-10 arası olmalı")
-
-        if min_sinif < 1 or min_sinif > 4:
-            return _error("Sınıf 1-4 arası olmalı")
-
         if Ders.objects.filter(ders_kodu=ders_kodu).exists():
             return _error("Ders kodu zaten var")
 
@@ -54,19 +42,13 @@ class CourseService:
     @transaction.atomic
     def donem_dersi_olustur(ders_id, akademisyen_id, yil, donem, kontenjan):
 
-        if yil < 2000 or yil > 2100:
-            return _error("Geçersiz yıl")
-
-        if donem not in ["Güz", "Bahar", "Yaz"]:
-            return _error("Geçersiz dönem")
-
         if kontenjan < 0:
             return _error("Kontenjan hatalı")
 
         try:
             ders = Ders.objects.get(id=ders_id)
             akademisyen = Akademisyen.objects.get(id=akademisyen_id)
-        except:
+        except (Ders.DoesNotExist, Akademisyen.DoesNotExist):
             return _error("Ders veya akademisyen bulunamadı")
 
         if DonemDersi.objects.filter(
@@ -122,6 +104,9 @@ class CourseService:
         except:
             return _error("Ders bulunamadı")
 
+        if not ders.aktiflik_durumu:
+            return _error("Ders zaten kapalı")
+    
         ders.aktiflik_durumu = False
         ders.save()
 

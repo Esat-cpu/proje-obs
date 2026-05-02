@@ -31,11 +31,27 @@ class DersKayitDonemi(models.Model):
         from django.utils import timezone
         now = timezone.now()
         return self.baslangic <= now <= self.bitis
+    
+    @classmethod
+    def get_aktif_donem(cls):
+        from django.utils import timezone
+        now = timezone.now()
+
+        return cls.objects.filter(
+            baslangic__lte=now,
+            bitis__gte=now
+        ).first()
 
 
 class DersKaydi(models.Model):
+    class Durum(models.TextChoices):
+        BEKLEMEDE = "beklemede", "Beklemede"
+        ONAYLANDI = "onaylandi", "Onaylandı"
+        REDDEDILDI = "reddedildi", "Reddedildi"
+
     ogrenci = models.ForeignKey(Ogrenci, on_delete=models.PROTECT)
     donem_dersi = models.ForeignKey(DonemDersi, on_delete=models.PROTECT)
+
     vize_notu = models.IntegerField(
         null=True, blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)]
@@ -48,7 +64,11 @@ class DersKaydi(models.Model):
         max_length=2, choices=HarfNotu.choices,
         null=True, blank=True
     )
-    onay_durumu = models.BooleanField(default=False)
+    onay_durumu = models.CharField(
+        max_length=20,
+        choices=Durum.choices,
+        default=Durum.BEKLEMEDE
+    )
 
     class Meta:
         verbose_name = "Ders Kaydı"

@@ -1,4 +1,6 @@
 from django.db import transaction
+from django.db.models import Count, Avg
+
 from apps.users.models import Ogrenci, Akademisyen
 from apps.courses.models import DonemDersi
 from apps.enrollments.models import DersKaydi, DersKayitDonemi
@@ -18,10 +20,10 @@ class EnrollmentService:
         try:
             ogrenci = Ogrenci.objects.get(id=ogrenci_id)
             donem_dersi = DonemDersi.objects.select_for_update().get(id=donem_dersi_id)
-        except:
+        except (Ogrenci.DoesNotExist, DonemDersi.DoesNotExist):
             return _error("Öğrenci veya ders bulunamadı")
 
-        kayit_donemi = DersKayitDonemi.aktif_donemi_getir()
+        kayit_donemi = DersKayitDonemi.get_aktif_donem()
         if not kayit_donemi:
             return _error("Ders kayıt dönemi kapalı")
 
@@ -46,7 +48,7 @@ class EnrollmentService:
         kayit = DersKaydi.objects.create(
             ogrenci=ogrenci,
             donem_dersi=donem_dersi,
-            onay_durumu=False
+            onay_durumu=DersKaydi.Durum.BEKLEMEDE
         )
 
         return {
@@ -61,16 +63,16 @@ class EnrollmentService:
 
         try:
             kayit = DersKaydi.objects.select_for_update().get(id=ders_kaydi_id)
-        except:
+        except DersKaydi.DoesNotExist:
             return _error("Kayıt bulunamadı")
 
-        if kayit.onay_durumu:
+        if kayit.onay_durumu == DersKaydi.Durum.ONAYLANDI:
             return _error("Zaten onaylı")
 
         if kayit.donem_dersi.is_full():
             return _error("Kontenjan dolu")
 
-        kayit.onay_durumu = True
+        kayit.onay_durumu = DersKaydi.Durum.ONAYLANDI
         kayit.save()
 
         return {
@@ -87,10 +89,10 @@ class EnrollmentService:
                 id=ders_kaydi_id,
                 ogrenci_id=ogrenci_id
             )
-        except:
+        except DersKaydi.DoesNotExist:
             return _error("Kayıt bulunamadı")
 
-        if kayit.onay_durumu:
+        if kayit.onay_durumu == DersKaydi.Durum.ONAYLANDI:
             return _error("Onaylı kayıt silinemez")
 
         kayit.delete()
@@ -107,21 +109,18 @@ class GradeService:
 
         try:
             kayit = DersKaydi.objects.get(id=ders_kaydi_id)
-        except:
+        except DersKaydi.DoesNotExist:
             return _error("Ders kaydı bulunamadı")
 
-        if not kayit.onay_durumu:
+        if kayit.onay_durumu != DersKaydi.Durum.ONAYLANDI:
             return _error("Onaysız kayda not girilemez")
-
-        if not (0 <= vize <= 100) or not (0 <= final <= 100):
-            return _error("Notlar 0-100 arasında olmalı")
 
         if akademisyen_id:
             try:
                 akademisyen = Akademisyen.objects.get(id=akademisyen_id)
-                if akademisyen != kayit.donem_dersi.akademisyen:
+                if akademisyen.id != kayit.donem_dersi.akademisyen_id:
                     return _error("Bu dersin hocası değilsiniz")
-            except:
+            except Akademisyen.DoesNotExist:
                 return _error("Akademisyen bulunamadı")
 
         kayit.vize_notu = vize
@@ -139,21 +138,26 @@ class GradeService:
 
     @staticmethod
     @transaction.atomic
-    def not_guncelle(ders_kaydi_id, vize=None, final=None):
+    def not_guncelle(ders_kaydi_id, akademisyen_id, vize=None, final=None):
 
         try:
-            kayit = DersKaydi.objects.get(id=ders_kaydi_id)
-        except:
+            kayit = DersKaydi.objects.select_for_update().get(id=ders_kaydi_id)
+        except DersKaydi.DoesNotExist:
             return _error("Kayıt bulunamadı")
 
+        try:
+            akademisyen = Akademisyen.objects.get(id=akademisyen_id)
+        except Akademisyen.DoesNotExist:
+            return _error("Akademisyen bulunamadı")
+
+        if akademisyen.id != kayit.donem_dersi.akademisyen_id:
+            return _error("Bu dersin notlarını güncelleme yetkiniz yok")
+
+        # not güncelleme
         if vize is not None:
-            if not (0 <= vize <= 100):
-                return _error("Vize 0-100 arası olmalı")
             kayit.vize_notu = vize
 
         if final is not None:
-            if not (0 <= final <= 100):
-                return _error("Final 0-100 arası olmalı")
             kayit.final_notu = final
 
         kayit.save()
@@ -170,11 +174,9 @@ class GradeService:
     @staticmethod
     def sinif_not_istatistikleri(donem_dersi_id):
 
-        from django.db.models import Count, Avg
-
         kayitlar = DersKaydi.objects.filter(
             donem_dersi_id=donem_dersi_id,
-            onay_durumu=True
+            onay_durumu=DersKaydi.Durum.ONAYLANDI
         )
 
         if not kayitlar.exists():
@@ -197,7 +199,7 @@ class GradeService:
 
         ogrenciler = DersKaydi.objects.filter(
             donem_dersi_id=donem_dersi_id,
-            onay_durumu=True
+            onay_durumu=DersKaydi.Durum.ONAYLANDI
         )
 
         return {
