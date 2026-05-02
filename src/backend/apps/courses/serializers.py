@@ -17,15 +17,3 @@ class DonemDersiSerializer(serializers.ModelSerializer):
     class Meta:
         model = DonemDersi
         fields = ["id", "ders", "akademisyen", "yil", "donem", "kontenjan", "aktiflik_durumu"]
-
-
-class DonemDersiCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DonemDersi
-        fields = ["ders", "akademisyen", "yil", "donem", "kontenjan", "aktiflik_durumu"]
-
-
-class DonemDersiUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DonemDersi
-        fields = ["kontenjan", "aktiflik_durumu"]
