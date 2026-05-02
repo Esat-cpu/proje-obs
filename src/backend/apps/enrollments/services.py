@@ -193,7 +193,7 @@ class GradeService:
         }
 
     @staticmethod
-    def akademisyen_dersi_ogrencileri(donem_dersi_id):
+    def donem_dersi_ogrencileri(donem_dersi_id):
 
         ogrenciler = DersKaydi.objects.filter(
             donem_dersi_id=donem_dersi_id,

@@ -10,6 +10,10 @@ def _error(message):
 class CourseService:
     """Ders yönetimi servisleri"""
 
+    # ==========================
+    # DERS 
+    # ==========================
+
     @staticmethod
     def ders_olustur(ders_kodu, ad, kredi, min_sinif):
 
@@ -40,6 +44,11 @@ class CourseService:
             "message": "Ders oluşturuldu",
             "data": {"id": ders.id}
         }
+
+
+    # ==========================
+    # DONEM DERSI 
+    # ==========================
 
     @staticmethod
     @transaction.atomic
