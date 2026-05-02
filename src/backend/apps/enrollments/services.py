@@ -10,7 +10,7 @@ class EnrollmentService:
 
     @staticmethod
     @transaction.atomic
-    def kayit_yap(ogrenci_id, donem_dersi_id):
+    def ders_kaydi_yap(ogrenci_id, donem_dersi_id):
 
         try:
             ogrenci = Ogrenci.objects.get(id=ogrenci_id)
@@ -39,9 +39,34 @@ class EnrollmentService:
         )
 
         return {"success": True, "message": "Ders kaydı oluşturuldu"}
+    
+    
+    @staticmethod
+    @transaction.atomic
+    def ders_kaydi_onayla(ders_kaydi_id):
+
+        try:
+            kayit = DersKaydi.objects.select_for_update().get(id=ders_kaydi_id)
+        except DersKaydi.DoesNotExist:
+            return {"success": False, "message": "Kayıt bulunamadı"}
+
+        if kayit.onay_durumu:
+            return {"success": False, "message": "Zaten onaylı"}
+
+        # kontenjan kontrolü (güvenlik)
+        if kayit.donem_dersi.is_full():
+            return {"success": False, "message": "Kontenjan dolu"}
+
+        kayit.onay_durumu = True
+        kayit.save()
+
+        return {
+            "success": True,
+            "message": "Kayıt onaylandı"
+        }
 
     @staticmethod
-    def kayit_iptal(ogrenci_id, ders_kaydi_id):
+    def ders_kaydi_iptal(ogrenci_id, ders_kaydi_id):
 
         try:
             kayit = DersKaydi.objects.get(
@@ -57,29 +82,6 @@ class EnrollmentService:
         kayit.delete()
 
         return {"success": True, "message": "Kayıt iptal edildi"}
-
-    @staticmethod
-    def ogrenci_dersleri(ogrenci_id, onay_durumu=None):
-
-        qs = DersKaydi.objects.filter(ogrenci_id=ogrenci_id)
-
-        if onay_durumu is not None:
-            qs = qs.filter(onay_durumu=onay_durumu)
-
-        return qs.select_related(
-            "donem_dersi__ders",
-            "donem_dersi__akademisyen__user"
-        )
-    
-    @staticmethod
-    def ders_ogrencileri(donem_dersi_id):
-
-        return DersKaydi.objects.filter(
-            donem_dersi_id=donem_dersi_id,
-            onay_durumu=True
-        ).select_related(
-            "ogrenci__user"
-        ).order_by("ogrenci__ogr_no")
 
 
 class GradeService:

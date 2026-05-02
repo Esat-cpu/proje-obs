@@ -86,4 +86,25 @@ class DersKaydi(models.Model):
     def __str__(self):
         return f"{self.ogrenci} - {self.donem_dersi}"
     
+    @classmethod
+    def ogrenci_dersleri(cls, ogrenci_id, onay_durumu=None):
+        qs = cls.objects.filter(ogrenci_id=ogrenci_id)
+
+        if onay_durumu is not None:
+            qs = qs.filter(onay_durumu=onay_durumu)
+
+        return qs.select_related(
+            "donem_dersi__ders",
+            "donem_dersi__akademisyen__user"
+        )
+
+    @classmethod
+    def ders_ogrencileri(cls, donem_dersi_id):
+        return cls.objects.filter(
+            donem_dersi_id=donem_dersi_id,
+            onay_durumu=True
+        ).select_related(
+            "ogrenci__user"
+        ).order_by("ogrenci__ogr_no")
+    
     
