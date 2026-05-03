@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Env dosyasını oluştur
+        run: cp .env.example .env
+
+      - name: Bağımlılıkları kur
+        run: |
+          pip install -r src/backend/requirements.txt
+
+      - name: Testleri çalıştır
+        run: |
+          cd src/backend
+          python manage.py migrate
+          python manage.py test
