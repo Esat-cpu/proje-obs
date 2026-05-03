@@ -1,37 +1,74 @@
 from rest_framework import serializers
 
-from .models import DersKaydi
-
-from users.serializers import OgrenciSerializer
-from courses.serializers import DonemDersiSerializer
+from apps.enrollments.models import DersKaydi, DersKayitDonemi
 
 
-class DersKaydiSerializer(serializers.ModelSerializer):
-    ogrenci = OgrenciSerializer(read_only=True)
-    donem_dersi = DonemDersiSerializer(read_only=True)
+class DersKayitDonemiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DersKayitDonemi
+        fields = ["id", "yil", "donem", "baslangic", "bitis"]
 
-    ortalama = serializers.ReadOnlyField()
-    harf_notu = serializers.ReadOnlyField()
+    def validate(self, veriler):
+        if veriler.get("baslangic") and veriler.get("bitis"):
+            if veriler["baslangic"] >= veriler["bitis"]:
+                raise serializers.ValidationError("Başlangıç tarihi bitiş tarihinden önce olmalıdır.")
+        return veriler
+
+
+class DersKaydiOkuSerializer(serializers.ModelSerializer):
+    ogrenci_ad = serializers.CharField(source="ogrenci.user.tam_ad", read_only=True)
+    ogrenci_no = serializers.CharField(source="ogrenci.ogr_no", read_only=True)
+    ders_ad = serializers.CharField(source="donem_dersi.ders.ad", read_only=True)
+    ders_kodu = serializers.CharField(source="donem_dersi.ders.ders_kodu", read_only=True)
+    kredi = serializers.IntegerField(source="donem_dersi.ders.kredi", read_only=True)
+    yil = serializers.IntegerField(source="donem_dersi.yil", read_only=True)
+    donem = serializers.CharField(source="donem_dersi.donem", read_only=True)
+    akademisyen_ad = serializers.CharField(source="donem_dersi.akademisyen", read_only=True)
+    ortalama = serializers.DecimalField(max_digits=5, decimal_places=2, read_only=True)
 
     class Meta:
         model = DersKaydi
         fields = [
             "id",
-            "ogrenci",
-            "donem_dersi",
-            "vize_notu",
-            "final_notu",
-            "harf_notu",
+            "ogrenci_ad", "ogrenci_no",
+            "ders_ad", "ders_kodu", "kredi",
+            "yil", "donem", "akademisyen_ad",
+            "vize_notu", "final_notu", "ortalama", "harf_notu",
             "onay_durumu",
-            "ortalama",
         ]
 
-class DersKaydiCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DersKaydi
-        fields = ["donem_dersi"]
 
-class DersKaydiUpdateSerializer(serializers.ModelSerializer):
+class DersKaydiOlusturSerializer(serializers.Serializer):
+    donem_dersi_id = serializers.IntegerField()
+
+
+class NotGuncellemeSerializer(serializers.Serializer):
+    vize_notu = serializers.IntegerField(min_value=0, max_value=100)
+    final_notu = serializers.IntegerField(min_value=0, max_value=100)
+
+
+class TranskriptKaydiSerializer(serializers.ModelSerializer):
+    ders_ad = serializers.CharField(source="donem_dersi.ders.ad", read_only=True)
+    ders_kodu = serializers.CharField(source="donem_dersi.ders.ders_kodu", read_only=True)
+    kredi = serializers.IntegerField(source="donem_dersi.ders.kredi", read_only=True)
+    yil = serializers.IntegerField(source="donem_dersi.yil", read_only=True)
+    donem = serializers.CharField(source="donem_dersi.donem", read_only=True)
+    ortalama = serializers.DecimalField(max_digits=5, decimal_places=2, read_only=True)
+
     class Meta:
         model = DersKaydi
-        fields = ["vize_notu", "final_notu", "onay_durumu"]
+        fields = [
+            "id",
+            "ders_ad", "ders_kodu", "kredi",
+            "yil", "donem",
+            "vize_notu", "final_notu", "ortalama", "harf_notu",
+        ]
+
+
+class TranskriptSerializer(serializers.Serializer):
+    ogrenci_no = serializers.CharField()
+    ogrenci_ad = serializers.CharField()
+    bolum = serializers.CharField()
+    sinif = serializers.IntegerField()
+    gpa = serializers.DecimalField(max_digits=3, decimal_places=2)
+    kayitlar = TranskriptKaydiSerializer(many=True)
