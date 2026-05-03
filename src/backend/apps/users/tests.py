@@ -293,13 +293,14 @@ class OgrenciOkuSerializerTestleri(TemelKurulum):
 
     def test_alanlar_mevcut(self):
         serializer = OgrenciOkuSerializer(self.ogrenci)
-        for alan in ["id", "user", "ogr_no", "bolum_ad", "bolum_kodu", "sinif", "gpa"]:
+        for alan in ["id", "user", "ogr_no", "bolum", "sinif", "gpa"]:
             self.assertIn(alan, serializer.data)
 
-    def test_bolum_bilgileri_dogru(self):
+    def test_bolum_nested(self):
         serializer = OgrenciOkuSerializer(self.ogrenci)
-        self.assertEqual(serializer.data["bolum_ad"], "Bilgisayar Mühendisliği")
-        self.assertEqual(serializer.data["bolum_kodu"], "BM")
+        self.assertIsInstance(serializer.data["bolum"], dict)
+        self.assertEqual(serializer.data["bolum"]["ad"], "Bilgisayar Mühendisliği")
+        self.assertEqual(serializer.data["bolum"]["bolum_kodu"], "BM")
 
     def test_user_nested(self):
         serializer = OgrenciOkuSerializer(self.ogrenci)
@@ -319,8 +320,13 @@ class AkademisyenOkuSerializerTestleri(TemelKurulum):
 
     def test_alanlar_mevcut(self):
         serializer = AkademisyenOkuSerializer(self.akademisyen)
-        for alan in ["id", "user", "bolum_ad", "bolum_kodu", "unvan", "unvan_goster"]:
+        for alan in ["id", "user", "bolum", "unvan", "unvan_goster"]:
             self.assertIn(alan, serializer.data)
+
+    def test_bolum_nested(self):
+        serializer = AkademisyenOkuSerializer(self.akademisyen)
+        self.assertIsInstance(serializer.data["bolum"], dict)
+        self.assertEqual(serializer.data["bolum"]["bolum_kodu"], "BM")
 
     def test_unvan_goster_dogru(self):
         serializer = AkademisyenOkuSerializer(self.akademisyen)

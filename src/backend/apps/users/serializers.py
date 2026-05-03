@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from apps.departments.serializers import BolumSerializer
 from apps.users.models import Akademisyen, Ogrenci, User
 
 
@@ -12,12 +13,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class OgrenciOkuSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    bolum_ad = serializers.CharField(source="bolum.ad", read_only=True)
-    bolum_kodu = serializers.CharField(source="bolum.bolum_kodu", read_only=True)
+    bolum = BolumSerializer(read_only=True)
 
     class Meta:
         model = Ogrenci
-        fields = ["id", "user", "ogr_no", "bolum_ad", "bolum_kodu", "sinif", "gpa"]
+        fields = ["id", "user", "ogr_no", "bolum", "sinif", "gpa"]
 
 
 class OgrenciExcelSerializer(serializers.Serializer):
@@ -31,10 +31,9 @@ class OgrenciExcelSerializer(serializers.Serializer):
 
 class AkademisyenOkuSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    bolum_ad = serializers.CharField(source="bolum.ad", read_only=True)
-    bolum_kodu = serializers.CharField(source="bolum.bolum_kodu", read_only=True)
+    bolum = BolumSerializer(read_only=True)
     unvan_goster = serializers.CharField(source="get_unvan_display", read_only=True)
 
     class Meta:
         model = Akademisyen
-        fields = ["id", "user", "bolum_ad", "bolum_kodu", "unvan", "unvan_goster"]
+        fields = ["id", "user", "bolum", "unvan", "unvan_goster"]

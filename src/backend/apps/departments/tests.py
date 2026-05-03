@@ -3,6 +3,7 @@ from django.http import Http404
 from django.test import TestCase
 
 from apps.departments.models import Bolum
+from apps.departments.serializers import BolumSerializer
 from apps.departments.services import DepartmentsService
 
 
@@ -52,3 +53,26 @@ class DepartmentsServiceTestleri(TestCase):
     def test_bolum_kodu_ile_getir_olmayan_hata(self):
         with self.assertRaises(Http404):
             DepartmentsService.bolum_kodu_ile_getir("YANLISKOD")
+
+
+class BolumSerializerTestleri(TestCase):
+    def setUp(self):
+        self.bolum = Bolum.objects.create(ad="Bilgisayar Mühendisliği", bolum_kodu="BM")
+
+    def test_alanlar_mevcut(self):
+        serializer = BolumSerializer(self.bolum)
+        self.assertIn("id", serializer.data)
+        self.assertIn("ad", serializer.data)
+        self.assertIn("bolum_kodu", serializer.data)
+
+    def test_degerler_dogru(self):
+        serializer = BolumSerializer(self.bolum)
+        self.assertEqual(serializer.data["ad"], "Bilgisayar Mühendisliği")
+        self.assertEqual(serializer.data["bolum_kodu"], "BM")
+        self.assertEqual(serializer.data["id"], self.bolum.pk)
+
+    def test_liste_serialize(self):
+        Bolum.objects.create(ad="Elektrik Elektronik", bolum_kodu="EE")
+        bolumler = Bolum.objects.all()
+        serializer = BolumSerializer(bolumler, many=True)
+        self.assertEqual(len(serializer.data), 2)

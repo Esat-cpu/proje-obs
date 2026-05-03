@@ -1,9 +1,12 @@
 from rest_framework import serializers
 
 from apps.courses.models import Ders, DonemDersi
+from apps.departments.serializers import BolumSerializer
 
 
 class DersSerializer(serializers.ModelSerializer):
+    bolum = BolumSerializer(read_only=True)
+
     class Meta:
         model = Ders
         fields = ["id", "ders_kodu", "ad", "kredi", "min_sinif", "bolum"]

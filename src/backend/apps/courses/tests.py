@@ -196,7 +196,8 @@ class DersSerializerTestleri(TemelKurulum):
         serializer = DersSerializer(self.ders)
         self.assertEqual(serializer.data["ders_kodu"], "BM101")
         self.assertEqual(serializer.data["kredi"], 3)
-        self.assertEqual(serializer.data["bolum"], self.bolum.pk)
+        self.assertIsInstance(serializer.data["bolum"], dict)
+        self.assertEqual(serializer.data["bolum"]["bolum_kodu"], "BM")
 
 
 class DonemDersiOkuSerializerTestleri(TemelKurulum):
