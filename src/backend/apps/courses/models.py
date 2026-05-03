@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
+from apps.departments.models import Bolum
 from apps.choices import Donem
 from apps.users.models import Akademisyen
 
@@ -12,6 +13,7 @@ class Ders(models.Model):
     min_sinif = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(4)]
     )
+    bolum = models.ForeignKey(Bolum, on_delete=models.PROTECT, related_name="dersler")
 
     class Meta:
         verbose_name = "Ders"

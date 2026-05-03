@@ -34,6 +34,11 @@ class DersKayitDonemi(models.Model):
 
 
 class DersKaydi(models.Model):
+    class Durum(models.TextChoices):
+        BEKLEMEDE = "beklemede", "Beklemede"
+        ONAYLANDI = "onaylandi", "Onaylandı"
+        REDDEDILDI = "reddedildi", "Reddedildi"
+
     ogrenci = models.ForeignKey(Ogrenci, on_delete=models.PROTECT)
     donem_dersi = models.ForeignKey(DonemDersi, on_delete=models.PROTECT)
     vize_notu = models.IntegerField(
@@ -48,7 +53,11 @@ class DersKaydi(models.Model):
         max_length=2, choices=HarfNotu.choices,
         null=True, blank=True,
     )
-    onay_durumu = models.BooleanField(default=False)
+    onay_durumu = models.CharField(
+        max_length=20,
+        choices=Durum.choices,
+        default=Durum.BEKLEMEDE,
+    )
 
     class Meta:
         verbose_name = "Ders Kaydı"
@@ -59,6 +68,10 @@ class DersKaydi(models.Model):
                 name="unique_ogrenci_donem_ders"
             )
         ]
+
+    @property
+    def aktif(self):
+        return self.onay_durumu == DersKaydi.Durum.ONAYLANDI
 
     @property
     def ortalama(self):

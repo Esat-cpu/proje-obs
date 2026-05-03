@@ -1,18 +1,6 @@
 from rest_framework import serializers
 
-from apps.enrollments.models import DersKaydi, DersKayitDonemi
-
-
-class DersKayitDonemiSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DersKayitDonemi
-        fields = ["id", "yil", "donem", "baslangic", "bitis"]
-
-    def validate(self, veriler):
-        if veriler.get("baslangic") and veriler.get("bitis"):
-            if veriler["baslangic"] >= veriler["bitis"]:
-                raise serializers.ValidationError("Başlangıç tarihi bitiş tarihinden önce olmalıdır.")
-        return veriler
+from apps.enrollments.models import DersKaydi
 
 
 class DersKaydiOkuSerializer(serializers.ModelSerializer):
@@ -25,6 +13,7 @@ class DersKaydiOkuSerializer(serializers.ModelSerializer):
     donem = serializers.CharField(source="donem_dersi.donem", read_only=True)
     akademisyen_ad = serializers.CharField(source="donem_dersi.akademisyen", read_only=True)
     ortalama = serializers.DecimalField(max_digits=5, decimal_places=2, read_only=True)
+    onay_durumu = serializers.ChoiceField(choices=DersKaydi.Durum.choices, read_only=True)
 
     class Meta:
         model = DersKaydi
