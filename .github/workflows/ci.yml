@@ -18,6 +18,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Env dosyasını oluştur
+        run: cp .env.example .env
+
       - name: Bağımlılıkları kur
         run: |
           pip install -r src/backend/requirements.txt
