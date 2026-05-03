@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Bolum
+
+from apps.departments.models import Bolum
 
 
 class BolumSerializer(serializers.ModelSerializer):

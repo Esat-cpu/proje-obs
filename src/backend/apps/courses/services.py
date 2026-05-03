@@ -1,117 +1,47 @@
-from django.db import transaction
+from django.shortcuts import get_object_or_404
+
 from apps.courses.models import Ders, DonemDersi
-from apps.users.models import Akademisyen
 
 
-def _error(message):
-    return {"success": False, "message": message, "data": None}
-
-
-class CourseService:
-    """Ders yönetimi servisleri"""
-
-    # ==========================
-    # DERS 
-    # ==========================
+class CoursesService:
 
     @staticmethod
-    def ders_olustur(ders_kodu, ad, kredi, min_sinif):
-
-        if Ders.objects.filter(ders_kodu=ders_kodu).exists():
-            return _error("Ders kodu zaten var")
-
-        ders = Ders.objects.create(
-            ders_kodu=ders_kodu,
-            ad=ad,
-            kredi=kredi,
-            min_sinif=min_sinif
-        )
-
-        return {
-            "success": True,
-            "message": "Ders oluşturuldu",
-            "data": {"id": ders.id}
-        }
-
-
-    # ==========================
-    # DONEM DERSI 
-    # ==========================
+    def dersleri_listele(sinif=None):
+        qs = Ders.objects.select_related("bolum")
+        if sinif is not None:
+            qs = qs.filter(min_sinif__lte=sinif)
+        return qs
 
     @staticmethod
-    @transaction.atomic
-    def donem_dersi_olustur(ders_id, akademisyen_id, yil, donem, kontenjan):
-
-        if kontenjan < 0:
-            return _error("Kontenjan hatalı")
-
-        try:
-            ders = Ders.objects.get(id=ders_id)
-            akademisyen = Akademisyen.objects.get(id=akademisyen_id)
-        except (Ders.DoesNotExist, Akademisyen.DoesNotExist):
-            return _error("Ders veya akademisyen bulunamadı")
-
-        if DonemDersi.objects.filter(
-            ders=ders,
-            akademisyen=akademisyen,
-            yil=yil,
-            donem=donem
-        ).exists():
-            return _error("Ders zaten açılmış")
-
-        donem_dersi = DonemDersi.objects.create(
-            ders=ders,
-            akademisyen=akademisyen,
-            yil=yil,
-            donem=donem,
-            kontenjan=kontenjan,
-            aktiflik_durumu=True
-        )
-
-        return {
-            "success": True,
-            "message": "Dönem dersi oluşturuldu",
-            "data": {"id": donem_dersi.id}
-        }
+    def ders_getir(ders_id):
+        return get_object_or_404(Ders, pk=ders_id)
 
     @staticmethod
-    def get_aktif_dersler(yil, donem):
-
-        dersler = DonemDersi.objects.filter(
-            yil=yil,
-            donem=donem,
-            aktiflik_durumu=True
-        ).select_related("ders", "akademisyen__user")
-
-        return {
-            "success": True,
-            "message": f"{dersler.count()} ders",
-            "data": list(dersler.values(
-                "id",
-                "ders__ad",
-                "ders__ders_kodu",
-                "akademisyen__user__ad",
-                "akademisyen__user__soyad",
-                "kontenjan"
-            ))
-        }
+    def donem_derslerini_listele(akademisyen=None, yil=None, donem=None, sadece_aktif=False):
+        qs = DonemDersi.objects.select_related("ders", "akademisyen__user")
+        if akademisyen is not None:
+            qs = qs.filter(akademisyen=akademisyen)
+        if yil is not None:
+            qs = qs.filter(yil=yil)
+        if donem is not None:
+            qs = qs.filter(donem=donem)
+        if sadece_aktif:
+            qs = qs.filter(aktiflik_durumu=True)
+        return qs
 
     @staticmethod
-    def donem_dersi_kapat(donem_dersi_id):
+    def akademisyen_derslerini_getir(akademisyen):
+        return CoursesService.donem_derslerini_listele(akademisyen=akademisyen)
 
-        try:
-            ders = DonemDersi.objects.get(id=donem_dersi_id)
-        except:
-            return _error("Ders bulunamadı")
+    @staticmethod
+    def donem_dersi_getir(donem_dersi_id):
+        return get_object_or_404(DonemDersi, pk=donem_dersi_id)
 
-        if not ders.aktiflik_durumu:
-            return _error("Ders zaten kapalı")
-    
-        ders.aktiflik_durumu = False
-        ders.save()
-
-        return {
-            "success": True,
-            "message": "Ders kapatıldı",
-            "data": {"id": ders.id}
-        }
+    @staticmethod
+    def kontenjan_dolu_mu(donem_dersi):
+        from apps.enrollments.models import DersKaydi
+        onaylanan_kayit_sayisi = DersKaydi.objects.filter(
+            donem_dersi=donem_dersi,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        ).count()
+        return onaylanan_kayit_sayisi >= donem_dersi.kontenjan

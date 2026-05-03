@@ -26,21 +26,11 @@ class DersKayitDonemi(models.Model):
 
     def __str__(self):
         return f"{self.yil} {self.donem}"
-    
-    def is_active(self):
-        from django.utils import timezone
-        now = timezone.now()
-        return self.baslangic <= now <= self.bitis
-    
-    @classmethod
-    def get_aktif_donem(cls):
-        from django.utils import timezone
-        now = timezone.now()
 
-        return cls.objects.filter(
-            baslangic__lte=now,
-            bitis__gte=now
-        ).first()
+    def aktif_mi(self):
+        from django.utils import timezone
+        simdi = timezone.now()
+        return self.baslangic <= simdi <= self.bitis
 
 
 class DersKaydi(models.Model):
@@ -51,23 +41,22 @@ class DersKaydi(models.Model):
 
     ogrenci = models.ForeignKey(Ogrenci, on_delete=models.PROTECT)
     donem_dersi = models.ForeignKey(DonemDersi, on_delete=models.PROTECT)
-
     vize_notu = models.IntegerField(
         null=True, blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     final_notu = models.IntegerField(
         null=True, blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     harf_notu = models.CharField(
         max_length=2, choices=HarfNotu.choices,
-        null=True, blank=True
+        null=True, blank=True,
     )
     onay_durumu = models.CharField(
         max_length=20,
         choices=Durum.choices,
-        default=Durum.BEKLEMEDE
+        default=Durum.BEKLEMEDE,
     )
 
     class Meta:
@@ -79,6 +68,10 @@ class DersKaydi(models.Model):
                 name="unique_ogrenci_donem_ders"
             )
         ]
+
+    @property
+    def aktif(self):
+        return self.onay_durumu == DersKaydi.Durum.ONAYLANDI
 
     @property
     def ortalama(self):
@@ -105,26 +98,3 @@ class DersKaydi(models.Model):
 
     def __str__(self):
         return f"{self.ogrenci} - {self.donem_dersi}"
-    
-    @classmethod
-    def ogrenci_dersleri(cls, ogrenci_id, onay_durumu=None):
-        qs = cls.objects.filter(ogrenci_id=ogrenci_id)
-
-        if onay_durumu is not None:
-            qs = qs.filter(onay_durumu=onay_durumu)
-
-        return qs.select_related(
-            "donem_dersi__ders",
-            "donem_dersi__akademisyen__user"
-        )
-
-    @classmethod
-    def ders_ogrencileri(cls, donem_dersi_id):
-        return cls.objects.filter(
-            donem_dersi_id=donem_dersi_id,
-            onay_durumu=True
-        ).select_related(
-            "ogrenci__user"
-        ).order_by("ogrenci__ogr_no")
-    
-    

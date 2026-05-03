@@ -1,217 +1,136 @@
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Count, Avg
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
-from apps.users.models import Ogrenci, Akademisyen
 from apps.courses.models import DonemDersi
 from apps.enrollments.models import DersKaydi, DersKayitDonemi
 
-
-def _error(message):
-    return {"success": False, "message": message, "data": None}
+MAX_DERS_SAYISI = 8
+MAX_KREDI = 30
 
 
 class EnrollmentService:
-    """Ders kayıt işlemleri"""
+
+    @staticmethod
+    def aktif_kayit_donemi_getir():
+        simdi = timezone.now()
+        return DersKayitDonemi.objects.filter(
+            baslangic__lte=simdi,
+            bitis__gte=simdi,
+        ).first()
+
+    @staticmethod
+    def kayit_donemi_aktif_mi():
+        return EnrollmentService.aktif_kayit_donemi_getir() is not None
 
     @staticmethod
     @transaction.atomic
-    def ders_kaydi_yap(ogrenci_id, donem_dersi_id):
+    def ders_kaydi_olustur(ogrenci, donem_dersi_id):
+        if not EnrollmentService.kayit_donemi_aktif_mi():
+            raise ValidationError("Ders kayıt dönemi aktif değil.")
 
-        try:
-            ogrenci = Ogrenci.objects.get(id=ogrenci_id)
-            donem_dersi = DonemDersi.objects.select_for_update().get(id=donem_dersi_id)
-        except (Ogrenci.DoesNotExist, DonemDersi.DoesNotExist):
-            return _error("Öğrenci veya ders bulunamadı")
+        donem_dersi = get_object_or_404(DonemDersi, pk=donem_dersi_id)
 
-        kayit_donemi = DersKayitDonemi.get_aktif_donem()
-        if not kayit_donemi:
-            return _error("Ders kayıt dönemi kapalı")
+        if not donem_dersi.aktiflik_durumu:
+            raise ValidationError("Bu dönem dersi aktif değil.")
 
-        if donem_dersi.yil != kayit_donemi.yil or donem_dersi.donem != kayit_donemi.donem:
-            return _error("Bu ders bu döneme ait değil")
+        if donem_dersi.ders.min_sinif > ogrenci.sinif:
+            raise ValidationError("Bu dersi almak için sınıf seviyeniz yetersiz.")
 
-        if not donem_dersi.is_active():
-            return _error("Ders aktif değil")
+        if DersKaydi.objects.filter(ogrenci=ogrenci, donem_dersi=donem_dersi).exists():
+            raise ValidationError("Bu derse zaten kayıtlısınız.")
 
-        if ogrenci.sinif < donem_dersi.ders.min_sinif:
-            return _error("Sınıf yetersiz")
+        from apps.courses.services import CoursesService
+        if CoursesService.kontenjan_dolu_mu(donem_dersi):
+            raise ValidationError("Bu dersin kontenjanı dolmuştur.")
 
-        if donem_dersi.is_full():
-            return _error("Kontenjan dolu")
-
-        if DersKaydi.objects.filter(
+        mevcut_kayitlar = DersKaydi.objects.filter(
             ogrenci=ogrenci,
-            donem_dersi=donem_dersi
-        ).exists():
-            return _error("Zaten kayıtlı")
+            donem_dersi__yil=donem_dersi.yil,
+            donem_dersi__donem=donem_dersi.donem,
+        ).select_related("donem_dersi__ders")
 
-        kayit = DersKaydi.objects.create(
-            ogrenci=ogrenci,
-            donem_dersi=donem_dersi,
-            onay_durumu=DersKaydi.Durum.BEKLEMEDE
-        )
+        if mevcut_kayitlar.count() >= MAX_DERS_SAYISI:
+            raise ValidationError(f"Bir dönemde en fazla {MAX_DERS_SAYISI} ders alabilirsiniz.")
 
-        return {
-            "success": True,
-            "message": "Kayıt oluşturuldu",
-            "data": {"id": kayit.id}
-        }
+        mevcut_kredi = sum(k.donem_dersi.ders.kredi for k in mevcut_kayitlar)
+        if mevcut_kredi + donem_dersi.ders.kredi > MAX_KREDI:
+            raise ValidationError(f"Kredi limitini ({MAX_KREDI}) aşıyorsunuz.")
 
-    @staticmethod
-    @transaction.atomic
-    def ders_kaydi_onayla(ders_kaydi_id):
-
-        try:
-            kayit = DersKaydi.objects.select_for_update().get(id=ders_kaydi_id)
-        except DersKaydi.DoesNotExist:
-            return _error("Kayıt bulunamadı")
-
-        if kayit.onay_durumu == DersKaydi.Durum.ONAYLANDI:
-            return _error("Zaten onaylı")
-
-        if kayit.donem_dersi.is_full():
-            return _error("Kontenjan dolu")
-
-        kayit.onay_durumu = DersKaydi.Durum.ONAYLANDI
+        kayit = DersKaydi(ogrenci=ogrenci, donem_dersi=donem_dersi, onay_durumu=DersKaydi.Durum.BEKLEMEDE)
         kayit.save()
-
-        return {
-            "success": True,
-            "message": "Onaylandı",
-            "data": {"id": kayit.id}
-        }
+        return kayit
 
     @staticmethod
-    def ders_kaydi_iptal(ogrenci_id, ders_kaydi_id):
+    def bekleyen_kayitlari_listele(akademisyen):
+        return DersKaydi.objects.filter(
+            donem_dersi__akademisyen=akademisyen,
+            onay_durumu=DersKaydi.Durum.BEKLEMEDE,
+        ).select_related("ogrenci__user", "donem_dersi__ders")
 
-        try:
-            kayit = DersKaydi.objects.get(
-                id=ders_kaydi_id,
-                ogrenci_id=ogrenci_id
-            )
-        except DersKaydi.DoesNotExist:
-            return _error("Kayıt bulunamadı")
+    @staticmethod
+    def ders_kaydi_onayla(kayit_id, akademisyen):
+        kayit = get_object_or_404(DersKaydi, pk=kayit_id)
+        if kayit.donem_dersi.akademisyen != akademisyen:
+            raise PermissionDenied("Bu kayıt size ait değil.")
+        kayit.onay_durumu = DersKaydi.Durum.ONAYLANDI
+        kayit.save(update_fields=["onay_durumu"])
+        return kayit
 
-        if kayit.onay_durumu == DersKaydi.Durum.ONAYLANDI:
-            return _error("Onaylı kayıt silinemez")
+    @staticmethod
+    def ders_kaydi_reddet(kayit_id, akademisyen):
+        kayit = get_object_or_404(DersKaydi, pk=kayit_id)
+        if kayit.donem_dersi.akademisyen != akademisyen:
+            raise PermissionDenied("Bu kayıt size ait değil.")
+        kayit.onay_durumu = DersKaydi.Durum.REDDEDILDI
+        kayit.save(update_fields=["onay_durumu"])
 
-        kayit.delete()
+    @staticmethod
+    def donem_dersi_ogrenci_listesi(donem_dersi_id, akademisyen):
+        donem_dersi = get_object_or_404(
+            DonemDersi, pk=donem_dersi_id, akademisyen=akademisyen
+        )
+        return DersKaydi.objects.filter(
+            donem_dersi=donem_dersi,
+        ).select_related("ogrenci__user")
 
-        return {"success": True, "message": "İptal edildi", "data": None}
+    @staticmethod
+    def ogrenci_derslerini_listele(ogrenci, yil=None, donem=None):
+        qs = DersKaydi.objects.filter(ogrenci=ogrenci).select_related(
+            "donem_dersi__ders", "donem_dersi__akademisyen__user"
+        )
+        if yil:
+            qs = qs.filter(donem_dersi__yil=yil)
+        if donem:
+            qs = qs.filter(donem_dersi__donem=donem)
+        return qs
+
+    @staticmethod
+    def transkript_getir(ogrenci):
+        return DersKaydi.objects.filter(
+            ogrenci=ogrenci,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        ).select_related(
+            "donem_dersi__ders",
+            "donem_dersi__akademisyen__user",
+        ).order_by("donem_dersi__yil", "donem_dersi__donem")
 
 
 class GradeService:
-    """Not işlemleri"""
 
     @staticmethod
     @transaction.atomic
-    def not_gir(ders_kaydi_id, vize, final, akademisyen_id=None):
-
-        try:
-            kayit = DersKaydi.objects.get(id=ders_kaydi_id)
-        except DersKaydi.DoesNotExist:
-            return _error("Ders kaydı bulunamadı")
-
-        if kayit.onay_durumu != DersKaydi.Durum.ONAYLANDI:
-            return _error("Onaysız kayda not girilemez")
-
-        if akademisyen_id:
-            try:
-                akademisyen = Akademisyen.objects.get(id=akademisyen_id)
-                if akademisyen.id != kayit.donem_dersi.akademisyen_id:
-                    return _error("Bu dersin hocası değilsiniz")
-            except Akademisyen.DoesNotExist:
-                return _error("Akademisyen bulunamadı")
-
-        kayit.vize_notu = vize
-        kayit.final_notu = final
+    def not_gir_guncelle(kayit_id, vize_notu, final_notu, akademisyen):
+        kayit = get_object_or_404(DersKaydi, pk=kayit_id)
+        if kayit.donem_dersi.akademisyen != akademisyen:
+            raise PermissionDenied("Bu kayıt size ait değil.")
+        if not kayit.aktif:
+            raise ValidationError("Onaylanmamış kayıda not girilemez.")
+        kayit.vize_notu = vize_notu
+        kayit.final_notu = final_notu
         kayit.save()
 
-        return {
-            "success": True,
-            "message": "Notlar girildi",
-            "data": {
-                "ortalama": kayit.ortalama,
-                "harf": kayit.harf_notu
-            }
-        }
-
-    @staticmethod
-    @transaction.atomic
-    def not_guncelle(ders_kaydi_id, akademisyen_id, vize=None, final=None):
-
-        try:
-            kayit = DersKaydi.objects.select_for_update().get(id=ders_kaydi_id)
-        except DersKaydi.DoesNotExist:
-            return _error("Kayıt bulunamadı")
-
-        try:
-            akademisyen = Akademisyen.objects.get(id=akademisyen_id)
-        except Akademisyen.DoesNotExist:
-            return _error("Akademisyen bulunamadı")
-
-        if akademisyen.id != kayit.donem_dersi.akademisyen_id:
-            return _error("Bu dersin notlarını güncelleme yetkiniz yok")
-
-        # not güncelleme
-        if vize is not None:
-            kayit.vize_notu = vize
-
-        if final is not None:
-            kayit.final_notu = final
-
-        kayit.save()
-
-        return {
-            "success": True,
-            "message": "Güncellendi",
-            "data": {
-                "ortalama": kayit.ortalama,
-                "harf": kayit.harf_notu
-            }
-        }
-
-    @staticmethod
-    def sinif_not_istatistikleri(donem_dersi_id):
-
-        kayitlar = DersKaydi.objects.filter(
-            donem_dersi_id=donem_dersi_id,
-            onay_durumu=DersKaydi.Durum.ONAYLANDI
-        )
-
-        if not kayitlar.exists():
-            return _error("Kayıt yok")
-
-        data = kayitlar.aggregate(
-            toplam=Count("id"),
-            vize_ort=Avg("vize_notu"),
-            final_ort=Avg("final_notu")
-        )
-
-        return {
-            "success": True,
-            "message": "İstatistikler",
-            "data": data
-        }
-
-    @staticmethod
-    def donem_dersi_ogrencileri(donem_dersi_id):
-
-        ogrenciler = DersKaydi.objects.filter(
-            donem_dersi_id=donem_dersi_id,
-            onay_durumu=DersKaydi.Durum.ONAYLANDI
-        )
-
-        return {
-            "success": True,
-            "message": "Öğrenciler listelendi",
-            "data": list(ogrenciler.values(
-                "id",
-                "ogrenci__ogr_no",
-                "ogrenci__user__ad",
-                "ogrenci__user__soyad",
-                "vize_notu",
-                "final_notu",
-                "harf_notu"
-            ))
-        }
+        from apps.users.services import UsersService
+        UsersService.gpa_guncelle(kayit.ogrenci)
+        return kayit

@@ -19,23 +19,14 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=15,
         choices=Role.choices,
-        blank=False
+        blank=False,
     )
 
     def __str__(self):
         return f"{self.username} ({self.ad} {self.soyad}) - {self.role}"
-    
+
     def tam_ad(self):
         return f"{self.ad} {self.soyad}"
-    
-    def is_ogrenci(self):
-        return self.role == self.Role.OGRENCI if self.role else False
-
-    def is_akademisyen(self):
-        return self.role == self.Role.AKADEMISYEN if self.role else False
-
-    def is_yonetici(self):
-        return self.role == self.Role.YONETICI if self.role else False
 
 
 class Ogrenci(models.Model):
@@ -44,16 +35,13 @@ class Ogrenci(models.Model):
     bolum = models.ForeignKey(Bolum, on_delete=models.PROTECT)
     sinif = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(8)]
+        validators=[MinValueValidator(1), MaxValueValidator(8)],
     )
     gpa = models.DecimalField(
         max_digits=3,
         decimal_places=2,
         default=Decimal("0.00"),
-        validators=[
-            MinValueValidator(Decimal("0.00")),
-            MaxValueValidator(Decimal("4.00"))
-        ]
+        validators=[MinValueValidator(0), MaxValueValidator(4)],
     )
 
     class Meta:
