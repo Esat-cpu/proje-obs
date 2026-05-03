@@ -1,67 +1,41 @@
-from django.db import transaction
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+
 from apps.departments.models import Bolum
-from apps.users.models import Ogrenci, Akademisyen
 
 
-def _error(message):
-    return {"success": False, "message": message, "data": None}
+def bolum_listesi_getir():
+    return Bolum.objects.all().order_by("bolum_kodu")
 
 
-class DepartmentService:
-    """Bölüm yönetimi servisleri"""
+def bolum_getir(bolum_id):
+    return get_object_or_404(Bolum, pk=bolum_id)
 
-    @staticmethod
-    @transaction.atomic
-    def bolum_olustur(ad, bolum_kodu):
 
-        # serializerda da olabilir su iki if blogu ama burda birakiyorum
-        if Bolum.objects.filter(bolum_kodu=bolum_kodu).exists():
-            return _error("Bölüm kodu zaten var")
+def bolum_kodu_ile_getir(bolum_kodu):
+    return get_object_or_404(Bolum, bolum_kodu=bolum_kodu)
 
-        if Bolum.objects.filter(ad=ad).exists():
-            return _error("Bölüm adı zaten var")
 
-        bolum = Bolum.objects.create(
-            ad=ad,
-            bolum_kodu=bolum_kodu
-        )
+def bolum_olustur(ad, bolum_kodu):
+    bolum = Bolum(ad=ad, bolum_kodu=bolum_kodu)
+    bolum.full_clean()
+    bolum.save()
+    return bolum
 
-        return {
-            "success": True,
-            "message": "Bölüm oluşturuldu",
-            "data": {"id": bolum.id}
-        }
 
-    @staticmethod
-    def get_bolumler():
+def bolum_guncelle(bolum_id, **guncelleme_verisi):
+    bolum = bolum_getir(bolum_id)
+    for alan, deger in guncelleme_verisi.items():
+        setattr(bolum, alan, deger)
+    bolum.full_clean()
+    bolum.save()
+    return bolum
 
-        bolumler = Bolum.objects.all().order_by("ad")
 
-        return {
-            "success": True,
-            "message": f"{bolumler.count()} bölüm",
-            "data": list(bolumler.values("id", "ad", "bolum_kodu"))
-        }
-
-    @staticmethod
-    @transaction.atomic
-    def bolum_sil(bolum_id):
-
-        try:
-            bolum = Bolum.objects.get(id=bolum_id)
-        except Bolum.DoesNotExist:
-            return _error("Bölüm bulunamadı")
-
-        if Ogrenci.objects.filter(bolum=bolum).exists():
-            return _error("Bölüme bağlı öğrenciler var")
-
-        if Akademisyen.objects.filter(bolum=bolum).exists():
-            return _error("Bölüme bağlı akademisyenler var")
-
-        bolum.delete()
-
-        return {
-            "success": True,
-            "message": "Bölüm silindi",
-            "data": {"id": bolum_id}
-        }
+def bolum_sil(bolum_id):
+    bolum = bolum_getir(bolum_id)
+    bagli_ogrenci = bolum.ogrenci_set.exists()
+    bagli_akademisyen = bolum.akademisyen_set.exists()
+    if bagli_ogrenci or bagli_akademisyen:
+        raise ValidationError("Bu bölüme bağlı öğrenci veya akademisyen bulunmaktadır.")
+    bolum.delete()
