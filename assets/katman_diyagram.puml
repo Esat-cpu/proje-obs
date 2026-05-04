@@ -1,0 +1,60 @@
+@startuml
+skinparam componentStyle rectangle
+
+package "Presentation Layer" {
+    [React SPA] as react
+}
+
+package "Admin Interface" {
+    [Django Admin Panel] as admin
+}
+
+package "Application Layer" {
+    package "Authentication" {
+        [JWT Auth Filter] as jwt
+    }
+
+    package "ViewSets (Controllers)" {
+        [OgrenciViewSet] as ogrenci
+        [AkademisyenViewSet] as akademisyen
+        [GeneralViews\n(Bolum, DonemDersi)] as general
+    }
+
+    package "Serializers\n(Validation & Transformation)" {
+        [Serializers] as serializers
+    }
+
+    package "Services\n(Business Logic)" {
+        [Services] as services
+    }
+}
+
+package "Data Layer" {
+    [Django ORM] as orm
+    [Models] as models
+    database "SQLite DB" as db
+}
+
+react --> jwt : HTTP Request (JSON)
+jwt --> ogrenci
+jwt --> akademisyen
+jwt --> general
+
+ogrenci <--> serializers
+akademisyen <--> serializers
+general <--> serializers
+
+ogrenci --> react : HTTP Response (JSON)
+akademisyen --> react
+general --> react
+
+serializers <--> services
+
+services <--> orm
+
+orm <--> models
+models <--> db
+
+admin <--> orm : Direct CRUD
+
+@enduml
