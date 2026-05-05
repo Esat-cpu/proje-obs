@@ -58,6 +58,9 @@ const OgrenciGiris = () => {
             console.error("Öğrenci giriş hatası:", err);
             // Hata mesajını backend'den gelen formata göre de özelleştirebilirsin (err.response.data.message vb.)
             setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
+            console.log("Öğrenci giriş isteği:", formData);
+        } catch (err) {
+            setErrors({ general: t("error.login", "Giriş başarısız.") });
         } finally {
             setLoading(false);
         }
@@ -72,6 +75,8 @@ const OgrenciGiris = () => {
                     {/* İkon */}
                     <div style={{ width: "64px", height: "64px", backgroundColor: "#dce8fb", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <User size={32} color="var(--primary-blue)" />
+
+                        <User size={32} color="var(--primary-blue)" />
                     </div>
 
                     {/* Başlık */}

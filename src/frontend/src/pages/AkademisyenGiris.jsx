@@ -49,6 +49,10 @@ const AkademisyenGiris = () => {
         } catch (err) {
             console.error("Akademisyen giriş hatası:", err);
             setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
+
+            console.log("Akademisyen giriş isteği:", formData);
+        } catch (err) {
+            setErrors({ general: t("error.login", "Giriş başarısız.") });
         } finally {
             setLoading(false);
         }
@@ -56,7 +60,6 @@ const AkademisyenGiris = () => {
 
     return (
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-color)" }}>
-
             {/* Üst bar */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 28px" }}>
                 <Link to="/" style={{ display: "flex", alignItems: "center", gap: "6px", textDecoration: "none", color: "var(--text-main)", fontSize: "14px", fontWeight: "500" }}>
