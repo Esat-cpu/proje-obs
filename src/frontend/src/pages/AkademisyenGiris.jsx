@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { Users, Eye, EyeOff, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
+// Dosyanın üst kısımlarına axiosClient'ı import etmeyi unutma
+import axiosClient from "../shared/api/axiosClient";
 
 const AkademisyenGiris = () => {
     const { t } = useTranslation();
@@ -36,9 +38,17 @@ const AkademisyenGiris = () => {
         }
         setLoading(true);
         try {
-            console.log("Akademisyen giriş isteği:", formData);
+            const response = await axiosClient.post("/auth/academician/login/", {
+                username: formData.username,
+                sifre: formData.sifre
+            });
+            const { token, role } = response.data;
+            login(token, role || "Akademisyen");
+            navigate("/academician");
+
         } catch (err) {
-            setErrors({ general: t("error.login", "Giriş başarısız.") });
+            console.error("Akademisyen giriş hatası:", err);
+            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
         } finally {
             setLoading(false);
         }
