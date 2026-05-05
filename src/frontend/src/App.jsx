@@ -6,17 +6,18 @@ import AkademisyenPaneli from './pages/AkademisyenPaneli';
 import LoginHomePage from './pages/LoginHomePage';
 import TopBar from './components/ui/TopBar';
 import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/ui/PublicRoute';
 import OgrenciGiris from './pages/OgrenciGiris';
 import AkademisyenGiris from './pages/AkademisyenGiris';
 
 const NotFound = () => {
   const { t } = useTranslation();
-  return <div className="page-container">{t('404')}</div>;
+  return <div className="page-container">{t('404', 'Sayfa Bulunamadı')}</div>;
 };
 
 const Forbidden = () => {
   const { t } = useTranslation();
-  return <div className="page-container">{t('403')}</div>;
+  return <div className="page-container">{t('403','Erişim Reddedildi')}</div>;
 };
 
 function App() {
@@ -28,14 +29,14 @@ function App() {
       return (
         <div className="nav-brand">
           <Home size={20} color="var(--primary-blue)" />
-          <span>{t('anasayfa')}</span>
+          <span>{t('Anasayfa')}</span>
         </div>
       );
     } else if (location.pathname.startsWith('/login/')) {
       return (
         <Link to="/" className="nav-brand">
           <Home size={20} color="var(--primary-blue)" />
-          <span>{t('anasayfa')}</span>
+          <span>{t('Anasayfa')}</span>
         </Link>
       );
     }
@@ -46,15 +47,30 @@ function App() {
     <div className="page-container">
       <TopBar leftContent={renderNavBrand()} />
       <Routes>
-        <Route path="/" element={<LoginHomePage />} />
-        <Route path="/login/student" element={<OgrenciGiris />} />
-        <Route path="/login/academician" element={<AkademisyenGiris />} />
-        <Route path="/student" element={
+        {/* PUBLIC ROTALAR: Giriş yapmış kullanıcılar buralara giremez, panele atılır */}
+        <Route path="/" element={
+          <PublicRoute>
+            <LoginHomePage />
+          </PublicRoute>
+        } />
+        <Route path="/login/student" element={
+          <PublicRoute>
+            <OgrenciGiris />
+          </PublicRoute>
+        } />
+        <Route path="/login/academician" element={
+          <PublicRoute>
+            <AkademisyenGiris />
+          </PublicRoute>
+        } />
+
+        {/* PROTECTED ROTALAR: Giriş yapmamış kullanıcılar buralara giremez, logine atılır */}
+        <Route path="/student/*" element={
           <ProtectedRoute allowedRoles={["Ogrenci"]}>
             <OgrenciPaneli />
           </ProtectedRoute>
         } />
-        <Route path="/academician" element={
+        <Route path="/academician/*" element={
           <ProtectedRoute allowedRoles={["Akademisyen"]}>
             <AkademisyenPaneli />
           </ProtectedRoute>

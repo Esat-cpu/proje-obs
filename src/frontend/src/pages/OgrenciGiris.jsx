@@ -46,14 +46,6 @@ const OgrenciGiris = () => {
 
     return (
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-color)" }}>
-
-            {/* Üst bar */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 28px" }}>
-                <Link to="/" style={{ display: "flex", alignItems: "center", gap: "6px", textDecoration: "none", color: "var(--text-main)", fontSize: "14px", fontWeight: "500" }}>
-                    ← {t("nav.backToHome", "Ana Sayfaya Dön")}
-                </Link>
-            </div>
-
             {/* Orta kart */}
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <div style={{ backgroundColor: "var(--card-bg)", borderRadius: "16px", padding: "40px 36px", width: "100%", maxWidth: "400px", boxShadow: "0 2px 16px rgba(59,111,212,0.08)", display: "flex", flexDirection: "column", alignItems: "center", gap: "24px" }}>
