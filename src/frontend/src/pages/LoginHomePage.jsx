@@ -22,7 +22,7 @@ const LoginHomePage = () => {
       description: t('portal.academicianDesc', 'Ders yönetimi ve not girişi'),
     },
     {
-      to: 'http://localhost:8000/admin/',
+      to: import.meta.env.VITE_API_BASE_URL + '/admin/',
       isExternal: true,/* bu kart harici bir linke gidiyor */
       icon: <UserCog size={32} color="#7c5cbf" />,
       iconBg: '#ece6f8',
