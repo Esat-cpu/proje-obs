@@ -57,7 +57,8 @@
   },
   "nav": {
     "home": "Anasayfa",
-    "languageSelect": "Dil Seçimi"
+    "languageSelect": "Dil Seçimi",
+    "backToHome": "Ana Sayfaya Dön"
   },
   "app": {
     "title": "OBS - Öğrenci Bilgi Sistemi",
@@ -70,5 +71,17 @@
     "academicianDesc": "Ders yönetimi ve not girişi",
     "admin": "Yönetici",
     "adminDesc": "Sistem ve kullanıcı yönetimi"
+  },
+  "form": {
+    "ogrNo": "Öğrenci Numarası",
+    "password": "Şifre",
+    "username": "Kullanıcı Adı",
+    "login": "Giriş Yap",
+    "loginBtn": "Giriş",
+    "loading": "Giriş yapılıyor..."
+  },
+  "error": {
+    "required": "Bu alan zorunludur.",
+    "login": "Giriş başarısız."
   }
 }

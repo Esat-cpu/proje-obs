@@ -1,74 +1,82 @@
-// Diğer dosyalardaki gerekli export bileşenlerini getir
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Home } from 'lucide-react';
 import OgrenciPaneli from './pages/OgrenciPaneli';
 import AkademisyenPaneli from './pages/AkademisyenPaneli';
 import LoginHomePage from './pages/LoginHomePage';
 import TopBar from './components/ui/TopBar';
-import { Home } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/ui/PublicRoute';
+import OgrenciGiris from './pages/OgrenciGiris';
+import AkademisyenGiris from './pages/AkademisyenGiris';
 
-//! Geçici olarak burada tanımlanan sayfa bileşenleri sonradan App.jsx'ten pages'e taşınacaklar
-const OgrenciGiris = () => {
-  const { t } = useTranslation();
-  return <div className="panel-container">{t('login.studentPage', 'Öğrenci Giriş Sayfası')}</div>;
-};
-const AkademisyenGiris = () => {
-  const { t } = useTranslation();
-  return <div className="panel-container">{t('login.academicianPage', 'Akademisyen Giriş Sayfası')}</div>;
-};
 const NotFound = () => {
   const { t } = useTranslation();
-  return <div className="panel-container">{t('app.notFound', '404 - Sayfa Bulunamadı')}</div>;
+  return <div className="page-container">{t('404', 'Sayfa Bulunamadı')}</div>;
 };
 
-/* main.jsx motoru çalıştırıp direksiyonu App bileşenine teslim eder. App.jsx ise ekranda neyin, ne zaman gösterileceğini yöneten bileşendir. */
-function App() { 
+const Forbidden = () => {
+  const { t } = useTranslation();
+  return <div className="page-container">{t('403','Erişim Reddedildi')}</div>;
+};
+
+function App() {
   const { t } = useTranslation();
   const location = useLocation();
 
-  // Sol üst köşedeki logonun/butonun nerede nasıl görüneceğini belirleyen mantık
   const renderNavBrand = () => {
     if (location.pathname === '/') {
-      // 1. Durum: Ana logindeysek (/) sadece düz yazı göster (tıklanamaz)
       return (
         <div className="nav-brand">
-          <Home size={22} color="var(--primary-blue)" />
-          <span>{t('nav.home', 'Anasayfa')}</span>
+          <Home size={20} color="var(--primary-blue)" />
+          <span>{t('Anasayfa')}</span>
         </div>
       );
     } else if (location.pathname.startsWith('/login/')) {
-      // 2. Durum: Kartlara basılıp girilen giriş sayfalarındaysak, geri dönülebilmesi için buton yap (Link)
       return (
         <Link to="/" className="nav-brand">
-          <Home size={22} color="var(--primary-blue)" />
-          <span>{t('nav.home', 'Anasayfa')}</span>
+          <Home size={20} color="var(--primary-blue)" />
+          <span>{t('Anasayfa')}</span>
         </Link>
       );
     }
-    // 3. Durum: Panelde veya başka bir sayfadaysak hiçbir şey gösterme
     return null;
   };
 
   return (
     <div className="page-container">
-      {/* Global Navbar - Artık Hangi Sayfaya Gidersen Git Hep Tepede Kalacak! */}
-      <TopBar 
-        leftContent={renderNavBrand()}
-      />
-
+      <TopBar leftContent={renderNavBrand()} />
       <Routes>
-      <Route path="/" element={<LoginHomePage />} />{/* Ana Login Sayfası */}
+        {/* PUBLIC ROTALAR: Giriş yapmış kullanıcılar buralara giremez, panele atılır */}
+        <Route path="/" element={
+          <PublicRoute>
+            <LoginHomePage />
+          </PublicRoute>
+        } />
+        <Route path="/login/student" element={
+          <PublicRoute>
+            <OgrenciGiris />
+          </PublicRoute>
+        } />
+        <Route path="/login/academician" element={
+          <PublicRoute>
+            <AkademisyenGiris />
+          </PublicRoute>
+        } />
 
-      {/* Ogrencilerin ve Akademisyenlerin Login Sayfaları */}
-      <Route path="/login/student" element={<OgrenciGiris />} /> 
-      <Route path="/login/academician" element={<AkademisyenGiris />} />
-      
-      {/* Logini geçince girilen Paneller */}
-      <Route path="/student/*" element={<OgrenciPaneli />} />
-      <Route path="/academician/*" element={<AkademisyenPaneli />} />
-      
-      {/* Hiçbir route eşleşmezse NotFound bileşeni çalışır */}
-      <Route path="*" element={<NotFound />} />
+        {/* PROTECTED ROTALAR: Giriş yapmamış kullanıcılar buralara giremez, logine atılır */}
+        <Route path="/student/*" element={
+          <ProtectedRoute allowedRoles={["Ogrenci"]}>
+            <OgrenciPaneli />
+          </ProtectedRoute>
+        } />
+        <Route path="/academician/*" element={
+          <ProtectedRoute allowedRoles={["Akademisyen"]}>
+            <AkademisyenPaneli />
+          </ProtectedRoute>
+        } />
+        <Route path="/403" element={<Forbidden />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
