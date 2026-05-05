@@ -12,11 +12,13 @@ import AkademisyenGiris from './pages/AkademisyenGiris';
 
 const NotFound = () => {
   const { t } = useTranslation();
+  return <div className="page-container">{t('404')}</div>;
   return <div className="page-container">{t('404', 'Sayfa Bulunamadı')}</div>;
 };
 
 const Forbidden = () => {
   const { t } = useTranslation();
+  return <div className="page-container">{t('403')}</div>;
   return <div className="page-container">{t('403','Erişim Reddedildi')}</div>;
 };
 
@@ -29,6 +31,7 @@ function App() {
       return (
         <div className="nav-brand">
           <Home size={20} color="var(--primary-blue)" />
+          <span>{t('anasayfa')}</span>
           <span>{t('Anasayfa')}</span>
         </div>
       );
@@ -36,6 +39,7 @@ function App() {
       return (
         <Link to="/" className="nav-brand">
           <Home size={20} color="var(--primary-blue)" />
+          <span>{t('anasayfa')}</span>
           <span>{t('Anasayfa')}</span>
         </Link>
       );
@@ -47,6 +51,10 @@ function App() {
     <div className="page-container">
       <TopBar leftContent={renderNavBrand()} />
       <Routes>
+        <Route path="/" element={<LoginHomePage />} />
+        <Route path="/login/student" element={<OgrenciGiris />} />
+        <Route path="/login/academician" element={<AkademisyenGiris />} />
+        <Route path="/student" element={
         {/* PUBLIC ROTALAR: Giriş yapmış kullanıcılar buralara giremez, panele atılır */}
         <Route path="/" element={
           <PublicRoute>
@@ -70,6 +78,7 @@ function App() {
             <OgrenciPaneli />
           </ProtectedRoute>
         } />
+        <Route path="/academician" element={
         <Route path="/academician/*" element={
           <ProtectedRoute allowedRoles={["Akademisyen"]}>
             <AkademisyenPaneli />

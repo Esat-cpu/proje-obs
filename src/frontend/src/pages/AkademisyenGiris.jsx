@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { Users, Eye, EyeOff, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
+// Dosyanın üst kısımlarına axiosClient'ı import etmeyi unutma
+import axiosClient from "../shared/api/axiosClient";
 
 const AkademisyenGiris = () => {
     const { t } = useTranslation();
@@ -36,6 +38,18 @@ const AkademisyenGiris = () => {
         }
         setLoading(true);
         try {
+            const response = await axiosClient.post("/auth/academician/login/", {
+                username: formData.username,
+                sifre: formData.sifre
+            });
+            const { token, role } = response.data;
+            login(token, role || "Akademisyen");
+            navigate("/academician");
+
+        } catch (err) {
+            console.error("Akademisyen giriş hatası:", err);
+            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
+
             console.log("Akademisyen giriş isteği:", formData);
         } catch (err) {
             setErrors({ general: t("error.login", "Giriş başarısız.") });
@@ -46,6 +60,12 @@ const AkademisyenGiris = () => {
 
     return (
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-color)" }}>
+            {/* Üst bar */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 28px" }}>
+                <Link to="/" style={{ display: "flex", alignItems: "center", gap: "6px", textDecoration: "none", color: "var(--text-main)", fontSize: "14px", fontWeight: "500" }}>
+                    ← {t("nav.backToHome", "Ana Sayfaya Dön")}
+                </Link>
+            </div>
 
             {/* Orta kart */}
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>

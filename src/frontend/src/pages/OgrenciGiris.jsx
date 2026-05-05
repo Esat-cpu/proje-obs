@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { User, Eye, EyeOff, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
+import axiosClient  from "../shared/api/axiosClient";
 
 const OgrenciGiris = () => {
     const { t } = useTranslation();
@@ -36,6 +37,27 @@ const OgrenciGiris = () => {
         }
         setLoading(true);
         try {
+            // Backend'deki öğrenci login endpoint'ine istek atılıyor
+            // Not: Endpoint yolunu (/api/auth/student/login/ vb.) backend tasarıma göre uyarlayabilirsin.
+            const response = await axiosClient.post("/auth/student/login/", {
+                ogr_no: formData.ogr_no,
+                sifre: formData.sifre
+            });
+
+            // Backend'den dönen token ve rol bilgisini alıyoruz
+            const { token, role } = response.data;
+
+            // AuthContext'teki login fonksiyonunu tetikleyip LocalStorage ve State'i güncelliyoruz
+            // Eğer backend role dönmüyorsa varsayılan olarak "Ogrenci" basabiliriz
+            login(token, role || "Ogrenci");
+
+            // Başarılı giriş sonrası öğrenci paneline yönlendiriyoruz
+            navigate("/student");
+
+        } catch (err) {
+            console.error("Öğrenci giriş hatası:", err);
+            // Hata mesajını backend'den gelen formata göre de özelleştirebilirsin (err.response.data.message vb.)
+            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
             console.log("Öğrenci giriş isteği:", formData);
         } catch (err) {
             setErrors({ general: t("error.login", "Giriş başarısız.") });
@@ -52,6 +74,8 @@ const OgrenciGiris = () => {
 
                     {/* İkon */}
                     <div style={{ width: "64px", height: "64px", backgroundColor: "#dce8fb", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <User size={32} color="var(--primary-blue)" />
+
                         <User size={32} color="var(--primary-blue)" />
                     </div>
 
