@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from datetime import timedelta
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     'apps.courses',
     'apps.enrollments',
     'apps.departments',
+    'apps.authentication',
 ]
 
 MIDDLEWARE = [
@@ -148,11 +150,18 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
-    # Şimdilik herkes erişebilir
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=12),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True

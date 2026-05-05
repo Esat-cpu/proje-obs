@@ -1,0 +1,177 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "apps.departments" {
+  class Bolum <<entity>> {
+    +ad: str
+    +bolum_kodu: str
+  }
+}
+
+package "apps.users" {
+  class User <<entity>> {
+    +id: int
+    +username: str
+    +ad: str
+    +soyad: str
+    +role: Role
+    +tam_ad(): str
+  }
+
+  class Ogrenci <<entity>> {
+    +ogr_no: str
+    +sinif: int
+    +gpa: Decimal
+  }
+
+  class Akademisyen <<entity>> {
+    +unvan: Unvan
+  }
+
+  class Yonetici <<entity>> {
+  }
+}
+
+package "apps.courses" {
+  class Ders <<entity>> {
+    +ders_kodu: str
+    +ad: str
+    +kredi: int
+    +min_sinif: int
+  }
+
+  class DonemDersi <<entity>> {
+    +yil: int
+    +donem: Donem
+    +kontenjan: int
+    +aktiflik_durumu: bool
+    +aktif_mi(): bool
+  }
+}
+
+package "apps.enrollments" {
+  class DersKayitDonemi <<entity>> {
+    +yil: int
+    +donem: Donem
+    +baslangic: datetime
+    +bitis: datetime
+    +aktif_mi(): bool
+  }
+
+  class DersKaydi <<entity>> {
+    +vize_notu: int
+    +final_notu: int
+    +harf_notu: str
+    +onay_durumu: Durum
+    +aktif(): bool
+    +ortalama(): Decimal
+  }
+}
+
+' ==================== İLİŞKİLER ====================
+
+User "1" *-- "0..1" Ogrenci
+User "1" *-- "0..1" Akademisyen
+User "1" *-- "0..1" Yonetici
+
+Bolum "1" o-- "*" Ogrenci
+Bolum "1" o-- "*" Akademisyen
+Bolum "1" o-- "*" Ders
+
+Ders "1" o-- "*" DonemDersi
+Akademisyen "1" o-- "*" DonemDersi
+
+Ogrenci "1" o-- "*" DersKaydi
+DonemDersi "1" o-- "*" DersKaydi
+
+' ==================== SERVICES (Control) ====================
+
+package "Services" {
+  class UsersService <<control>> {
+    +ogr_no_uret(): str
+    +kullanici_adi_uret(ad, soyad): str
+    +ogrenci_olustur(ad, soyad, bolum_kodu, sinif): Ogrenci
+    +ogrenci_getir(ogrenci_id): Ogrenci
+    +akademisyen_getir(akademisyen_id): Akademisyen
+    +gpa_guncelle(ogrenci): Decimal
+    +ogrenci_kaydi_excel(dosya): dict
+  }
+
+  class CoursesService <<control>> {
+    +dersleri_listele(sinif): QuerySet
+    +ders_getir(ders_id): Ders
+    +donem_derslerini_listele(...): QuerySet
+    +akademisyen_derslerini_getir(akademisyen): QuerySet
+    +donem_dersi_getir(donem_dersi_id): DonemDersi
+    +kontenjan_dolu_mu(donem_dersi): bool
+  }
+
+  class EnrollmentService <<control>> {
+    +aktif_kayit_donemi_getir(): DersKayitDonemi
+    +kayit_donemi_aktif_mi(): bool
+    +ders_kaydi_olustur(ogrenci, donem_dersi_id): DersKaydi
+    +bekleyen_kayitlari_listele(akademisyen): QuerySet
+    +ders_kaydi_onayla(kayit_id, akademisyen): DersKaydi
+    +ders_kaydi_reddet(kayit_id, akademisyen): void
+    +donem_dersi_ogrenci_listesi(donem_dersi_id, akademisyen): QuerySet
+    +ogrenci_derslerini_listele(ogrenci, yil, donem): QuerySet
+    +transkript_getir(ogrenci): QuerySet
+  }
+
+  class GradeService <<control>> {
+    +not_gir_guncelle(kayit_id, vize_notu, final_notu, akademisyen): DersKaydi
+  }
+
+  class DepartmentsService <<control>> {
+    +bolum_listesi_getir(): QuerySet
+    +bolum_getir(bolum_id): Bolum
+    +bolum_kodu_ile_getir(bolum_kodu): Bolum
+  }
+}
+
+' ==================== VIEWSETS (Boundary) ====================
+
+package "ViewSets" {
+  class OgrenciViewSet <<boundary>> {
+    +dersleri_listele()
+    +ders_kaydi_olustur()
+    +transkript_goruntule()
+  }
+
+  class AkademisyenViewSet <<boundary>> {
+    +dersleri_listele()
+    +ogrenci_listesi()
+    +bekleyen_kayitlar()
+    +kayit_onayla()
+    +kayit_reddet()
+    +not_gir()
+  }
+
+  class GeneralListView <<boundary>> {
+    +list()
+  }
+}
+
+' ==================== BAĞLANTILAR ====================
+
+OgrenciViewSet --> EnrollmentService
+OgrenciViewSet --> CoursesService
+
+AkademisyenViewSet --> EnrollmentService
+AkademisyenViewSet --> GradeService
+AkademisyenViewSet --> CoursesService
+
+GeneralListView --> CoursesService
+
+UsersService --> Ogrenci
+UsersService --> User
+CoursesService --> Ders
+CoursesService --> DonemDersi
+EnrollmentService --> DersKaydi
+EnrollmentService --> DersKayitDonemi
+GradeService --> DersKaydi
+GradeService --> UsersService
+DepartmentsService --> Bolum
+
+@enduml

@@ -12,18 +12,21 @@ class User(AbstractUser):
     soyad = models.CharField(max_length=100)
 
     class Role(models.TextChoices):
-        OGRENCI = "Öğrenci"
-        AKADEMISYEN = "Akademisyen"
-        YONETICI = "Yönetici"
+        OGRENCI = "OGRENCI", "Öğrenci"
+        AKADEMISYEN = "AKADEMISYEN", "Akademisyen"
+        YONETICI = "YONETICI", "Yönetici"
 
     role = models.CharField(
         max_length=15,
         choices=Role.choices,
-        blank=False
+        blank=False,
     )
 
     def __str__(self):
         return f"{self.username} ({self.ad} {self.soyad}) - {self.role}"
+
+    def tam_ad(self):
+        return f"{self.ad} {self.soyad}"
 
 
 class Ogrenci(models.Model):
@@ -32,13 +35,13 @@ class Ogrenci(models.Model):
     bolum = models.ForeignKey(Bolum, on_delete=models.PROTECT)
     sinif = models.IntegerField(
         default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(8)]
+        validators=[MinValueValidator(1), MaxValueValidator(8)],
     )
     gpa = models.DecimalField(
         max_digits=3,
         decimal_places=2,
         default=Decimal("0.00"),
-        validators=[MinValueValidator(0), MaxValueValidator(4)]
+        validators=[MinValueValidator(0), MaxValueValidator(4)],
     )
 
     class Meta:
