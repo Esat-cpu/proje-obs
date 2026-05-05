@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
+from apps.departments.models import Bolum
 from apps.choices import Donem
 from apps.users.models import Akademisyen
 
@@ -12,6 +13,7 @@ class Ders(models.Model):
     min_sinif = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(4)]
     )
+    bolum = models.ForeignKey(Bolum, on_delete=models.PROTECT, related_name="dersler")
 
     class Meta:
         verbose_name = "Ders"
@@ -27,7 +29,7 @@ class DonemDersi(models.Model):
     yil = models.IntegerField(validators=[MinValueValidator(2000), MaxValueValidator(2100)])
     donem = models.CharField(max_length=10, choices=Donem.choices)
     kontenjan = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(999)])
-    aktiflik_durumu = models.BooleanField(default=True)
+    aktiflik_durumu = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Dönem Dersi"
@@ -41,3 +43,6 @@ class DonemDersi(models.Model):
 
     def __str__(self):
         return f"{self.ders.ad} - {self.donem} {self.yil}"
+
+    def aktif_mi(self):
+        return self.aktiflik_durumu

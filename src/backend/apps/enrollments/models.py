@@ -27,23 +27,37 @@ class DersKayitDonemi(models.Model):
     def __str__(self):
         return f"{self.yil} {self.donem}"
 
+    def aktif_mi(self):
+        from django.utils import timezone
+        simdi = timezone.now()
+        return self.baslangic <= simdi <= self.bitis
+
 
 class DersKaydi(models.Model):
+    class Durum(models.TextChoices):
+        BEKLEMEDE = "beklemede", "Beklemede"
+        ONAYLANDI = "onaylandi", "Onaylandı"
+        REDDEDILDI = "reddedildi", "Reddedildi"
+
     ogrenci = models.ForeignKey(Ogrenci, on_delete=models.PROTECT)
     donem_dersi = models.ForeignKey(DonemDersi, on_delete=models.PROTECT)
     vize_notu = models.IntegerField(
         null=True, blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     final_notu = models.IntegerField(
         null=True, blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     harf_notu = models.CharField(
         max_length=2, choices=HarfNotu.choices,
-        null=True, blank=True
+        null=True, blank=True,
     )
-    onay_durumu = models.BooleanField(default=False)
+    onay_durumu = models.CharField(
+        max_length=20,
+        choices=Durum.choices,
+        default=Durum.BEKLEMEDE,
+    )
 
     class Meta:
         verbose_name = "Ders Kaydı"
@@ -54,6 +68,10 @@ class DersKaydi(models.Model):
                 name="unique_ogrenci_donem_ders"
             )
         ]
+
+    @property
+    def aktif(self):
+        return self.onay_durumu == DersKaydi.Durum.ONAYLANDI
 
     @property
     def ortalama(self):
