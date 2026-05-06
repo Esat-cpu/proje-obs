@@ -182,3 +182,978 @@ body {
 .logo-icon-wrapper { width: 100px; height: 100px; background-color: #dce8fb; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
 .logo-label { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 500; }
 .cards-row { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: stretch; }
+
+/* =========================================
+   PANEL LAYOUT STİLLERİ (Öğrenci & Akademisyen)
+   ========================================= */
+.panel-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+/* Panel Üst Bilgi Alanı (Header) */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.panel-logo-box {
+  width: 48px;
+  height: 48px;
+  background-color: #eef2ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.panel-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.panel-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background-color: #fee2e2;
+  color: #ef4444;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.logout-btn:hover {
+  opacity: 0.8;
+}
+
+.mobile-toggle-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.panel-nav-container {
+  background-color: var(--card-bg);
+  margin: 24px 32px 0 32px; 
+  border-radius: 12px;
+  padding: 0 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color);
+}
+
+.panel-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.panel-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.panel-nav-link:hover {
+  color: var(--primary-blue);
+  background-color: rgba(59, 111, 212, 0.04);
+}
+
+.panel-nav-link.active {
+  color: var(--primary-blue);
+  border-bottom-color: var(--primary-blue);
+}
+
+.mobile-only-actions {
+  display: none;
+}
+
+/* Ana İçerik Alanı */
+.panel-main-content {
+  flex: 1;
+  padding: 32px;
+  width: 100%;
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+  .panel-header-right { display: none; }
+  .mobile-toggle-btn { display: block; }
+  
+  .panel-nav-container {
+    display: none;
+    flex-direction: column;
+    padding: 16px;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: var(--card-bg);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+  
+  .panel-nav-container.open { display: flex; }
+  
+  .panel-nav { flex-direction: column; }
+  
+  .panel-nav-link {
+    border-bottom: none;
+    border-left: 3px solid transparent;
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+  
+  .panel-nav-link.active {
+    border-bottom-color: transparent;
+    background-color: rgba(59, 111, 212, 0.08);
+    border-left-color: var(--primary-blue);
+  }
+
+  .mobile-only-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+  }
+}
+/* =========================================
+   GENEL BAKIŞ (DASHBOARD) STİLLERİ
+   ========================================= */
+.dashboard-container { display: flex; flex-direction: column; gap: 32px; }
+
+/* İstatistik Kartları */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+.stat-card { background: var(--card-bg); padding: 24px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
+.stat-header { display: flex; justify-content: space-between; margin-bottom: 16px; }
+.stat-value { font-size: 28px; font-weight: 700; margin: 0; color: var(--text-main); }
+.stat-label { font-size: 14px; color: var(--text-muted); margin: 4px 0 0; }
+
+/* 2 Sütunlu Düzen */
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+@media (max-width: 992px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+/* Alt Bölüm Başlıkları */
+.dash-section-title { font-size: 16px; font-weight: 700; margin: 0; color: var(--text-main); }
+.dash-section-subtitle { font-size: 13px; color: var(--text-muted); margin: 4px 0 16px; }
+
+/* Aktif Ders Kartı */
+.active-course-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 16px; }
+.course-head { display: flex; gap: 12px; margin-bottom: 12px; }
+.course-code { background: #eef2ff; color: var(--primary-blue); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.course-credit { background: #f3f4f6; color: var(--text-muted); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 500; }
+.course-name { margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main); }
+.course-teacher { margin: 4px 0 16px; font-size: 13px; color: var(--text-muted); }
+.course-grades { display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 16px; }
+.grade-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.grade-value { font-size: 16px; font-weight: 700; color: var(--text-main); }
+.text-blue { color: var(--primary-blue); }
+
+/* Tablo (DataTable Bileşeni İçin) */
+.grades-table-container { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; }
+.grades-table { width: 100%; border-collapse: collapse; text-align: left; }
+.grades-table th { padding: 16px; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+.grades-table td {
+  padding: 12px 16px !important; 
+}.grades-table tr:last-child td { border-bottom: none; }
+.grades-table td strong { display: block; font-size: 14px; color: var(--text-main); }
+.grades-table td span { font-size: 12px; color: var(--text-muted); }
+
+/* Renkli Harf Notu Rozetleri */
+.badge {
+  padding: 4px 12px;
+  border-radius: 12px !important; 
+  font-weight: 700;
+  display: inline-block;
+}
+.badge-success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+.badge-blue {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.badge-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+.badge-danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+/* Not Giriş Kutusu */
+.grade-input {
+  width: 70px;
+  padding: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+}
+.grades-table tfoot td {
+  background-color: rgba(135, 135, 135, 0.08); 
+  border-top: 1px solid var(--border-color); 
+  border-bottom: none;
+}
+/* =========================================
+   DERSLERİM, KAYIT & TRANSKRİPT STİLLERİ
+   ========================================= */
+.card-container { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; padding: 24px; }
+.card-container.no-padding { padding: 0; }
+.section-title { 
+  margin: -24px -24px 24px -24px; 
+  padding: 24px; 
+  font-size: 18px; 
+  font-weight: 700; 
+  color: var(--text-main); 
+  border-bottom: 1px solid var(--border-color); 
+}
+/* Bannerlar (Mavi & Mor) */
+.banner { padding: 32px; border-radius: 16px; color: white; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.banner h2 { margin: 0 0 8px 0; font-size: 24px; }
+.banner p { margin: 0; opacity: 0.9; font-size: 14px; line-height: 1.5; }
+.banner-blue { background: linear-gradient(135deg, var(--primary-blue), #2563eb); }
+.banner-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); align-items: center; }
+.banner-details { display: flex; gap: 24px; margin-top: 16px; opacity: 0.9; font-size: 13px; font-weight: 500; }
+.banner-details span { display: flex; align-items: center; gap: 6px; }
+
+.btn-white { background: white; color: #7c3aed; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+.btn-white:hover { transform: translateY(-2px); }
+
+/* Transkript Özet Kartları & Tablo Üstü */
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
+.summary-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px; }
+.icon-box { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.bg-green-light { background: #d1fae5; }
+.bg-blue-light { background: #dce8fb; }
+.bg-purple-light { background: #ede9fe; }
+.summary-card p { margin: 0 0 4px 0; font-size: 13px; color: var(--text-muted); }
+.summary-card h3 { margin: 0; font-size: 20px; color: var(--text-main); }
+.badge-blue { background: #dce8fb; color: var(--primary-blue); }
+
+.term-header { display: flex; justify-content: space-between; align-items: center; padding: 24px; border-bottom: 1px solid var(--border-color); }
+.term-header h3 { margin: 0 0 4px 0; font-size: 16px; color: var(--text-main); }
+.term-header p { margin: 0; font-size: 13px; color: var(--text-muted); }
+.term-gpa { text-align: right; }
+.term-gpa p { margin: 0; font-size: 13px; color: var(--text-muted); }
+.term-gpa h3 { color: #8b5cf6; font-size: 20px; margin-top: 4px; margin-bottom: 0; }
+
+/* Ders Kayıt Sayfası */
+.registration-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+@media (max-width: 992px) { .registration-grid { grid-template-columns: 1fr; } }
+.reg-left, .reg-right { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 24px; }
+.reg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.reg-header h3 { margin: 0; font-size: 16px; color: var(--text-main); }
+.badge-gray { background: #f3f4f6; color: var(--text-muted); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+.search-box { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 24px; }
+.search-box input { border: none; background: transparent; width: 100%; outline: none; color: var(--text-main); }
+
+.reg-course-card { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+.reg-course-card:last-child { border-bottom: none; padding-bottom: 0; }
+.tags { display: flex; gap: 8px; margin-bottom: 8px; }
+.quota-tag.warning { background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.reg-course-info h4 { margin: 0 0 4px 0; font-size: 15px; color: var(--text-main); }
+.reg-course-info .teacher { margin: 0 0 8px 0; font-size: 13px; color: var(--text-muted); }
+.reg-course-info .details { margin: 0; font-size: 12px; color: #9ca3af; }
+.btn-add { background: var(--primary-blue); color: white; border: none; padding: 8px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+.btn-add:hover { opacity: 0.9; }
+
+.credit-summary { display: flex; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); margin: 20px 0; font-size: 14px; color: var(--text-muted); }
+.font-bold { font-weight: 700; font-size: 16px; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 0; color: var(--text-muted); gap: 16px; text-align: center; }
+.empty-state p { margin: 0; }
+.grades-table thead th {
+  background-color: #f8f9fa; 
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .grades-table thead th {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.card-container .grades-table-container {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.card-container .grades-table thead th:first-child,
+.card-container .grades-table thead th:last-child {
+  border-radius: 0 !important;
+}
+/* --- AKADEMİSYEN PANELİ NAVİGASYON --- */
+
+.panel-nav-container {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 8px; 
+  margin-bottom: 24px;
+  display: flex; 
+}
+
+.panel-nav {
+  border-bottom: none !important;
+  display: flex;
+  gap: 12px; 
+  width: auto; 
+}
+
+.panel-nav-link {
+  border-bottom: none !important;
+  padding: 0 !important;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block; 
+}
+.nav-link-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.panel-nav-link.active .nav-link-content {
+  background-color: #e6f6ee; 
+  color: #059669; 
+}
+
+.nav-badge {
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.panel-nav-container {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 24px;
+  display: flex;
+}
+
+.nav-link-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.panel-nav-link.active .nav-link-content {
+  background-color: #eef2ff !important; 
+  color: var(--primary-blue) !important; 
+}
+
+.nav-badge {
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+.badge-success { background-color: #d1fae5; color: #065f46; }
+.badge-blue { background-color: #dbeafe; color: #1e40af; }
+.grade-input { width: 60px; padding: 6px; border: 1px solid #e2e8f0; border-radius: 6px; text-align: center; }
+/* Kayıt Onayları Sayfası Özel Stilleri */
+.banner-green {
+  background-color: #10b981;
+  padding: 40px;
+  border-radius: 16px;
+  color: white;
+  margin-bottom: 24px;
+}
+
+.banner-green h2 { margin: 0 0 8px 0; font-size: 28px; }
+.banner-green p { margin: 0; opacity: 0.9; font-size: 16px; }
+
+.bg-warning-light { background-color: #fff7ed; }
+.bg-danger-light { background-color: #fef2f2; }
+
+.btn-add:active { transform: scale(0.98); }
+
+.approval-banner {
+  background-color: #22c55e; 
+  padding: 20px 32px;      
+  border-radius: 12px;
+  color: white;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15); 
+}
+
+.approval-banner h2 { 
+  margin: 0; 
+  font-size: 22px; 
+  font-weight: 700; 
+  letter-spacing: -0.5px;
+}
+
+.approval-banner p { 
+  margin: 4px 0 0; 
+  opacity: 0.9; 
+  font-size: 14px; 
+}
+
+/* Özet İstatistik İkon Kutuları */
+.icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bg-blue-soft { background-color: #eff6ff; }
+.bg-orange-soft { background-color: #fff7ed; }
+.bg-green-soft { background-color: #f0fdf4; }
+.bg-red-soft { background-color: #fef2f2; }
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+.summary-label { font-size: 13px; color: var(--text-muted); }
+.summary-value { margin: 0; font-size: 22px; font-weight: 700; }
+
+/* Filtreleme Çubuğu */
+.filter-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.search-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+.search-input-wrapper input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  background: transparent;
+}
+.status-select {
+  padding: 0 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Talep Kartı Tasarımı */
+.approval-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.student-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.student-name { font-weight: 700; font-size: 17px; }
+.student-id { color: var(--text-muted); font-size: 14px; }
+.badge-yellow {
+  background: #fefce8;
+  color: #a16207;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.course-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  width: fit-content;
+  font-size: 13px;
+}
+
+.academic-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+}
+.stat-item label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.stat-item span { font-weight: 600; font-size: 14px; }
+.text-green { color: #10b981; }
+
+/* Aksiyon Butonları */
+.approval-actions { display: flex; flex-direction: column; gap: 12px; }
+.btn-approve {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-reject {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Özet Kartları Yan Yana Dizilimi */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+.search-input-wrapper {
+  flex: 0.65; 
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.status-select {
+  flex: 0.35; 
+  padding: 0 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  color: var(--text-main);
+}
+
+@media (max-width: 1024px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.panel-nav-container {
+  margin: 12px 32px 0 32px !important; 
+}
+
+.panel-main-content {
+  padding-top: 16px !important; 
+}
+
+/* 3. Banner'ın rengini ve boyutunu optimize et */
+.approval-banner {
+  background-color: #16a34a; 
+  padding: 16px 28px;      
+  border-radius: 12px;
+  margin-bottom: 20px;     
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1); 
+}
+
+.approval-banner h2 {
+  font-size: 20px;         
+  margin-bottom: 2px;
+}
+
+.approval-banner p {
+  font-size: 13px;         
+}
+
+.summary-grid {
+  margin-bottom: 20px; 
+}
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-color: #0f172a;    
+  --card-bg: #1e293b;        
+  --text-main: #f8fafc;     
+  --text-muted: #94a3b8;      
+  --border-color: #334155;    
+}
+
+/* Karanlık modda beyaz kalan alanları zorla güncelle */
+[data-theme='dark'] .card-container,
+[data-theme='dark'] .summary-card,
+[data-theme='dark'] .approval-card,
+[data-theme='dark'] .search-input-wrapper,
+[data-theme='dark'] .status-select,
+[data-theme='dark'] .panel-nav-container {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme='dark'] .course-pill {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+[data-theme='dark'] .status-select option {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+}
+/* --- LAYOUT VE SİDEBAR SİSTEMİ --- */
+.panel-layout-body {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: calc(100vh - 80px);
+}
+
+.empty-left-sidebar {
+  width: 260px;
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Sidebar Kapalıyken Genişlik Sıfır */
+.empty-left-sidebar.closed {
+  width: 0;
+  border-right: none;
+  opacity: 0;
+}
+
+/* Sidebar Açıkken */
+.empty-left-sidebar.open {
+  width: 260px;
+  opacity: 1;
+}
+
+.panel-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sidebar-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: var(--bg-color);
+}
+
+/* --- TABLO HİZALAMA DÜZELTMELERİ --- */
+.grades-table th, 
+.grades-table td {
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 14px 12px !important;
+}
+
+/* Metin olan kısımları sola yasla */
+.grades-table td:nth-child(2), 
+.grades-table th:nth-child(2) {
+  text-align: left !important;
+}
+
+/* Rozet ve Input Ortalaması */
+.badge, .grade-input {
+  display: inline-flex !important;
+  margin: 0 auto !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.grade-input {
+  display: block !important;
+  width: 60px;
+}
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grades-table th {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: center;
+}
+
+.grades-table th:first-child, 
+.grades-table td:first-child {
+  text-align: left !important;
+  padding-left: 24px !important;
+}
+
+.grades-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: var(--text-main);
+  text-align: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 40px;
+}
+.badge-aa { background-color: #ecfdf5; color: #10b981; } 
+.badge-ba { background-color: #eff6ff; color: #3b82f6; } 
+.badge-bb { background-color: #fffbeb; color: #f59e0b; } 
+
+.table-footer-row td {
+  border-bottom: none;
+  padding: 24px !important;
+  font-weight: 700;
+  font-size: 15px;
+}
+.text-avg {
+  color: #3b82f6; 
+  text-align: right !important;
+  padding-right: 24px !important;
+}
+.grades-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+.grades-table th, 
+.grades-table td {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 16px 12px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.grades-table th:first-child, 
+.grades-table td:first-child {
+    text-align: left !important;
+    padding-left: 24px !important;
+    width: 40%;
+}
+
+.dashboard-grid .grades-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+.dashboard-grid .grades-table th, 
+.dashboard-grid .grades-table td {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 16px 12px !important;
+}
+
+.dashboard-grid .grades-table th:first-child, 
+.dashboard-grid .grades-table td:first-child {
+    text-align: left !important;
+    padding-left: 24px !important;
+}
+
+.dashboard-grid .table-footer-row td:first-child {
+    text-align: left !important;
+}
+
+.dashboard-grid .table-footer-row td:last-child {
+    text-align: right !important;
+    padding-right: 24px !important;
+    color: #2563eb !important;
+}
+
+.badge-aa { background-color: #e6fcf5 !important; color: #0ca678 !important; }
+.badge-ba { background-color: #e7f5ff !important; color: #1c7ed6 !important; }
+.badge-bb { background-color: #fff9db !important; color: #f08c00 !important; }
+
+.table-footer-row td {
+    border-bottom: none !important;
+    padding: 24px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+}
+
+.text-avg {
+    color: #3b82f6 !important;
+    text-align: center !important;
+}
+.grades-table-container .grades-table th, 
+.grades-table-container .grades-table td {
+    text-align: center !important;
+    padding: 16px 12px !important;
+    vertical-align: middle !important;
+}
+
+.grades-table-container .grades-table th:first-child, 
+.grades-table-container .grades-table td:first-child {
+    text-align: left !important;
+    padding-left: 24px !important;
+}
+
+.grades-table-container .badge {
+    display: inline-flex !important;
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    min-width: 45px !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.grades-table-container .badge-aa { background-color: #d1fae5 !important; color: #065f46 !important; }
+.grades-table-container .badge-ba { background-color: #dbeafe !important; color: #1e40af !important; }
+.grades-table-container .badge-bb { background-color: #fef3c7 !important; color: #92400e !important; }
+
+.grades-table-container .table-footer-row td {
+    font-weight: 700 !important;
+    padding: 20px !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+.grades-table-container .text-avg {
+    color: #2563eb !important;
+    text-align: right !important;
+    padding-right: 24px !important;
+}
+.badge-aa { background-color: #d1fae5 !important; color: #065f46 !important; }
+.badge-ba { background-color: #dbeafe !important; color: #1e40af !important; }
+.badge-bb { background-color: #fef3c7 !important; color: #92400e !important; }
+
+.badge {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    display: inline-flex !important;
+    font-weight: 700 !important;
+    border: none !important;
+}
+.grades-table th, 
+.grades-table td {
+    text-align: center !important;
+}
+
+.grades-table th:first-child, 
+.grades-table td:first-child {
+    text-align: left !important;
+    padding-left: 24px !important;
+}
+
+.grades-table td {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.table-footer-row td:first-child {
+    text-align: left !important;
+}
+
+.table-footer-row td:last-child {
+    text-align: right !important;
+    padding-right: 24px !important;
+    color: #2563eb !important;
+}
