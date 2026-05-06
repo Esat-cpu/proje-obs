@@ -1,9 +1,8 @@
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home } from 'lucide-react';
-import OgrenciPaneli from './pages/OgrenciPaneli';
-import AkademisyenPaneli from './pages/AkademisyenPaneli';
-import LoginHomePage from './pages/LoginHomePage';
+import OgrenciPaneli from './pages/OgrenciPaneli/OgrenciPaneli';
+import AkademisyenPaneli from './pages/AkademisyenPaneli/AkademisyenPaneli';import LoginHomePage from './pages/LoginHomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/ui/PublicRoute';
 import OgrenciGiris from './pages/OgrenciGiris';

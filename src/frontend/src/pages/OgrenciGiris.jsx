@@ -37,7 +37,7 @@ const OgrenciGiris = () => {
         }
         setLoading(true);
         try {
-            const response = await axiosClient.post("/auth/student/login/", {
+            const response = await axiosClient.post("/auth/student/login/", { //backende yönlendirilecek jwt kullanılacak mı ?
                 ogr_no: formData.ogr_no,
                 sifre: formData.sifre
             });
