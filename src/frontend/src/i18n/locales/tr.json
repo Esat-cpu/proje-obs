@@ -41,6 +41,7 @@
     "currentTerm": "2025-2026 Bahar Dönemi",
     "midterm": "Vize",
     "final": "Final",
+    "currentGradesTitle": "Güncel Dönem Notları",
     "pastGrades": "Geçmiş Dönem Notları",
     "pastTerm": "2024-2025 Güz Dönemi",
     "course": "Ders",
@@ -144,14 +145,14 @@
   "academician": {
     "nav": {
       "overview": "Genel Bakış",
-      "courses": "Derslerim",
+      "courses": "Not Girişi",
       "approvals": "Kayıt Onayları"
     },
     "dashboard": {
       "activeCourses": "Aktif Ders",
       "totalStudents": "Toplam Öğrenci",
-      "pendingGrades": "Bekleyen Not",
-      "pendingApprovals": "Onay Bekleyen",
+      "pendingGrades": "Giriş Bekleyen Not",
+      "pendingApprovals": "Kayıt Onayı Bekleyen",
       "myCourses": "Verdiğim Dersler",
       "currentSemester": "2025-2026 Bahar Dönemi",
       "notEntry": "Not Girişi",

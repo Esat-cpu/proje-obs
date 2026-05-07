@@ -17,6 +17,10 @@ const Transcript = () => {
     { kodu: 'CS203', kredi: 6, harf: 'AA', puan: '4.00' },
     { kodu: 'CS204', kredi: 5, harf: 'BA', puan: '3.50' }
   ];
+  const pastTermsData = [
+    { id: '2024_fall', name: "2024-2025 Güz Dönemi", avg: "3.40", count: 6 },
+    { id: '2023_spring', name: "2023-2024 Bahar Dönemi", avg: "3.10", count: 5 }
+  ];
 
   return (
     <div className="dashboard-container">
@@ -24,13 +28,66 @@ const Transcript = () => {
       <div className="banner banner-purple">
         <div>
           <h2>{t('studentDashboard.transcript.title')}</h2>
-          <p>Muhammed Şerbetçioğlu - 20241001234</p>
+          <p>Victor Osimhen - 4242424242</p>
           <p style={{ margin: 0, opacity: 0.8, fontSize: '14px' }}>Bilgisayar Mühendisliği</p>
         </div>
         <button className="btn-white">
           <Download size={18} /> {t('studentDashboard.transcript.download')}
         </button>
       </div>
+
+      {pastTermsData.map((term) => (
+        <div key={term.id} className="card-container no-padding" style={{ marginTop: '24px' }}>
+          <div className="term-header">
+            <div>
+              <h3>{term.name}</h3>
+              <p>{term.count} {t('studentDashboard.transcript.listed')}</p>
+            </div>
+            <div className="term-gpa">
+              <p>{t('studentDashboard.transcript.termAvg')}</p>
+              <h3>{term.avg}</h3>
+            </div>
+          </div>
+          <div className="grades-table-container">
+            <DataTable
+              columns={[
+                {
+                  header: t('studentDashboard.transcript.code'),
+                  accessor: 'kodu'
+                },
+                {
+                  header: t('studentDashboard.transcript.name'),
+                  render: (row) => t(`data.courses.${row.kodu}`)
+                },
+                {
+                  header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.credit')}</div>,
+                  render: (row) => <div style={{ textAlign: 'center' }}>{row.kredi}</div>
+                },
+                {
+                  header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.letter')}</div>,
+                  render: (row) => {
+                    let badgeClass = 'badge-success';
+                    if (row.harf === 'BB' || row.harf === 'CB') badgeClass = 'badge-warning';
+                    if (row.harf === 'CC' || row.harf === 'DC') badgeClass = 'badge-blue';
+                    if (row.harf === 'DD' || row.harf === 'FD' || row.harf === 'FF') badgeClass = 'badge-danger';
+                    return (
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <span className={`badge ${badgeClass}`}>{row.harf}</span>
+                      </div>
+                    );
+                  }
+                },
+                {
+                  header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.value')}</div>,
+                  render: (row) => <div style={{ textAlign: 'center' }}>{row.puan}</div>
+                }
+              ]}
+              // Not: Gerçek senaryoda her dönemin kendi verisi (term.grades) olmalı, şimdilik mock veriyi kullanıyoruz.
+              data={transcriptData}
+            />
+          </div>
+        </div>
+      ))}
 
       {/* Özet Kartları */}
       <div className="summary-grid">
@@ -60,33 +117,33 @@ const Transcript = () => {
       {/* Dönem Tablosu */}
       <div className="card-container no-padding">
         <div className="term-header">
-           <div>
-             {/* Dönem ismi data.terms sözlüğünden çekiliyor */}
-             <h3>{t('data.terms.2023_fall')}</h3>
-             <p>8 {t('studentDashboard.transcript.listed')}</p>
-           </div>
-           <div className="term-gpa">
-             <p>{t('studentDashboard.transcript.termAvg')}</p>
-             <h3>3.25</h3>
-           </div>
+          <div>
+            {/* Dönem ismi data.terms sözlüğünden çekiliyor */}
+            <h3>{t('data.terms.2023_fall')}</h3>
+            <p>8 {t('studentDashboard.transcript.listed')}</p>
+          </div>
+          <div className="term-gpa">
+            <p>{t('studentDashboard.transcript.termAvg')}</p>
+            <h3>3.25</h3>
+          </div>
         </div>
-        
-        <DataTable 
+
+        <DataTable
           columns={[
-            { 
-              header: t('studentDashboard.transcript.code'), 
-              accessor: 'kodu' 
+            {
+              header: t('studentDashboard.transcript.code'),
+              accessor: 'kodu'
             },
-            { 
-              header: t('studentDashboard.transcript.name'), 
-              render: (row) => t(`data.courses.${row.kodu}`) 
+            {
+              header: t('studentDashboard.transcript.name'),
+              render: (row) => t(`data.courses.${row.kodu}`)
             },
-            { 
-              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.credit')}</div>, 
+            {
+              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.credit')}</div>,
               render: (row) => <div style={{ textAlign: 'center' }}>{row.kredi}</div>
             },
-            { 
-              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.letter')}</div>, 
+            {
+              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.letter')}</div>,
               render: (row) => {
                 // Nota göre dinamik renk ataması
                 let badgeClass = 'badge-success'; // AA, BA için yeşil
@@ -102,8 +159,8 @@ const Transcript = () => {
                 );
               }
             },
-            { 
-              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.value')}</div>, 
+            {
+              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.value')}</div>,
               render: (row) => <div style={{ textAlign: 'center' }}>{row.puan}</div>
             }
           ]}

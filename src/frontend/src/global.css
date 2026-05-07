@@ -1157,3 +1157,89 @@ body {
     padding-right: 24px !important;
     color: #2563eb !important;
 }
+/* =========================================
+   MOBİL UYUM (RESPONSIVE) DÜZELTMELERİ
+   ========================================= */
+@media (max-width: 768px) {
+  
+  /* 1. TABLOLARIN TAŞMASINI ENGELLE (Yatay Scroll Ekle) */
+  .grades-table-container {
+    overflow-x: auto !important;
+    width: 100%;
+  }
+  .grades-table {
+    min-width: 600px !important; /* Tablo sıkışmasın, parmakla kaydırılsın */
+  }
+
+  /* 2. KARTLARI VE İSTATİSTİKLERİ TEK SÜTUNA DÜŞÜR */
+  .summary-grid, 
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 3. ARAMA VE FİLTRE ÇUBUĞUNU ALT ALTA AL */
+  .filter-row {
+    flex-direction: column !important;
+  }
+  .search-input-wrapper, 
+  .status-select {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* 4. AKADEMİSYEN: KAYIT ONAYLARI KARTLARINI DÜZENLE */
+  .approval-card {
+    flex-direction: column !important;
+    gap: 16px;
+  }
+  /* Yan yana yaptığımız Ders, Kredi, GNO'yu mobilde alt alta al */
+  .approval-card-left .course-info-section {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .approval-actions {
+    flex-direction: row !important; /* Butonları alt alta değil, yan yana al */
+    width: 100%;
+  }
+  .btn-approve, .btn-reject {
+    flex: 1; /* Butonlar ekranı eşit paylaşsın */
+    justify-content: center;
+  }
+
+  /* 5. ÖĞRENCİ: DERS KAYIT SAYFASI DÜZENİ */
+  .registration-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .reg-course-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+  .reg-course-card .btn-add {
+    width: 100%;
+  }
+
+  /* 6. BANNER VE BAŞLIKLARI DÜZENLE */
+  .banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px;
+  }
+  .term-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+  .term-gpa {
+    text-align: left !important;
+  }
+
+  /* 7. BOŞ SİDEBAR EKRANI BOZMASIN (Mobilde üstte yüzer menü gibi davransın) */
+  .empty-left-sidebar.open {
+    position: absolute;
+    z-index: 100;
+    height: 100%;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  }
+}

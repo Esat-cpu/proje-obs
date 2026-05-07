@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from "../../context/AuthContext";//
 import { GraduationCap, Moon, Sun, LogOut, Menu, X } from 'lucide-react';
 
 const PanelLayout = ({ title, userName, navItems, children, logoColor = "var(--primary-blue)" }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  
+  const { logout } = useAuth(); //
+  const handleLogout = () => {
+    logout();      // 1. Önce token'ları temizle
+    navigate("/"); // 2. App.jsx'teki anasayfa rotasına (LoginHomePage) yönlendir
+  };
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
@@ -33,9 +39,9 @@ const PanelLayout = ({ title, userName, navItems, children, logoColor = "var(--p
           <button className="sidebar-toggle-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             <Menu size={24} />
           </button>
-          
+
           <div className="panel-logo-box">
-            <GraduationCap size={28} color={logoColor} /> 
+            <GraduationCap size={28} color={logoColor} />
           </div>
           <div>
             <h1 className="panel-title">{title}</h1>
@@ -53,7 +59,7 @@ const PanelLayout = ({ title, userName, navItems, children, logoColor = "var(--p
               <option value="en">English</option>
             </select>
           </div>
-          <button onClick={() => navigate('/')} className="logout-btn">
+          <button onClick={handleLogout} className="logout-btn">
             <LogOut size={16} />
             <span>{t('auth.logoutButton', 'Çıkış Yap')}</span>
           </button>
@@ -64,7 +70,7 @@ const PanelLayout = ({ title, userName, navItems, children, logoColor = "var(--p
         {/* SOLDAKİ BOŞ BAR */}
         <aside className={`empty-left-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
           <div className="sidebar-placeholder">
-             {/* Burası şu an boş, sidebar açıkken görünür */}
+            {/* Burası şu an boş, sidebar açıkken görünür */}
           </div>
         </aside>
 
