@@ -87,8 +87,8 @@ const GenelBakis = () => {
 
         {/* 3. Sağ Sütun: Geçmiş Dönem Notları Tablosu */}
         <div>
-          <h2 className="dash-section-title">{t('studentDashboard.overview.pastGrades')}</h2>
-          <p className="dash-section-subtitle">{t('data.terms.2024_fall')}</p>
+          <h2 className="dash-section-title">{t('studentDashboard.overview.currentGradesTitle')}</h2>
+          <p className="dash-section-subtitle">{t('studentDashboard.overview.currentTerm')}</p>
           
           <div className="card-container no-padding">
             <DataTable 

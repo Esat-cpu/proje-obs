@@ -28,19 +28,15 @@ const GenelBakis = () => {
         <div className="stat-card">
           <div className="icon-wrapper bg-purple-soft"><ClipboardCheck size={24} color="#8b5cf6" /></div>
           <h3 className="stat-value">12</h3>
-          <p className="stat-label">{t('academician.dashboard.pendingGrades')}</p>
+          <p className="stat-label">{t('academician.dashboard.pendingGrades','Giriş Bekleyen Not')}</p>
         </div>
         <div className="stat-card">
           <div className="icon-wrapper bg-orange-soft"><Clock size={24} color="#ea580c" /></div>
           <h3 className="stat-value">4</h3>
-          <p className="stat-label">{t('academician.dashboard.pendingApprovals')}</p>
+          <p className="stat-label">{t('academician.dashboard.pendingApprovals','Kayıt Onayı Bekleyen')}</p>
         </div>
       </div>
-
-      <div className="card-container">
-        <h2 className="dash-section-title">{t('academician.dashboard.myCourses')}</h2>
-        <p className="dash-section-subtitle">{t('academician.dashboard.currentSemester')}</p>
-        
+      
         <div className="active-courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
           {courses.map(course => (
             <div key={course.id} className="active-course-card">
@@ -62,15 +58,11 @@ const GenelBakis = () => {
                     <span>{course.ogrenci} {t('academician.courses.studentCount')}</span>
                   </div>
                 </div>
-                <button className="btn-add" style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#10b981' }}>
-                  <ClipboardCheck size={18} /> {t('academician.dashboard.notEntry')}
-                </button>
               </div>
             </div>
           ))}
         </div>
       </div>
-    </div>
   );
 };
 

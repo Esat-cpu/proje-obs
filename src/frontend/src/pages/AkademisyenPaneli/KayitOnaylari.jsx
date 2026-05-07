@@ -21,11 +21,6 @@ const KayitOnaylari = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Banner */}
-      <div className="approval-banner">
-        <h2>{t('academician.approvals.bannerTitle')}</h2>
-        <p>{t('academician.approvals.bannerDesc')}</p>
-      </div>
 
       {/* İstatistikler */}
       <div className="summary-grid">
@@ -67,22 +62,29 @@ const KayitOnaylari = () => {
               <User size={18} className="text-muted" /><span className="student-name">{req.name}</span>
               <span className="student-id">{req.studentId}</span><span className="badge-yellow">{req.status}</span>
             </div>
-            
-            <div className="course-info-section">
-              <p className="section-subtitle-small">{t('academician.approvals.courseInfo')}</p>
-              <div className="course-pill">
+          
+            {/* Kapsayıcıya yan yana dizilmeleri için flex eklendi */}
+            <div className="course-info-section" style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+              
+              {/* CS301 Ders Kartı (Pill) */}
+              <div className="course-pill" style={{ margin: 0 }}>
                 <BookOpen size={14} color="#3b82f6" />
-                {/* DERS ADI VE SINIF BURADA ÇEVRİLİYOR */}
                 <span>
                   {req.course} - {t(`data.courses.${req.course}`)} | <strong className="text-green">{t(`data.classes.${req.grade}`)}</strong>
                 </span>
               </div>
-            </div>
 
-            <div className="academic-stats">
-              <div className="stat-item"><label>{t('academician.approvals.currentCourses')}</label><span>{req.currentCourses}</span></div>
-              <div className="stat-item"><label>{t('academician.approvals.totalCredits')}</label><span>{req.totalCredits}</span></div>
-              <div className="stat-item"><label>{t('academician.approvals.gpa')}</label><span className="text-green font-bold">{req.gpa}</span></div>
+              {/* Toplam Kredi Buraya Taşındı */}
+              <div className="stat-item">
+                <label>{t('academician.approvals.totalCredits')}</label>
+                <span>{req.totalCredits}</span>
+              </div>
+              <div className="stat-item">
+                <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)' }}>
+                  {t('academician.approvals.gpa')}
+                </label>
+                <span className="text-green font-bold" style={{ fontSize: '14px' }}>{req.gpa}</span>
+              </div>
             </div>
           </div>
           <div className="approval-actions">

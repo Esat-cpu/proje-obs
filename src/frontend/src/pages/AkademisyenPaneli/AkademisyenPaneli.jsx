@@ -29,7 +29,7 @@ const AkademisyenPaneli = () => {
     },
     { 
       path: "/academician/courses", 
-      label: t('academician.nav.courses', 'Derslerim'), 
+      label: t('academician.nav.courses', 'Not Girişi'), 
       icon: Book 
     },
     { 
