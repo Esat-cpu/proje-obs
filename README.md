@@ -59,8 +59,10 @@ python src/backend/manage.py runserver --insecure
 cd src/frontend
 npm install
 ```
+2.Çevre Değişkenleri:
+Proje src/frontend dizininde bulunan `.env.example` dosyasını `.env` olarak sadece kopyalayın.
 
-2.Çalıştırmak için:
+3.Çalıştırmak için:
 ```bash
 npm run dev
 ```
