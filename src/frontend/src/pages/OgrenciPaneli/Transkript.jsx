@@ -35,7 +35,30 @@ const Transcript = () => {
           <Download size={18} /> {t('studentDashboard.transcript.download')}
         </button>
       </div>
-
+      {/* Özet Kartları */}
+      <div className="summary-grid">
+        <div className="summary-card">
+          <div className="icon-box bg-green-light"><Award color="#059669" /></div>
+          <div>
+            <p>{t('studentDashboard.transcript.gpa')}</p>
+            <h3>3.46</h3>
+          </div>
+        </div>
+        <div className="summary-card">
+          <div className="icon-box bg-blue-light"><Layers color="#2563eb" /></div>
+          <div>
+            <p>{t('studentDashboard.transcript.totalCredit')}</p>
+            <h3>142</h3>
+          </div>
+        </div>
+        <div className="summary-card">
+          <div className="icon-box bg-purple-light"><Calendar color="#7c3aed" /></div>
+          <div>
+            <p>{t('studentDashboard.transcript.term')}</p>
+            <h3>6</h3>
+          </div>
+        </div>
+      </div>
       {pastTermsData.map((term) => (
         <div key={term.id} className="card-container no-padding" style={{ marginTop: '24px' }}>
           <div className="term-header">
@@ -88,31 +111,6 @@ const Transcript = () => {
           </div>
         </div>
       ))}
-
-      {/* Özet Kartları */}
-      <div className="summary-grid">
-        <div className="summary-card">
-          <div className="icon-box bg-green-light"><Award color="#059669" /></div>
-          <div>
-            <p>{t('studentDashboard.transcript.gpa')}</p>
-            <h3>3.46</h3>
-          </div>
-        </div>
-        <div className="summary-card">
-          <div className="icon-box bg-blue-light"><Layers color="#2563eb" /></div>
-          <div>
-            <p>{t('studentDashboard.transcript.totalCredit')}</p>
-            <h3>142</h3>
-          </div>
-        </div>
-        <div className="summary-card">
-          <div className="icon-box bg-purple-light"><Calendar color="#7c3aed" /></div>
-          <div>
-            <p>{t('studentDashboard.transcript.term')}</p>
-            <h3>6</h3>
-          </div>
-        </div>
-      </div>
 
       {/* Dönem Tablosu */}
       <div className="card-container no-padding">

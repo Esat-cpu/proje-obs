@@ -37,9 +37,9 @@ const AkademisyenGiris = () => {
         }
         setLoading(true);
         try {
-            const response = await axiosClient.post("/auth/academician/login/", {
+            const response = await axiosClient.post("/api/auth/token/", { //?
                 username: formData.username,
-                sifre: formData.sifre
+                password: formData.sifre
             });
             const { token, role } = response.data;
             login(token, role || "Akademisyen");
