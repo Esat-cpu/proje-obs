@@ -12,7 +12,6 @@ class RolePermission(BasePermission):
             request.user.role == self.role
         )
 
-j
 class IsOgrenci(RolePermission):
     role = User.Role.OGRENCI
 
