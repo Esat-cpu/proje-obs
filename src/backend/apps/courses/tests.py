@@ -295,3 +295,31 @@ class AkademisyenDersListeViewTestleri(TemelKurulum):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["ders"]["ders_kodu"], "BM101")
+
+
+class AkademisyenDersListePasifFiltresiTestleri(TemelKurulum):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        super().setUp()
+        self.client = APIClient()
+
+    def test_pasif_ders_listelenmez(self):
+        pasif_ders = Ders.objects.create(
+            ders_kodu="BM200", ad="Pasif Ders", kredi=3, min_sinif=1, bolum=self.bolum,
+        )
+        DonemDersi.objects.create(
+            ders=pasif_ders, akademisyen=self.akademisyen,
+            yil=2024, donem="BAHAR", kontenjan=20, aktiflik_durumu=False,
+        )
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/academician/courses/")
+        self.assertEqual(response.status_code, 200)
+        kodlar = [dd["ders"]["ders_kodu"] for dd in response.data]
+        self.assertNotIn("BM200", kodlar)
+
+    def test_sadece_aktif_dersler_listelenir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/academician/courses/")
+        self.assertEqual(response.status_code, 200)
+        for dd in response.data:
+            self.assertTrue(dd["aktiflik_durumu"])

@@ -438,6 +438,128 @@ class AkademisyenProfilViewTestleri(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
+class OgrenciOkuSerializerToplamKrediTestleri(TemelKurulum):
+    def setUp(self):
+        super().setUp()
+        ogr_user = User.objects.create_user(
+            username="ogr1", password="x", ad="Ali", soyad="Veli", role=User.Role.OGRENCI,
+        )
+        self.ogrenci = Ogrenci.objects.create(user=ogr_user, ogr_no="20240001", bolum=self.bolum, sinif=1)
+        akd_user = User.objects.create_user(
+            username="hoca1", password="x", ad="Ahmet", soyad="Yılmaz", role=User.Role.AKADEMISYEN,
+        )
+        self.akademisyen = Akademisyen.objects.create(
+            user=akd_user, bolum=self.bolum, unvan=Akademisyen.Unvan.DR_OGRETIM_UYESI,
+        )
+
+    def _kayit_olustur(self, ders_kodu, kredi, onay_durumu):
+        from apps.courses.models import Ders, DonemDersi
+        from apps.enrollments.models import DersKaydi
+        ders = Ders.objects.create(ders_kodu=ders_kodu, ad=ders_kodu, kredi=kredi, min_sinif=1, bolum=self.bolum)
+        dd = DonemDersi.objects.create(
+            ders=ders, akademisyen=self.akademisyen,
+            yil=2024, donem="GUZ", kontenjan=30, aktiflik_durumu=True,
+        )
+        return DersKaydi.objects.create(ogrenci=self.ogrenci, donem_dersi=dd, onay_durumu=onay_durumu)
+
+    def test_toplam_kredi_alani_mevcut(self):
+        serializer = OgrenciOkuSerializer(self.ogrenci)
+        self.assertIn("toplam_kredi", serializer.data)
+
+    def test_toplam_kredi_kayit_yokken_sifir(self):
+        serializer = OgrenciOkuSerializer(self.ogrenci)
+        self.assertEqual(serializer.data["toplam_kredi"], 0)
+
+    def test_toplam_kredi_onaylanan_dersler_sayilir(self):
+        from apps.enrollments.models import DersKaydi
+        self._kayit_olustur("BM101", 3, DersKaydi.Durum.ONAYLANDI)
+        self._kayit_olustur("BM102", 4, DersKaydi.Durum.ONAYLANDI)
+        serializer = OgrenciOkuSerializer(self.ogrenci)
+        self.assertEqual(serializer.data["toplam_kredi"], 7)
+
+    def test_toplam_kredi_beklemede_sayilmaz(self):
+        from apps.enrollments.models import DersKaydi
+        self._kayit_olustur("BM103", 3, DersKaydi.Durum.BEKLEMEDE)
+        serializer = OgrenciOkuSerializer(self.ogrenci)
+        self.assertEqual(serializer.data["toplam_kredi"], 0)
+
+    def test_toplam_kredi_reddedilen_sayilmaz(self):
+        from apps.enrollments.models import DersKaydi
+        self._kayit_olustur("BM104", 3, DersKaydi.Durum.REDDEDILDI)
+        serializer = OgrenciOkuSerializer(self.ogrenci)
+        self.assertEqual(serializer.data["toplam_kredi"], 0)
+
+
+class AkademisyenOkuSerializerIstatistikTestleri(TemelKurulum):
+    def setUp(self):
+        super().setUp()
+        akd_user = User.objects.create_user(
+            username="hoca1", password="x", ad="Ahmet", soyad="Yılmaz", role=User.Role.AKADEMISYEN,
+        )
+        self.akademisyen = Akademisyen.objects.create(
+            user=akd_user, bolum=self.bolum, unvan=Akademisyen.Unvan.PROF_DR,
+        )
+
+    def test_ders_sayisi_alani_mevcut(self):
+        serializer = AkademisyenOkuSerializer(self.akademisyen)
+        self.assertIn("ders_sayisi", serializer.data)
+
+    def test_ogrenci_sayisi_alani_mevcut(self):
+        serializer = AkademisyenOkuSerializer(self.akademisyen)
+        self.assertIn("ogrenci_sayisi", serializer.data)
+
+    def test_ders_sayisi_bosta_sifir(self):
+        serializer = AkademisyenOkuSerializer(self.akademisyen)
+        self.assertEqual(serializer.data["ders_sayisi"], 0)
+
+    def test_ders_sayisi_sadece_aktif_sayar(self):
+        from apps.courses.models import Ders, DonemDersi
+        ders1 = Ders.objects.create(ders_kodu="BM101", ad="Algoritma", kredi=3, min_sinif=1, bolum=self.bolum)
+        ders2 = Ders.objects.create(ders_kodu="BM102", ad="Veri Yapıları", kredi=3, min_sinif=1, bolum=self.bolum)
+        DonemDersi.objects.create(
+            ders=ders1, akademisyen=self.akademisyen,
+            yil=2024, donem="GUZ", kontenjan=30, aktiflik_durumu=True,
+        )
+        DonemDersi.objects.create(
+            ders=ders2, akademisyen=self.akademisyen,
+            yil=2024, donem="BAHAR", kontenjan=30, aktiflik_durumu=False,
+        )
+        serializer = AkademisyenOkuSerializer(self.akademisyen)
+        self.assertEqual(serializer.data["ders_sayisi"], 1)
+
+    def test_ogrenci_sayisi_onaylananlar_sayilir(self):
+        from apps.courses.models import Ders, DonemDersi
+        from apps.enrollments.models import DersKaydi
+        ogr_user = User.objects.create_user(
+            username="ogr1", password="x", ad="Ali", soyad="Veli", role=User.Role.OGRENCI,
+        )
+        ogrenci = Ogrenci.objects.create(user=ogr_user, ogr_no="20240001", bolum=self.bolum, sinif=1)
+        ders = Ders.objects.create(ders_kodu="BM101", ad="Algoritma", kredi=3, min_sinif=1, bolum=self.bolum)
+        dd = DonemDersi.objects.create(
+            ders=ders, akademisyen=self.akademisyen,
+            yil=2024, donem="GUZ", kontenjan=30, aktiflik_durumu=True,
+        )
+        DersKaydi.objects.create(ogrenci=ogrenci, donem_dersi=dd, onay_durumu=DersKaydi.Durum.ONAYLANDI)
+        serializer = AkademisyenOkuSerializer(self.akademisyen)
+        self.assertEqual(serializer.data["ogrenci_sayisi"], 1)
+
+    def test_ogrenci_sayisi_beklemede_sayilmaz(self):
+        from apps.courses.models import Ders, DonemDersi
+        from apps.enrollments.models import DersKaydi
+        ogr_user = User.objects.create_user(
+            username="ogr2", password="x", ad="Ayşe", soyad="Kaya", role=User.Role.OGRENCI,
+        )
+        ogrenci = Ogrenci.objects.create(user=ogr_user, ogr_no="20240002", bolum=self.bolum, sinif=1)
+        ders = Ders.objects.create(ders_kodu="BM103", ad="Test", kredi=3, min_sinif=1, bolum=self.bolum)
+        dd = DonemDersi.objects.create(
+            ders=ders, akademisyen=self.akademisyen,
+            yil=2024, donem="GUZ", kontenjan=30, aktiflik_durumu=True,
+        )
+        DersKaydi.objects.create(ogrenci=ogrenci, donem_dersi=dd, onay_durumu=DersKaydi.Durum.BEKLEMEDE)
+        serializer = AkademisyenOkuSerializer(self.akademisyen)
+        self.assertEqual(serializer.data["ogrenci_sayisi"], 0)
+
+
 class OgrenciExcelSerializerTestleri(TestCase):
     def test_gecerli_xlsx_dosyasi(self):
         import openpyxl
