@@ -34,6 +34,12 @@ class OgrenciDersListeView(APIView):
         yil = request.query_params.get("yil")
         donem = request.query_params.get("donem")
 
+        if not yil and not donem:
+            aktif_donem = EnrollmentService.aktif_kayit_donemi_getir()
+            if aktif_donem:
+                yil = aktif_donem.yil
+                donem = aktif_donem.donem
+
         kayitlar = EnrollmentService.ogrenci_derslerini_listele(
             ogrenci=ogrenci,
             yil=yil,
@@ -56,8 +62,19 @@ class OgrenciTranskriptView(APIView):
     permission_classes = [IsOgrenci]
 
     def get(self, request):
+        from collections import defaultdict
         ogrenci = request.user.ogrenci
         kayitlar = EnrollmentService.transkript_getir(ogrenci)
+
+        gruplar = defaultdict(list)
+        for kayit in kayitlar:
+            anahtar = (kayit.donem_dersi.yil, kayit.donem_dersi.donem)
+            gruplar[anahtar].append(kayit)
+
+        donem_listesi = [
+            {"yil": yil, "donem": donem, "dersler": ks}
+            for (yil, donem), ks in sorted(gruplar.items())
+        ]
 
         data = {
             "ogrenci_no": ogrenci.ogr_no,
@@ -65,7 +82,7 @@ class OgrenciTranskriptView(APIView):
             "bolum": ogrenci.bolum.ad,
             "sinif": ogrenci.sinif,
             "gpa": ogrenci.gpa,
-            "kayitlar": TranskriptKaydiSerializer(kayitlar, many=True).data,
+            "kayitlar": donem_listesi,
         }
         serializer = TranskriptSerializer(data)
         return Response(serializer.data)

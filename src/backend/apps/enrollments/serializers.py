@@ -54,10 +54,16 @@ class TranskriptKaydiSerializer(serializers.ModelSerializer):
         ]
 
 
+class DonemOzetiSerializer(serializers.Serializer):
+    yil = serializers.IntegerField()
+    donem = serializers.CharField()
+    dersler = TranskriptKaydiSerializer(many=True)
+
+
 class TranskriptSerializer(serializers.Serializer):
     ogrenci_no = serializers.CharField()
     ogrenci_ad = serializers.CharField()
     bolum = serializers.CharField()
     sinif = serializers.IntegerField()
     gpa = serializers.DecimalField(max_digits=3, decimal_places=2)
-    kayitlar = TranskriptKaydiSerializer(many=True)
+    kayitlar = DonemOzetiSerializer(many=True)

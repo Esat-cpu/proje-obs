@@ -34,6 +34,9 @@ class AkademisyenDersListeView(APIView):
 
     def get(self, request):
         akademisyen = request.user.akademisyen
-        donem_dersleri = CoursesService.akademisyen_derslerini_getir(akademisyen)
+        donem_dersleri = CoursesService.donem_derslerini_listele(
+            akademisyen=akademisyen,
+            sadece_aktif=True,
+        )
         serializer = DonemDersiOkuSerializer(donem_dersleri, many=True)
         return Response(serializer.data)
