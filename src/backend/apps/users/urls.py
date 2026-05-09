@@ -1,28 +1,13 @@
 from django.urls import path
 
-from apps.users.views import (
-    AkademisyenDetayView,
-    AkademisyenListeView,
-    BenimProfilView,
-    OgrenciDetayView,
-    OgrenciExcelYukleView,
-    OgrenciGpaGuncelleView,
-    OgrenciListeView,
-)
+from apps.users.views import AkademisyenProfilView, OgrenciProfilView
 
 app_name = "users"
 
 urlpatterns = [
-    # Profil
-    path("me/", BenimProfilView.as_view(), name="benim-profilim"),
+    # GET /api/student/profile/
+    path("student/profile/", OgrenciProfilView.as_view(), name="ogrenci-profil"),
 
-    # Öğrenci
-    path("ogrenciler/", OgrenciListeView.as_view(), name="ogrenci-liste"),
-    path("ogrenciler/excel-yukle/", OgrenciExcelYukleView.as_view(), name="ogrenci-excel-yukle"),
-    path("ogrenciler/<int:pk>/", OgrenciDetayView.as_view(), name="ogrenci-detay"),
-    path("ogrenciler/<int:pk>/gpa-guncelle/", OgrenciGpaGuncelleView.as_view(), name="ogrenci-gpa-guncelle"),
-
-    # Akademisyen
-    path("akademisyenler/", AkademisyenListeView.as_view(), name="akademisyen-liste"),
-    path("akademisyenler/<int:pk>/", AkademisyenDetayView.as_view(), name="akademisyen-detay"),
+    # GET /api/academician/profile/
+    path("academician/profile/", AkademisyenProfilView.as_view(), name="akademisyen-profil"),
 ]

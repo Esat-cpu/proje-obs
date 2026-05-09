@@ -25,35 +25,120 @@
     "profile": "Profile"
   },
   "studentDashboard": {
-    "panelTitle": "Student Panel",
-    "welcome": "Welcome, {{name}}",
+    "panelTitle": "Student Dashboard",
     "tabs": {
       "overview": "Overview",
       "myCourses": "My Courses",
-      "courseRegistration": "Course Registration",
+      "courseRegistration": "Registration",
       "transcript": "Transcript"
     },
-    "stats": {
+    "overview": {
       "activeCourses": "Active Courses",
-      "gpa": "GPA",
+      "gpa": "CGPA",
       "credits": "Credits",
-      "semester": "Semester"
-    },
-    "active": {
-      "title": "Active Courses and Grades",
-      "credit": "Credit",
+      "term": "Term",
+      "activeCoursesNotes": "Active Courses & Grades",
+      "currentTerm": "2025-2026 Spring Term",
       "midterm": "Midterm",
-      "final": "Final"
-    },
-    "past": {
-      "title": "Past Semester Grades",
+      "final": "Final",
+      "pastGrades": "Past Term Grades",
+      "pastTerm": "2024-2025 Fall Term",
       "course": "Course",
-      "grade": "Letter Grade",
-      "semesterGpa": "Semester GPA"
+      "grade": "Grade",
+      "termAvg": "Term Average"
+    },
+    "courses": {
+      "title": "My Courses",
+      "code": "Course Code",
+      "name": "Course Name",
+      "instructor": "Instructor",
+      "term": "Term",
+      "classLevel": "Class",
+      "credit": "Credit"
+    },
+    "registration": {
+      "title": "Course Registration",
+      "subtitle": "2025-2026 Spring - Registration Period",
+      "deadline": "Deadline: March 25, 2026",
+      "maxCredit": "Max Credit: 30",
+      "available": "Available Courses",
+      "search": "Search course code, name or instructor...",
+      "left": "Left",
+      "add": "Add",
+      "selected": "Selected Courses",
+      "totalCredit": "Total Credit",
+      "empty": "No courses selected yet",
+      "quota": "Quota"
+    },
+    "transcript": {
+      "title": "Academic Transcript",
+      "download": "Download PDF",
+      "gpa": "Cumulative GPA",
+      "totalCredit": "Total Credit",
+      "term": "Term",
+      "termName": "2023-2024 Fall Term",
+      "listed": "courses listed",
+      "termAvg": "Term Average",
+      "code": "Course Code",
+      "name": "Course Name",
+      "credit": "Credit",
+      "letter": "Grade",
+      "value": "Points"
+    }
+  },
+  "academician": {
+    "panelTitle": "Academician Panel",
+    "nav": {
+      "overview": "Overview",
+      "courses": "Grade Entry",
+      "approvals": "Registration Approvals"
+    },
+    "dashboard": {
+      "activeCourses": "Active Courses",
+      "totalStudents": "Total Students",
+      "pendingGrades": "Pending Grades",
+      "pendingApprovals": "Pending Approvals",
+      "myCourses": "My Courses",
+      "currentSemester": "2025-2026 Spring Semester",
+      "notEntry": "Grade Entry",
+      "notEntered": "grades not entered",
+      "goToGrades": "Go to Grade Entry",
+      "reviewRequests": "Review Requests"
+    },
+    "courses": {
+      "title": "2025-2026 Fall Semester Active Courses",
+      "code": "Course Code",
+      "name": "Course Name",
+      "class": "Class",
+      "studentCount": "Student Count",
+      "actionBtn": "Student List / Enter Grade",
+      "backBtn": "Back to Courses",
+      "saveBtn": "Save Grades"
+    },
+    "approvals": {
+      "bannerTitle": "Course Registration Approval System",
+      "bannerDesc": "Review and approve student course registration requests",
+      "total": "Total Requests",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "searchPlaceholder": "Search student or course...",
+      "approveBtn": "Approve",
+      "rejectBtn": "Reject",
+      "courseInfo": "Course Info",
+      "currentCourses": "Current Courses",
+      "totalCredits": "Total Credits",
+      "gpa": "GPA"
+    },
+    "table": {
+      "average": "Average",
+      "letterGrade": "Grade",
+      "studentId": "Student No",
+      "fullName": "Name Surname"
     }
   },
   "dashboard": {
-    "welcomeMessage": "Welcome to Student Information System, {{name}}"
+    "welcomeMessage": "Welcome, {{name}}"
   },
   "nav": {
     "home": "Home",
@@ -83,5 +168,39 @@
   "error": {
     "required": "This field is required.",
     "login": "Login failed."
+  },
+"data": {
+    "courses": {
+      "CS101": "Introduction to Programming",
+      "MATH101": "Mathematics I",
+      "PHYS101": "Physics I",
+      "ENG101": "English I",
+      "CS201": "Object Oriented Programming",
+      "CS202": "Discrete Mathematics",
+      "CS203": "Operating Systems",
+      "CS204": "Computer Networks",
+      "CS301": "Data Structures",
+      "CS302": "Algorithm Analysis",
+      "CS303": "Database Systems",
+      "CS304": "Web Programming",
+      "CS401": "Advanced Algorithms"
+    },
+    "titles": {
+      "prof": "Prof. Dr.",
+      "doc": "Assoc. Prof. Dr.",
+      "asst": "Asst. Prof. Dr."
+    },
+    "terms": {
+      "2023_fall": "Fall 2023-2024",
+      "2024_fall": "Fall 2024-2025",
+      "2025_spring": "Spring 2025-2026",
+      "2026_fall": "Fall 2026"
+    },
+    "classes": {
+      "grade_1": "1st Grade",
+      "grade_2": "2nd Grade",
+      "grade_3": "3rd Grade",
+      "grade_4": "4th Grade"
+    }
   }
 }

@@ -25,35 +25,93 @@
     "profile": "Profil"
   },
   "studentDashboard": {
-    "panelTitle": "Öğrenci Paneli",
-    "welcome": "Hoş Geldin, {{name}}",
+  "panelTitle": "Öğrenci Paneli",
+  "tabs": {
+    "overview": "Genel Bakış",
+    "myCourses": "Derslerim",
+    "courseRegistration": "Ders Kayıt",
+    "transcript": "Transkript"
+  },
+  "overview": {
+    "activeCourses": "Aktif Ders",
+    "gpa": "GNO",
+    "credits": "Kredi",
+    "term": "Dönem",
+    "activeCoursesNotes": "Aktif Dersler ve Notlar",
+    "currentTerm": "2025-2026 Bahar Dönemi",
+    "midterm": "Vize",
+    "final": "Final",
+    "currentGradesTitle": "Güncel Dönem Notları",
+    "pastGrades": "Geçmiş Dönem Notları",
+    "pastTerm": "2024-2025 Güz Dönemi",
+    "course": "Ders",
+    "grade": "Not",
+    "termAvg": "Dönem Ortalaması"
+  },
+  "courses": {
+    "title": "Derslerim",
+    "code": "Ders Kodu",
+    "name": "Ders Adı",
+    "instructor": "Öğretim Görevlisi",
+    "term": "Dönem",
+    "classLevel": "Sınıf",
+    "credit": "Kredi"
+  },
+  "registration": {
+    "title": "Ders Kayıt",
+    "subtitle": "2025-2026 Bahar Dönemi - Ders Kayıt Dönemi",
+    "deadline": "Son Tarih: 25 Mart 2026",
+    "maxCredit": "Maksimum Kredi: 30",
+    "available": "Açılan Dersler",
+    "search": "Ders kodu, isim veya öğretim görevlisi ara...",
+    "left": "Kaldı",
+    "add": "Ekle",
+    "selected": "Seçilen Dersler",
+    "totalCredit": "Toplam Kredi",
+    "empty": "Henüz ders seçilmedi",
+    "quota": "Kontenjan"
+  },
+  "transcript": {
+    "title": "Akademik Transkript",
+    "download": "PDF İndir",
+    "gpa": "Genel Not Ortalaması",
+    "totalCredit": "Toplam Kredi",
+    "term": "Dönem",
+    "termName": "2023-2024 Güz Dönemi",
+    "listed": "ders listeleniyor",
+    "termAvg": "Dönem Ortalaması",
+    "code": "Ders Kodu",
+    "name": "Ders Adı",
+    "credit": "Kredi",
+    "letter": "Harf Notu",
+    "value": "Not Değeri"
+  }
+},
+"academicianDashboard": {
+    "panelTitle": "Akademisyen Paneli",
     "tabs": {
       "overview": "Genel Bakış",
-      "myCourses": "Derslerim",
-      "courseRegistration": "Ders Kaydı",
-      "transcript": "Transkript"
+      "myCourses": "Verdiğim Dersler",
+      "gradeEntry": "Not Girişi"
     },
-    "stats": {
-      "activeCourses": "Aktif Dersler",
-      "gpa": "GANO",
-      "credits": "Kredi",
-      "semester": "Dönem"
+    "overview": {
+      "activeCourses": "Aktif Ders Sayısı",
+      "totalStudents": "Toplam Öğrenci",
+      "pendingExams": "Okunacak Sınav",
+      "messages": "Sistem Mesajı",
+      "coursesListTitle": "Dönem Dersleri",
+      "coursesListSubtitle": "2025-2026 Bahar Dönemi"
     },
-    "active": {
-      "title": "Aktif Dersler ve Notlar",
-      "credit": "Kredi",
-      "midterm": "Vize",
-      "final": "Final"
-    },
-    "past": {
-      "title": "Geçmiş Dönem Notları",
-      "course": "Ders",
-      "grade": "Harf Notu",
-      "semesterGpa": "Dönem Ort."
+    "table": {
+      "code": "Ders Kodu",
+      "name": "Ders Adı",
+      "studentCount": "Öğrenci Sayısı",
+      "term": "Dönem",
+      "action": "İşlem"
     }
   },
   "dashboard": {
-    "welcomeMessage": "Öğrenci Bilgi Sistemine Hoş Geldiniz, {{name}}"
+    "welcomeMessage": "Hoş Geldiniz, {{name}}"
   },
   "nav": {
     "home": "Anasayfa",
@@ -83,5 +141,121 @@
   "error": {
     "required": "Bu alan zorunludur.",
     "login": "Giriş başarısız."
+  },
+  "academician": {
+    "nav": {
+      "overview": "Genel Bakış",
+      "courses": "Not Girişi",
+      "approvals": "Kayıt Onayları"
+    },
+    "dashboard": {
+      "activeCourses": "Aktif Ders",
+      "totalStudents": "Toplam Öğrenci",
+      "pendingGrades": "Giriş Bekleyen Not",
+      "pendingApprovals": "Kayıt Onayı Bekleyen",
+      "myCourses": "Verdiğim Dersler",
+      "currentSemester": "2025-2026 Bahar Dönemi",
+      "notEntry": "Not Girişi",
+      "notEntered": "not girilmedi",
+      "goToGrades": "Not Giriş Ekranına Git",
+      "reviewRequests": "Talepleri İncele"
+    },
+    "courses": {
+      "title": "2025-2026 Güz Dönemi Aktif Derslerim",
+      "code": "Ders Kodu",
+      "name": "Ders Adı",
+      "class": "Sınıf",
+      "studentCount": "Öğrenci Sayısı",
+      "actionBtn": "Öğrenci Listesi / Not Gir",
+      "backBtn": "Derslere Dön",
+      "saveBtn": "Notları Kaydet"
+    },
+    "approvals": {
+      "bannerTitle": "Ders Kaydı Onay Sistemi",
+      "bannerDesc": "Öğrenci ders kayıt taleplerini inceleyin ve onaylayın",
+      "total": "Toplam Talep",
+      "pending": "Bekleyen",
+      "approved": "Onaylanan",
+      "rejected": "Reddedilen",
+      "searchPlaceholder": "Öğrenci veya ders ara...",
+      "approveBtn": "Onayla",
+      "rejectBtn": "Reddet",
+      "courseInfo": "Ders Bilgisi",
+      "currentCourses": "Mevcut Ders Sayısı",
+      "totalCredits": "Toplam Kredi",
+      "gpa": "GNO"
+    },
+    "table": {
+      "average": "Ortalama",
+      "letterGrade": "Harf Notu",
+      "studentId": "Öğrenci No",
+      "fullName": "Ad Soyad"
+    }
+  },
+  "dashboard": {
+    "welcomeMessage": "Hoş Geldiniz, {{name}}"
+  },
+  "nav": {
+    "home": "Anasayfa",
+    "languageSelect": "Dil Seçimi",
+    "backToHome": "Ana Sayfaya Dön"
+  },
+  "app": {
+    "title": "OBS - Öğrenci Bilgi Sistemi",
+    "universityLogo": "Üniversite Logosu"
+  },
+  "portal": {
+    "student": "Öğrenci",
+    "studentDesc": "Ders seçimi, notlar ve Transkript",
+    "academician": "Akademisyen",
+    "academicianDesc": "Ders yönetimi ve not girişi",
+    "admin": "Yönetici",
+    "adminDesc": "Sistem ve kullanıcı yönetimi"
+  },
+  "form": {
+    "ogrNo": "Öğrenci Numarası",
+    "password": "Şifre",
+    "username": "Kullanıcı Adı",
+    "login": "Giriş Yap",
+    "loginBtn": "Giriş",
+    "loading": "Giriş yapılıyor..."
+  },
+  "error": {
+    "required": "Bu alan zorunludur.",
+    "login": "Giriş başarısız."
+  },
+"data": {
+    "courses": {
+      "CS101": "Programlamaya Giriş",
+      "MATH101": "Matematik I",
+      "PHYS101": "Fizik I",
+      "ENG101": "İngilizce I",
+      "CS201": "Nesne Yönelimli Programlama",
+      "CS202": "Ayrık Matematik",
+      "CS203": "İşletim Sistemleri",
+      "CS204": "Bilgisayar Ağları",
+      "CS301": "Veri Yapıları",
+      "CS302": "Algoritma Analizi",
+      "CS303": "Veritabanı Sistemleri",
+      "CS304": "Web Programlama",
+      "CS401": "İleri Algoritmalar"
+    },
+    "titles": {
+      "prof": "Prof. Dr.",
+      "doc": "Doç. Dr.",
+      "asst": "Dr. Öğr. Üyesi"
+    },
+    "terms": {
+      "2023_fall": "2023-2024 Güz Dönemi",
+      "2024_fall": "2024-2025 Güz Dönemi",
+      "2025_spring": "2025-2026 Bahar Dönemi",
+      "2026_fall": "2026 Güz"
+    },
+    "classes": {
+      "grade_1": "1. Sınıf",
+      "grade_2": "2. Sınıf",
+      "grade_3": "3. Sınıf",
+      "grade_4": "4. Sınıf"
+    }
   }
 }
