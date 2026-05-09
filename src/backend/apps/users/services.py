@@ -115,6 +115,7 @@ class UsersService:
         return ogrenci.gpa
 
     @staticmethod
+    @transaction.atomic
     def ogrenci_kaydi_excel(dosya):
         try:
             import openpyxl
@@ -136,6 +137,7 @@ class UsersService:
         basarili = 0
         hatali = 0
         hatalar = []
+        sifreler = {}  # Şifreleri geçici tut
 
         for satir_no, satir in enumerate(sayfa.iter_rows(min_row=2), start=2):
             if not any(hucre.value for hucre in satir):
@@ -154,13 +156,23 @@ class UsersService:
                     sifre=sifre
                 )
 
-                sayfa.cell(satir_no, sifre_kolon).value = sifre
+                sifreler[satir_no] = sifre  # Şifreyi kaydet
                 basarili += 1
             except Exception as hata:
                 hatali += 1
                 hatalar.append({"satir": satir_no, "hata": str(hata)})
 
-        # Bellekte tut
+        # HATA VARSA ROLLBACK
+        if hatali > 0:
+            raise ValidationError(
+                f"{hatali} satırda hata var, hiçbir öğrenci kaydedilmedi.",
+                params={'hatalar': hatalar}  # Hataları parametre olarak gönder
+            )
+
+        # HATA YOKSA şifreleri Excel'e yaz
+        for satir_no, sifre in sifreler.items():
+            sayfa.cell(satir_no, sifre_kolon).value = sifre
+
         from io import BytesIO
         output = BytesIO()
         calisma_kitabi.save(output)

@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div id="content-main">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-row">
+            <div>
+                <label for="excel_dosya">Excel Dosyası:</label>
+                <input type="file" name="excel_dosya" id="excel_dosya" accept=".xlsx" required>
+                <p class="help">Excel formatı: ad, soyad, bolum_kodu</p>
+            </div>
+        </div>
+
+        <div class="submit-row">
+            <input type="submit" value="Yükle ve Kaydet" class="default">
+            <a href="{% url 'admin:users_ogrenci_changelist' %}" class="button cancel-link">İptal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
