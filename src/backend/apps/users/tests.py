@@ -260,6 +260,30 @@ class OgrenciKaydiExcelTestleri(TemelKurulum):
         self.assertEqual(sonuc["basarili"], 0)
         self.assertEqual(sonuc["hatali"], 0)
 
+    def test_sifrelerin_excele_yazildigi(self):
+        import openpyxl
+        dosya = self._excel_olustur([["Ali", "Veli", "BM"], ["Ayşe", "Kaya", "BM"]])
+        sonuc = UsersService.ogrenci_kaydi_excel(dosya)
+
+        # Dönen dosyayı kontrol et
+        self.assertIn("dosya", sonuc)
+
+        # Excel'i oku
+        wb = openpyxl.load_workbook(sonuc["dosya"])
+        ws = wb.active
+
+        # Şifre kolonu var mı?
+        self.assertEqual(ws.cell(1, 4).value, "Şifre")
+
+        # Şifreler yazılmış mı?
+        sifre1 = ws.cell(2, 4).value
+        sifre2 = ws.cell(3, 4).value
+
+        self.assertIsNotNone(sifre1)
+        self.assertIsNotNone(sifre2)
+        self.assertEqual(len(sifre1), 8)  # 8 karakterli
+        self.assertNotEqual(sifre1, sifre2)  # Farklı şifreler
+
 
 # -----------------------------------------------------------------------
 # SERİALİZER TESTLERİ
