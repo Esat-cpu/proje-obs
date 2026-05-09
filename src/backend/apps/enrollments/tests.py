@@ -472,6 +472,7 @@ class NotGuncellemeSerializerTestleri(TestCase):
 
 
 class TranskriptKaydiSerializerTestleri(TemelKurulum):
+
     def setUp(self):
         super().setUp()
         self.kayit = DersKaydi.objects.create(
@@ -489,3 +490,313 @@ class TranskriptKaydiSerializerTestleri(TemelKurulum):
         serializer = TranskriptKaydiSerializer(self.kayit)
         self.assertEqual(serializer.data["ders_kodu"], "BM101")
         self.assertEqual(serializer.data["kredi"], 3)
+
+
+# -----------------------------------------------------------------------
+# VIEW TESTLERİ
+# -----------------------------------------------------------------------
+
+class ViewTemelKurulum(TemelKurulum):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        super().setUp()
+        self.client = APIClient()
+
+
+class OgrenciDersListeViewTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+
+    def test_ogrenci_derslerini_gorebilir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/courses/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_akademisyen_erisemez(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/student/courses/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/student/courses/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_yil_filtresi_calisir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/courses/?yil=2024")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_yanlis_yil_filtresi_bos_doner(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/courses/?yil=1999")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+
+class OgrenciTranskriptViewTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            vize_notu=80, final_notu=90,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+
+    def test_ogrenci_transkriptini_gorebilir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/transcript/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("ogrenci_no", response.data)
+        self.assertIn("gpa", response.data)
+        self.assertIn("kayitlar", response.data)
+
+    def test_akademisyen_erisemez(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/student/transcript/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/student/transcript/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_sadece_onaylananlar_transkripte_girer(self):
+        ders2 = Ders.objects.create(ders_kodu="BM102", ad="Veri Yapıları", kredi=3, min_sinif=1, bolum=self.bolum)
+        dd2 = DonemDersi.objects.create(
+            ders=ders2, akademisyen=self.akademisyen,
+            yil=2024, donem="BAHAR", kontenjan=30, aktiflik_durumu=True,
+        )
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=dd2,
+            onay_durumu=DersKaydi.Durum.BEKLEMEDE,
+        )
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/transcript/")
+        self.assertEqual(len(response.data["kayitlar"]), 1)
+
+
+class OgrenciDersKayitViewTestleri(ViewTemelKurulum):
+    def test_gecerli_kayit_olusturulur(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.post(
+            "/api/student/enrollments/",
+            {"donem_dersi_ids": [self.donem_dersi.pk]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(response.data["basarili"]), 1)
+
+    def test_gecersiz_liste_formati_hata(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.post(
+            "/api/student/enrollments/",
+            {"donem_dersi_ids": "gecersiz"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_bos_liste_hata(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.post(
+            "/api/student/enrollments/",
+            {"donem_dersi_ids": []},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_akademisyen_erisemez(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.post(
+            "/api/student/enrollments/",
+            {"donem_dersi_ids": [self.donem_dersi.pk]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.post("/api/student/enrollments/", {}, format="json")
+        self.assertEqual(response.status_code, 401)
+
+    def test_kapali_donemde_hata_doner(self):
+        self.aktif_donem.delete()
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.post(
+            "/api/student/enrollments/",
+            {"donem_dersi_ids": [self.donem_dersi.pk]},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+
+class AkademisyenKayitIstekleriViewTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            onay_durumu=DersKaydi.Durum.BEKLEMEDE,
+        )
+
+    def test_akademisyen_bekleyenleri_gorebilir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/academician/enrollment-requests/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_ogrenci_erisemez(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/academician/enrollment-requests/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/academician/enrollment-requests/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_baska_akademisyenin_kayitlari_gorunmez(self):
+        self.client.force_authenticate(user=self.akademisyen2.user)
+        response = self.client.get("/api/academician/enrollment-requests/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+
+class AkademisyenKayitIstekDetayViewTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        self.kayit = DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            onay_durumu=DersKaydi.Durum.BEKLEMEDE,
+        )
+
+    def test_kayit_onaylanir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.patch(
+            f"/api/academician/enrollment-requests/{self.kayit.pk}/",
+            {"durum": "onaylandi"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.kayit.refresh_from_db()
+        self.assertEqual(self.kayit.onay_durumu, DersKaydi.Durum.ONAYLANDI)
+
+    def test_kayit_reddedilir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.patch(
+            f"/api/academician/enrollment-requests/{self.kayit.pk}/",
+            {"durum": "reddedildi"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.kayit.refresh_from_db()
+        self.assertEqual(self.kayit.onay_durumu, DersKaydi.Durum.REDDEDILDI)
+
+    def test_gecersiz_durum_hata(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.patch(
+            f"/api/academician/enrollment-requests/{self.kayit.pk}/",
+            {"durum": "gecersiz"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_yetkisiz_akademisyen_403(self):
+        self.client.force_authenticate(user=self.akademisyen2.user)
+        response = self.client.patch(
+            f"/api/academician/enrollment-requests/{self.kayit.pk}/",
+            {"durum": "onaylandi"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_ogrenci_erisemez(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.patch(
+            f"/api/academician/enrollment-requests/{self.kayit.pk}/",
+            {"durum": "onaylandi"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+
+class AkademisyenDersOgrencileriViewTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+
+    def test_akademisyen_ogrenci_listesini_gorebilir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get(f"/api/academician/courses/{self.donem_dersi.pk}/students/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_baska_akademisyen_erisemez(self):
+        self.client.force_authenticate(user=self.akademisyen2.user)
+        response = self.client.get(f"/api/academician/courses/{self.donem_dersi.pk}/students/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_ogrenci_erisemez(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get(f"/api/academician/courses/{self.donem_dersi.pk}/students/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get(f"/api/academician/courses/{self.donem_dersi.pk}/students/")
+        self.assertEqual(response.status_code, 401)
+
+
+class AkademisyenNotGirViewTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        self.kayit = DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+
+    def test_not_girilir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.patch(
+            f"/api/academician/grades/{self.kayit.pk}/",
+            {"vize_notu": 70, "final_notu": 85},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.kayit.refresh_from_db()
+        self.assertEqual(self.kayit.vize_notu, 70)
+        self.assertEqual(self.kayit.final_notu, 85)
+
+    def test_gecersiz_not_araligi_hata(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.patch(
+            f"/api/academician/grades/{self.kayit.pk}/",
+            {"vize_notu": 150, "final_notu": 85},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_yetkisiz_akademisyen_403(self):
+        self.client.force_authenticate(user=self.akademisyen2.user)
+        response = self.client.patch(
+            f"/api/academician/grades/{self.kayit.pk}/",
+            {"vize_notu": 70, "final_notu": 85},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_ogrenci_erisemez(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.patch(
+            f"/api/academician/grades/{self.kayit.pk}/",
+            {"vize_notu": 70, "final_notu": 85},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.patch(f"/api/academician/grades/{self.kayit.pk}/", {}, format="json")
+        self.assertEqual(response.status_code, 401)

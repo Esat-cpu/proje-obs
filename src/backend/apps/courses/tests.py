@@ -214,3 +214,84 @@ class DonemDersiOkuSerializerTestleri(TemelKurulum):
     def test_aktiflik_durumu_alani(self):
         serializer = DonemDersiOkuSerializer(self.donem_dersi)
         self.assertIn("aktiflik_durumu", serializer.data)
+
+
+# -----------------------------------------------------------------------
+# VIEW TESTLERİ
+# -----------------------------------------------------------------------
+
+class MevcutDerslerViewTestleri(TemelKurulum):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        from apps.users.models import Ogrenci
+        super().setUp()
+        self.client = APIClient()
+        ogr_user = User.objects.create_user(
+            username="ogr1", password="x", ad="Ali", soyad="Veli", role=User.Role.OGRENCI,
+        )
+        self.ogrenci = Ogrenci.objects.create(
+            user=ogr_user, ogr_no="20240001", bolum=self.bolum, sinif=1,
+        )
+
+    def test_ogrenci_erisebilir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/courses/available/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_akademisyen_erisemez(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/courses/available/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/courses/available/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_sadece_aktif_dersler_geliyor(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/courses/available/")
+        self.assertEqual(response.status_code, 200)
+        for dd in response.data:
+            self.assertTrue(dd["aktiflik_durumu"])
+
+    def test_bolumdisi_ders_gelmiyor(self):
+        from apps.departments.models import Bolum
+        baska_bolum = Bolum.objects.create(ad="Elektrik", bolum_kodu="EE")
+        Ders.objects.create(ders_kodu="EE101", ad="Devreler", kredi=3, min_sinif=1, bolum=baska_bolum)
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/courses/available/")
+        kodlar = [dd["ders"]["ders_kodu"] for dd in response.data]
+        self.assertNotIn("EE101", kodlar)
+
+
+class AkademisyenDersListeViewTestleri(TemelKurulum):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        from apps.users.models import Ogrenci
+        super().setUp()
+        self.client = APIClient()
+        ogr_user = User.objects.create_user(
+            username="ogr1", password="x", ad="Ali", soyad="Veli", role=User.Role.OGRENCI,
+        )
+        self.ogrenci_user = ogr_user
+
+    def test_akademisyen_erisebilir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/academician/courses/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_ogrenci_erisemez(self):
+        self.client.force_authenticate(user=self.ogrenci_user)
+        response = self.client.get("/api/academician/courses/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/academician/courses/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_akademisyenin_dersleri_geliyor(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/academician/courses/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["ders"]["ders_kodu"], "BM101")

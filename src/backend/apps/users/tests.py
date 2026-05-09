@@ -333,6 +333,111 @@ class AkademisyenOkuSerializerTestleri(TemelKurulum):
         self.assertEqual(serializer.data["unvan_goster"], "Prof. Dr.")
 
 
+class MeViewTestleri(TestCase):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        self.client = APIClient()
+        self.bolum = Bolum.objects.create(ad="Bilgisayar Mühendisliği", bolum_kodu="BM")
+        ogr_user = User.objects.create_user(
+            username="ogr1", password="x", ad="Ali", soyad="Veli", role=User.Role.OGRENCI,
+        )
+        self.ogrenci = Ogrenci.objects.create(
+            user=ogr_user, ogr_no="20240001", bolum=self.bolum, sinif=1,
+        )
+        akd_user = User.objects.create_user(
+            username="hoca1", password="x", ad="Ahmet", soyad="Yılmaz", role=User.Role.AKADEMISYEN,
+        )
+        self.akademisyen = Akademisyen.objects.create(
+            user=akd_user, bolum=self.bolum, unvan=Akademisyen.Unvan.DR_OGRETIM_UYESI,
+        )
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/me/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_ogrenci_kendi_profilini_getirir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/me/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["role"], User.Role.OGRENCI)
+        self.assertIn("profil", response.data)
+
+    def test_akademisyen_kendi_profilini_getirir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/me/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["role"], User.Role.AKADEMISYEN)
+        self.assertIn("profil", response.data)
+
+
+class OgrenciProfilViewTestleri(TestCase):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        self.client = APIClient()
+        self.bolum = Bolum.objects.create(ad="Bilgisayar Mühendisliği", bolum_kodu="BM")
+        ogr_user = User.objects.create_user(
+            username="ogr1", password="x", ad="Ali", soyad="Veli", role=User.Role.OGRENCI,
+        )
+        self.ogrenci = Ogrenci.objects.create(
+            user=ogr_user, ogr_no="20240001", bolum=self.bolum, sinif=1,
+        )
+        akd_user = User.objects.create_user(
+            username="hoca1", password="x", ad="Ahmet", soyad="Yılmaz", role=User.Role.AKADEMISYEN,
+        )
+        self.akademisyen = Akademisyen.objects.create(
+            user=akd_user, bolum=self.bolum, unvan=Akademisyen.Unvan.DR_OGRETIM_UYESI,
+        )
+
+    def test_ogrenci_profiline_erisebilir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/profile/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["ogr_no"], "20240001")
+
+    def test_akademisyen_erisemez(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/student/profile/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/student/profile/")
+        self.assertEqual(response.status_code, 401)
+
+
+class AkademisyenProfilViewTestleri(TestCase):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        self.client = APIClient()
+        self.bolum = Bolum.objects.create(ad="Bilgisayar Mühendisliği", bolum_kodu="BM")
+        ogr_user = User.objects.create_user(
+            username="ogr1", password="x", ad="Ali", soyad="Veli", role=User.Role.OGRENCI,
+        )
+        self.ogrenci = Ogrenci.objects.create(
+            user=ogr_user, ogr_no="20240001", bolum=self.bolum, sinif=1,
+        )
+        akd_user = User.objects.create_user(
+            username="hoca1", password="x", ad="Ahmet", soyad="Yılmaz", role=User.Role.AKADEMISYEN,
+        )
+        self.akademisyen = Akademisyen.objects.create(
+            user=akd_user, bolum=self.bolum, unvan=Akademisyen.Unvan.DR_OGRETIM_UYESI,
+        )
+
+    def test_akademisyen_profiline_erisebilir(self):
+        self.client.force_authenticate(user=self.akademisyen.user)
+        response = self.client.get("/api/academician/profile/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("unvan", response.data)
+
+    def test_ogrenci_erisemez(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/academician/profile/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/academician/profile/")
+        self.assertEqual(response.status_code, 401)
+
+
 class OgrenciExcelSerializerTestleri(TestCase):
     def test_gecerli_xlsx_dosyasi(self):
         import openpyxl
