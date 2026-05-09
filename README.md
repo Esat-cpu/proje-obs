@@ -10,6 +10,7 @@ geliştirilen web tabanlı bir Öğrenci Bilgi Sistemi (OBS) prototipidir.
 
 - [Proje Özeti](docs/proje-ozeti.pdf)
 - [Analiz Dokümanı](docs/srs.pdf)
+- [Tasarım Dokümanı](docs/tasarim-dokumani.pdf)
 
 
 ## Kurulum
