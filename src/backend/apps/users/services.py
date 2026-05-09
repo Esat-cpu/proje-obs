@@ -48,12 +48,19 @@ class UsersService:
         return f"{temel}{sayac}"
 
     @staticmethod
+    def sifre_uret(uzunluk=8):
+        import secrets
+        import string
+        karakterler = string.ascii_letters + string.digits
+        return ''.join(secrets.choice(karakterler) for _ in range(uzunluk))
+
+    @staticmethod
     @transaction.atomic
     def ogrenci_olustur(ad, soyad, bolum_kodu, sinif=1, sifre=None):
         bolum = get_object_or_404(Bolum, bolum_kodu=bolum_kodu)
         ogr_no = UsersService.ogr_no_uret()
         kullanici_adi = UsersService.kullanici_adi_uret(ad, soyad)
-        sifre = sifre or ogr_no
+        sifre = sifre or UsersService.sifre_uret()
 
         user = User(
             username=kullanici_adi,
@@ -120,25 +127,48 @@ class UsersService:
             raise ValidationError("Excel dosyası okunamadı.")
 
         sayfa = calisma_kitabi.active
+
+        # Şifre kolonu ekle
+        if sayfa.cell(1, sayfa.max_column).value != 'Şifre':
+            sayfa.cell(1, sayfa.max_column + 1).value = 'Şifre'
+
+        sifre_kolon = sayfa.max_column
         basarili = 0
         hatali = 0
         hatalar = []
 
-        for satir_no, satir in enumerate(sayfa.iter_rows(min_row=2, values_only=True), start=2):
-            if not any(satir):
+        for satir_no, satir in enumerate(sayfa.iter_rows(min_row=2), start=2):
+            if not any(hucre.value for hucre in satir):
                 continue
             try:
-                ad, soyad, bolum_kodu = satir[0], satir[1], satir[2]
+                ad, soyad, bolum_kodu = satir[0].value, satir[1].value, satir[2].value
                 if not all([ad, soyad, bolum_kodu]):
                     raise ValueError("Eksik alan")
+
+                sifre = UsersService.sifre_uret()
+
                 UsersService.ogrenci_olustur(
                     ad=str(ad).strip(),
                     soyad=str(soyad).strip(),
                     bolum_kodu=str(bolum_kodu).strip(),
+                    sifre=sifre
                 )
+
+                sayfa.cell(satir_no, sifre_kolon).value = sifre
                 basarili += 1
             except Exception as hata:
                 hatali += 1
                 hatalar.append({"satir": satir_no, "hata": str(hata)})
 
-        return {"basarili": basarili, "hatali": hatali, "hatalar": hatalar}
+        # Bellekte tut
+        from io import BytesIO
+        output = BytesIO()
+        calisma_kitabi.save(output)
+        output.seek(0)
+
+        return {
+            "basarili": basarili,
+            "hatali": hatali,
+            "hatalar": hatalar,
+            "dosya": output
+        }
