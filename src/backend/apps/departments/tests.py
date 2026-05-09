@@ -55,6 +55,38 @@ class DepartmentsServiceTestleri(TestCase):
             DepartmentsService.bolum_kodu_ile_getir("YANLISKOD")
 
 
+class BolumListViewTestleri(TestCase):
+    def setUp(self):
+        from rest_framework.test import APIClient
+        from apps.users.models import User
+        self.client = APIClient()
+        self.bolum = Bolum.objects.create(ad="Bilgisayar Mühendisliği", bolum_kodu="BM")
+        self.user = User.objects.create_user(
+            username="testuser", password="x", ad="Test", soyad="User", role=User.Role.OGRENCI,
+        )
+
+    def test_kimlik_dogrulanmamis_erisemez(self):
+        response = self.client.get("/api/departments/")
+        self.assertEqual(response.status_code, 401)
+
+    def test_kimlik_dogrulanmis_liste_getirir(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/departments/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_bolumler_listede_mevcut(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/departments/")
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["bolum_kodu"], "BM")
+
+    def test_birden_fazla_bolum_listelenir(self):
+        Bolum.objects.create(ad="Elektrik Elektronik", bolum_kodu="EE")
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/departments/")
+        self.assertEqual(len(response.data), 2)
+
+
 class BolumSerializerTestleri(TestCase):
     def setUp(self):
         self.bolum = Bolum.objects.create(ad="Bilgisayar Mühendisliği", bolum_kodu="BM")

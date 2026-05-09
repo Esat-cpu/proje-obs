@@ -93,6 +93,7 @@ class EnrollmentService:
         )
         return DersKaydi.objects.filter(
             donem_dersi=donem_dersi,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
         ).select_related("ogrenci__user")
 
     @staticmethod
