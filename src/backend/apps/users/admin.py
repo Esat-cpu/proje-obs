@@ -9,6 +9,10 @@ from django.core.exceptions import ValidationError
 from apps.users.models import User, Ogrenci, Akademisyen, Yonetici
 from apps.users.services import UsersService
 
+admin.site.site_header = "OBS Admin Panel"
+admin.site.site_title = "OBS Yönetim"
+admin.site.index_title = "Yönetim"
+
 
 class AkademisyenInline(admin.StackedInline):
     model = Akademisyen
