@@ -18,23 +18,18 @@ axiosClient.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-
 // RESPONSE interceptor — 401 gelince token yenile
 let isRefreshing = false;
-let failedQueue = [];
-
-const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(token);
-  });
-  failedQueue = [];
-};
 
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Login isteği 401 aldıysa refresh deneme, hatayı direkt döndür
+    if (originalRequest.url?.includes("/api/auth/token/")) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       const refreshToken = localStorage.getItem("refreshToken");
@@ -44,17 +39,6 @@ axiosClient.interceptors.response.use(
         localStorage.removeItem("role");
         window.location.href = "/";
         return Promise.reject(error);
-      }
-
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return axiosClient(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
       }
 
       originalRequest._retry = true;
@@ -68,11 +52,9 @@ axiosClient.interceptors.response.use(
         const newToken = response.data.access;
         localStorage.setItem("token", newToken);
         axiosClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-        processQueue(null, newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosClient(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("role");
