@@ -1,14 +1,16 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home } from 'lucide-react';
-import OgrenciPaneli from './pages/OgrenciPaneli/OgrenciPaneli';
-import AkademisyenPaneli from './pages/AkademisyenPaneli/AkademisyenPaneli';
-import LoginHomePage from './pages/LoginHomePage';
+import TopBar from './components/ui/TopBar'; // TopBar'ı geri getirdik
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/ui/PublicRoute';
-import OgrenciGiris from './pages/OgrenciGiris';
-import AkademisyenGiris from './pages/AkademisyenGiris';
-import TopBar from './components/ui/TopBar'; // TopBar'ı geri getirdik
+const LoginHomePage = lazy(() => import('./pages/LoginHomePage'));
+const OgrenciGiris = lazy(() => import('./pages/OgrenciGiris'));
+const AkademisyenGiris = lazy(() => import('./pages/AkademisyenGiris'));
+const OgrenciPaneli = lazy(() => import('./pages/OgrenciPaneli/OgrenciPaneli'));
+const AkademisyenPaneli = lazy(() => import('./pages/AkademisyenPaneli/AkademisyenPaneli'));
+
 
 const NotFound = () => {
   const { t } = useTranslation();
@@ -49,45 +51,21 @@ function App() {
 
   return (
     <div className="page-container">
-      
+
       {/* Sadece panel olmayan sayfalarda (Giriş & Ana Sayfa) Global TopBar'ı göster */}
       {!isPanelRoute && <TopBar leftContent={renderNavBrand()} />}
-      
-      <Routes>
-        {/* PUBLIC ROTALAR */}
-        <Route path="/" element={
-          <PublicRoute>
-            <LoginHomePage />
-          </PublicRoute>
-        } />
-        <Route path="/login/student" element={
-          <PublicRoute>
-            <OgrenciGiris />
-          </PublicRoute>
-        } />
-        <Route path="/login/academician" element={
-          <PublicRoute>
-            <AkademisyenGiris />
-          </PublicRoute>
-        } />
-
-        {/* PROTECTED ROTALAR */}
-        <Route path="/student/*" element={
-          <ProtectedRoute allowedRoles={["Ogrenci"]}>
-            <OgrenciPaneli />
-          </ProtectedRoute>
-        } />
-        <Route path="/academician/*" element={
-          <ProtectedRoute allowedRoles={["Akademisyen"]}>
-            <AkademisyenPaneli />
-          </ProtectedRoute>
-        } />
-
-        {/* HATA ROTALARI */}
-        <Route path="/403" element={<Forbidden />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </div>
+      <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>Yükleniyor...</div>}>
+        <Routes>
+          <Route path="/" element={<PublicRoute><LoginHomePage /></PublicRoute>} />
+          <Route path="/login/student" element={<PublicRoute><OgrenciGiris /></PublicRoute>} />
+          <Route path="/login/academician" element={<PublicRoute><AkademisyenGiris /></PublicRoute>} />
+          <Route path="/student/*" element={<ProtectedRoute allowedRoles={["Ogrenci"]}><OgrenciPaneli /></ProtectedRoute>} />
+          <Route path="/academician/*" element={<ProtectedRoute allowedRoles={["Akademisyen"]}><AkademisyenPaneli /></ProtectedRoute>} />
+          <Route path="/403" element={<Forbidden />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </div >
   );
 }
 
