@@ -28,7 +28,7 @@ class MevcutDersler(APIView):
 class AkademisyenDersListeView(APIView):
     """
     GET /api/academician/courses/
-    Akademisyenin sorumlu olduğu tüm dönem derslerini listeler.
+    Akademisyenin aktif dönem derslerini listeler.
     """
     permission_classes = [IsAkademisyen]
 

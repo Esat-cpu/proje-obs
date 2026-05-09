@@ -800,3 +800,93 @@ class AkademisyenNotGirViewTestleri(ViewTemelKurulum):
     def test_kimlik_dogrulanmamis_erisemez(self):
         response = self.client.patch(f"/api/academician/grades/{self.kayit.pk}/", {}, format="json")
         self.assertEqual(response.status_code, 401)
+
+
+class OgrenciDersListeAktifDonemTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        ders2 = Ders.objects.create(
+            ders_kodu="BM102", ad="Veri Yapıları", kredi=3, min_sinif=1, bolum=self.bolum,
+        )
+        self.dd_bahar = DonemDersi.objects.create(
+            ders=ders2, akademisyen=self.akademisyen,
+            yil=2024, donem="BAHAR", kontenjan=30, aktiflik_durumu=True,
+        )
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.dd_bahar,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+
+    def test_parametresiz_aktif_donemi_getirir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/courses/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["donem"], "GUZ")
+
+    def test_aktif_donem_yoksa_tum_dersler_gelir(self):
+        self.aktif_donem.delete()
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/courses/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+    def test_query_param_verilince_o_donem_gelir(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/courses/?donem=BAHAR")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["donem"], "BAHAR")
+
+
+class OgrenciTranskriptGruplamaTestleri(ViewTemelKurulum):
+    def setUp(self):
+        super().setUp()
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=self.donem_dersi,
+            vize_notu=80, final_notu=90,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+        ders2 = Ders.objects.create(
+            ders_kodu="BM102", ad="Veri Yapıları", kredi=4, min_sinif=1, bolum=self.bolum,
+        )
+        dd2 = DonemDersi.objects.create(
+            ders=ders2, akademisyen=self.akademisyen,
+            yil=2024, donem="BAHAR", kontenjan=30, aktiflik_durumu=True,
+        )
+        DersKaydi.objects.create(
+            ogrenci=self.ogrenci, donem_dersi=dd2,
+            vize_notu=70, final_notu=80,
+            onay_durumu=DersKaydi.Durum.ONAYLANDI,
+        )
+
+    def test_transkript_donem_gruplu_donuyor(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/transcript/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("kayitlar", response.data)
+        self.assertEqual(len(response.data["kayitlar"]), 2)
+
+    def test_transkript_donem_grubu_alanlari_mevcut(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/transcript/")
+        ilk_donem = response.data["kayitlar"][0]
+        self.assertIn("yil", ilk_donem)
+        self.assertIn("donem", ilk_donem)
+        self.assertIn("dersler", ilk_donem)
+
+    def test_transkript_her_grupta_bir_ders(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/transcript/")
+        for donem_grubu in response.data["kayitlar"]:
+            self.assertEqual(len(donem_grubu["dersler"]), 1)
+
+    def test_transkript_siralama_yil_donem(self):
+        self.client.force_authenticate(user=self.ogrenci.user)
+        response = self.client.get("/api/student/transcript/")
+        donemler = [(g["yil"], g["donem"]) for g in response.data["kayitlar"]]
+        self.assertEqual(donemler, sorted(donemler))
