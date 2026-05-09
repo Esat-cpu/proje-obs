@@ -1,10 +1,13 @@
 from django.urls import path
 
-from apps.users.views import AkademisyenProfilView, OgrenciProfilView
+from apps.users.views import AkademisyenProfilView, MeView, OgrenciProfilView
 
 app_name = "users"
 
 urlpatterns = [
+    # GET /api/me/
+    path("me/", MeView.as_view(), name="me"),
+
     # GET /api/student/profile/
     path("student/profile/", OgrenciProfilView.as_view(), name="ogrenci-profil"),
 

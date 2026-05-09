@@ -6,7 +6,6 @@ from rest_framework.views import APIView
 from apps.enrollments.models import DersKaydi
 from apps.enrollments.serializers import (
     DersKaydiOkuSerializer,
-    DersKaydiOlusturSerializer,
     NotGuncellemeSerializer,
     TranskriptKaydiSerializer,
     TranskriptSerializer,
@@ -73,35 +72,53 @@ class OgrenciTranskriptView(APIView):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  ÖĞRENCİ — derse kayıt ol
+#  ÖĞRENCİ — derse kayıt ol (çoklu)
 #  POST /api/student/enrollments/
 # ─────────────────────────────────────────────────────────────────────────────
 
 class OgrenciDersKayitView(APIView):
     """
     POST /api/student/enrollments/
-    Oturum açan öğrenciyi belirtilen döneme dersine kaydeder.
-    Body: { "donem_dersi_id": <int> }
+    Oturum açan öğrenciyi belirtilen dönem derslerine kaydeder.
+    Body: { "donem_dersi_ids": [<int>, ...] }
+    Her ders için ayrı ayrı işlem yapılır; kısmi başarı mümkündür.
     """
     permission_classes = [IsOgrenci]
 
     def post(self, request):
-        serializer = DersKaydiOlusturSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        donem_dersi_ids = request.data.get("donem_dersi_ids")
+
+        if not isinstance(donem_dersi_ids, list) or not donem_dersi_ids:
+            return Response(
+                {"detail": "'donem_dersi_ids' alanı dolu bir liste olmalıdır."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not all(isinstance(id_, int) for id_ in donem_dersi_ids):
+            return Response(
+                {"detail": "Tüm ders ID'leri tam sayı olmalıdır."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         ogrenci = request.user.ogrenci
+        basarili = []
+        hatalar = []
 
-        try:
-            kayit = EnrollmentService.ders_kaydi_olustur(
-                ogrenci=ogrenci,
-                donem_dersi_id=serializer.validated_data["donem_dersi_id"],
-            )
-        except ValidationError as e:
-            return Response({"detail": e.message}, status=status.HTTP_400_BAD_REQUEST)
+        for donem_dersi_id in donem_dersi_ids:
+            try:
+                kayit = EnrollmentService.ders_kaydi_olustur(
+                    ogrenci=ogrenci,
+                    donem_dersi_id=donem_dersi_id,
+                )
+                basarili.append(DersKaydiOkuSerializer(kayit).data)
+            except ValidationError as e:
+                hatalar.append({"donem_dersi_id": donem_dersi_id, "hata": e.message})
+
+        if not basarili:
+            return Response({"hatalar": hatalar}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
-            DersKaydiOkuSerializer(kayit).data,
+            {"basarili": basarili, "hatalar": hatalar},
             status=status.HTTP_201_CREATED,
         )
 
@@ -167,7 +184,7 @@ class AkademisyenKayitIstekDetayView(APIView):
 class AkademisyenDersOgrencileriView(APIView):
     """
     GET /api/academician/courses/{id}/students/
-    Akademisyenin belirtilen döneme dersine kayıtlı öğrencileri döner.
+    Akademisyenin belirtilen dönem dersine kayıtlı öğrencileri döner.
     """
     permission_classes = [IsAkademisyen]
 
