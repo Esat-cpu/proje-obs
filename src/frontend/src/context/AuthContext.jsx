@@ -30,14 +30,16 @@ function authReducer(state, action) {
 export function AuthProvider({ children }) {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
-    const login = (token, role) => {
+    const login = (token, role, refreshToken = null) => {
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
         dispatch({ type: "LOGIN", payload: { token, role } });
     };
 
     const logout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("role");
         dispatch({ type: "LOGOUT" });
     };
