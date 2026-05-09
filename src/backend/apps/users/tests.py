@@ -2,6 +2,7 @@ import io
 from decimal import Decimal
 
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 
 from apps.departments.models import Bolum
 from apps.users.models import Akademisyen, Ogrenci, User, Yonetici
@@ -228,14 +229,13 @@ class OgrenciKaydiExcelTestleri(TemelKurulum):
 
     def test_gecersiz_bolum_kodu_hatali(self):
         dosya = self._excel_olustur([["Ali", "Veli", "YANLIS"]])
-        sonuc = UsersService.ogrenci_kaydi_excel(dosya)
-        self.assertEqual(sonuc["hatali"], 1)
-        self.assertEqual(sonuc["basarili"], 0)
+        with self.assertRaises(ValidationError):
+            UsersService.ogrenci_kaydi_excel(dosya)
 
     def test_eksik_alan_hatali(self):
         dosya = self._excel_olustur([["Ali", None, "BM"]])
-        sonuc = UsersService.ogrenci_kaydi_excel(dosya)
-        self.assertEqual(sonuc["hatali"], 1)
+        with self.assertRaises(ValidationError):
+            UsersService.ogrenci_kaydi_excel(dosya)
 
     def test_karisik_satirlar(self):
         dosya = self._excel_olustur([
@@ -243,16 +243,22 @@ class OgrenciKaydiExcelTestleri(TemelKurulum):
             ["Geçersiz", None, "YANLIS"],
             ["Fatma", "Çelik", "BM"],
         ])
-        sonuc = UsersService.ogrenci_kaydi_excel(dosya)
-        self.assertEqual(sonuc["basarili"], 2)
-        self.assertEqual(sonuc["hatali"], 1)
+        # Hata varsa hiçbir şey kaydedilmez (rollback)
+        with self.assertRaises(ValidationError) as context:
+            UsersService.ogrenci_kaydi_excel(dosya)
+
+        # Hata mesajını kontrol et
+        self.assertIn("1 satırda hata var", str(context.exception))
 
     def test_hata_detaylari_donuyor(self):
         dosya = self._excel_olustur([["Ali", None, "BM"]])
-        sonuc = UsersService.ogrenci_kaydi_excel(dosya)
-        self.assertIn("hatalar", sonuc)
-        self.assertEqual(len(sonuc["hatalar"]), 1)
-        self.assertIn("satir", sonuc["hatalar"][0])
+        # ValidationError'da params içinde hatalar var
+        with self.assertRaises(ValidationError) as context:
+            UsersService.ogrenci_kaydi_excel(dosya)
+
+        self.assertIsNotNone(context.exception.params)
+        self.assertIn("hatalar", context.exception.params)
+        self.assertEqual(len(context.exception.params["hatalar"]), 1)
 
     def test_bos_excel_sifir_kayit(self):
         dosya = self._excel_olustur([])
@@ -283,6 +289,21 @@ class OgrenciKaydiExcelTestleri(TemelKurulum):
         self.assertIsNotNone(sifre2)
         self.assertEqual(len(sifre1), 8)  # 8 karakterli
         self.assertNotEqual(sifre1, sifre2)  # Farklı şifreler
+
+    def test_transaction_rollback(self):
+        """Hata varsa hiçbir öğrenci kaydedilmez"""
+        dosya = self._excel_olustur([
+            ["Ali", "Veli", "BM"],
+            ["Hatalı", None, "BM"],  # Eksik alan
+        ])
+
+        baslangic_sayisi = Ogrenci.objects.count()
+
+        with self.assertRaises(ValidationError):
+            UsersService.ogrenci_kaydi_excel(dosya)
+
+        # Hiçbir öğrenci eklenmemiş olmalı
+        self.assertEqual(Ogrenci.objects.count(), baslangic_sayisi)
 
 
 # -----------------------------------------------------------------------
