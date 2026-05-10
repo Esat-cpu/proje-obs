@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12px;
+            color: #000;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            margin-bottom: 20px;
+        }
+
+        .info p {
+            margin: 4px 0;
+        }
+
+        .donem {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin-top: 10px;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+            padding: 8px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #999;
+            padding: 6px;
+            font-size: 11px;
+            text-align: center;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        /* Ders adı sola hizalı */
+        td:nth-child(2) {
+            text-align: left;
+        }
+
+        /* Tablo sayfa içinde bölünmesin */
+        table {
+            page-break-inside: avoid;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>AKADEMİK TRANSKRİPT</h1>
+
+<div class="info">
+    <p><b>Öğrenci No:</b> {{ ogrenci.ogr_no }}</p>
+    <p><b>Ad Soyad:</b> {{ ogrenci.user.tam_ad }}</p>
+    <p><b>Bölüm:</b> {{ ogrenci.bolum.ad }}</p>
+    <p><b>Sınıf:</b> {{ ogrenci.sinif }}</p>
+    <p><b>GPA:</b> {{ ogrenci.gpa }}</p>
+</div>
+
+{% for d in donem_listesi %}
+
+    <div class="donem">
+        {{ d.yil }} - {{ d.donem }}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ders Kodu</th>
+                <th>Ders Adı</th>
+                <th>Kredi</th>
+                <th>Vize</th>
+                <th>Final</th>
+                <th>Ortalama</th>
+                <th>Harf</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for kayit in d.dersler %}
+            <tr>
+                <td>{{ kayit.donem_dersi.ders.ders_kodu }}</td>
+                <td>{{ kayit.donem_dersi.ders.ad }}</td>
+                <td>{{ kayit.donem_dersi.ders.kredi }}</td>
+
+                <td>{{ kayit.vize_notu|default:"--" }}</td>
+                <td>{{ kayit.final_notu|default:"--" }}</td>
+                <td>{{ kayit.ortalama|default:"--" }}</td>
+                <td>{{ kayit.harf_notu|default:"--" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endfor %}
+
+</body>
+</html>

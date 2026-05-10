@@ -3,6 +3,10 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
+from io import BytesIO
+from django.template.loader import render_to_string
+from weasyprint import HTML
+
 from apps.courses.models import DonemDersi
 from apps.enrollments.models import DersKaydi, DersKayitDonemi
 
@@ -116,6 +120,42 @@ class EnrollmentService:
             "donem_dersi__ders",
             "donem_dersi__akademisyen__user",
         ).order_by("donem_dersi__yil", "donem_dersi__donem")
+
+    @staticmethod
+    def transkript_pdf(ogrenci) -> BytesIO:
+        from collections import defaultdict
+
+        kayitlar = EnrollmentService.transkript_getir(ogrenci)
+
+        gruplar = defaultdict(list)
+
+        for k in kayitlar:
+            key = (k.donem_dersi.yil, k.donem_dersi.donem)
+            gruplar[key].append(k)
+
+        # template için uygun formata çevir
+        donem_listesi = [
+            {
+                "yil": yil,
+                "donem": donem,
+                "dersler": dersler
+            }
+            for (yil, donem), dersler in sorted(gruplar.items())
+        ]
+
+        html = render_to_string(
+            "pdf/transkript.html",
+            {
+                "ogrenci": ogrenci,
+                "donem_listesi": donem_listesi,
+            }
+        )
+
+        pdf = HTML(string=html).write_pdf()
+
+        buffer = BytesIO(pdf)
+        buffer.seek(0)
+        return buffer
 
 
 class GradeService:
