@@ -4,6 +4,7 @@
     "cancel": "İptal",
     "edit": "Düzenle",
     "delete": "Sil",
+    "remove": "Kaldır",
     "loading": "Yükleniyor...",
     "error": "Beklenmeyen bir hata oluştu.",
     "success": "İşlem başarıyla tamamlandı."
@@ -25,124 +26,70 @@
     "profile": "Profil"
   },
   "studentDashboard": {
-  "panelTitle": "Öğrenci Paneli",
-  "tabs": {
-    "overview": "Genel Bakış",
-    "myCourses": "Derslerim",
-    "courseRegistration": "Ders Kayıt",
-    "transcript": "Transkript"
-  },
-  "overview": {
-    "activeCourses": "Aktif Ders",
-    "gpa": "GNO",
-    "credits": "Kredi",
-    "term": "Dönem",
-    "activeCoursesNotes": "Aktif Dersler ve Notlar",
-    "currentTerm": "2025-2026 Bahar Dönemi",
-    "midterm": "Vize",
-    "final": "Final",
-    "currentGradesTitle": "Güncel Dönem Notları",
-    "pastGrades": "Geçmiş Dönem Notları",
-    "pastTerm": "2024-2025 Güz Dönemi",
-    "course": "Ders",
-    "grade": "Not",
-    "termAvg": "Dönem Ortalaması"
-  },
-  "courses": {
-    "title": "Derslerim",
-    "code": "Ders Kodu",
-    "name": "Ders Adı",
-    "instructor": "Öğretim Görevlisi",
-    "term": "Dönem",
-    "classLevel": "Sınıf",
-    "credit": "Kredi"
-  },
-  "registration": {
-    "title": "Ders Kayıt",
-    "subtitle": "2025-2026 Bahar Dönemi - Ders Kayıt Dönemi",
-    "deadline": "Son Tarih: 25 Mart 2026",
-    "maxCredit": "Maksimum Kredi: 30",
-    "available": "Açılan Dersler",
-    "search": "Ders kodu, isim veya öğretim görevlisi ara...",
-    "left": "Kaldı",
-    "add": "Ekle",
-    "selected": "Seçilen Dersler",
-    "totalCredit": "Toplam Kredi",
-    "empty": "Henüz ders seçilmedi",
-    "quota": "Kontenjan"
-  },
-  "transcript": {
-    "title": "Akademik Transkript",
-    "download": "PDF İndir",
-    "gpa": "Genel Not Ortalaması",
-    "totalCredit": "Toplam Kredi",
-    "term": "Dönem",
-    "termName": "2023-2024 Güz Dönemi",
-    "listed": "ders listeleniyor",
-    "termAvg": "Dönem Ortalaması",
-    "code": "Ders Kodu",
-    "name": "Ders Adı",
-    "credit": "Kredi",
-    "letter": "Harf Notu",
-    "value": "Not Değeri"
-  }
-},
-"academicianDashboard": {
-    "panelTitle": "Akademisyen Paneli",
+    "panelTitle": "Öğrenci Paneli",
     "tabs": {
       "overview": "Genel Bakış",
-      "myCourses": "Verdiğim Dersler",
-      "gradeEntry": "Not Girişi"
+      "myCourses": "Derslerim",
+      "courseRegistration": "Ders Kayıt",
+      "transcript": "Transkript"
     },
     "overview": {
-      "activeCourses": "Aktif Ders Sayısı",
-      "totalStudents": "Toplam Öğrenci",
-      "pendingExams": "Okunacak Sınav",
-      "messages": "Sistem Mesajı",
-      "coursesListTitle": "Dönem Dersleri",
-      "coursesListSubtitle": "2025-2026 Bahar Dönemi"
+      "activeCourses": "Aktif Ders",
+      "gpa": "GNO",
+      "credits": "Kredi",
+      "term": "Dönem",
+      "activeCoursesNotes": "Aktif Dersler ve Notlar",
+      "currentTerm": "2025-2026 Bahar Dönemi",
+      "midterm": "Vize",
+      "final": "Final",
+      "currentGradesTitle": "Güncel Dönem Notları",
+      "pastGrades": "Geçmiş Dönem Notları",
+      "pastTerm": "2024-2025 Güz Dönemi",
+      "course": "Ders",
+      "grade": "Not",
+      "termAvg": "Dönem Ortalaması"
     },
-    "table": {
+    "courses": {
+      "title": "Derslerim",
       "code": "Ders Kodu",
       "name": "Ders Adı",
-      "studentCount": "Öğrenci Sayısı",
+      "instructor": "Öğretim Görevlisi",
       "term": "Dönem",
-      "action": "İşlem"
+      "classLevel": "Sınıf",
+      "credit": "Kredi"
+    },
+    "registration": {
+      "title": "Ders Kayıt",
+      "subtitle": "2025-2026 Bahar Dönemi - Ders Kayıt Dönemi",
+      "deadline": "Son Tarih: 25 Mart 2026",
+      "maxCredit": "Maksimum Kredi: 30",
+      "available": "Açılan Dersler",
+      "search": "Ders kodu, isim veya öğretim görevlisi ara...",
+      "left": "Kaldı",
+      "add": "Ekle",
+      "selected": "Seçilen Dersler",
+      "totalCredit": "Toplam Kredi",
+      "empty": "Henüz ders seçilmedi",
+      "quota": "Kontenjan"
+    },
+    "transcript": {
+      "title": "Akademik Transkript",
+      "download": "PDF İndir",
+      "gpa": "Genel Not Ortalaması",
+      "totalCredit": "Toplam Kredi",
+      "term": "Dönem",
+      "termName": "2023-2024 Güz Dönemi",
+      "listed": "ders listeleniyor",
+      "termAvg": "Dönem Ortalaması",
+      "code": "Ders Kodu",
+      "name": "Ders Adı",
+      "credit": "Kredi",
+      "letter": "Harf Notu",
+      "value": "Not Değeri"
     }
   },
-  "dashboard": {
-    "welcomeMessage": "Hoş Geldiniz, {{name}}"
-  },
-  "nav": {
-    "home": "Anasayfa",
-    "languageSelect": "Dil Seçimi",
-    "backToHome": "Ana Sayfaya Dön"
-  },
-  "app": {
-    "title": "OBS - Öğrenci Bilgi Sistemi",
-    "universityLogo": "Üniversite Logosu"
-  },
-  "portal": {
-    "student": "Öğrenci",
-    "studentDesc": "Ders seçimi, notlar ve Transkript",
-    "academician": "Akademisyen",
-    "academicianDesc": "Ders yönetimi ve not girişi",
-    "admin": "Yönetici",
-    "adminDesc": "Sistem ve kullanıcı yönetimi"
-  },
-  "form": {
-    "ogrNo": "Öğrenci Numarası",
-    "password": "Şifre",
-    "username": "Kullanıcı Adı",
-    "login": "Giriş Yap",
-    "loginBtn": "Giriş",
-    "loading": "Giriş yapılıyor..."
-  },
-  "error": {
-    "required": "Bu alan zorunludur.",
-    "login": "Giriş başarısız."
-  },
   "academician": {
+    "panelTitle": "Akademisyen Paneli",
     "nav": {
       "overview": "Genel Bakış",
       "courses": "Not Girişi",
@@ -224,7 +171,7 @@
     "required": "Bu alan zorunludur.",
     "login": "Giriş başarısız."
   },
-"data": {
+  "data": {
     "courses": {
       "CS101": "Programlamaya Giriş",
       "MATH101": "Matematik I",
@@ -247,7 +194,9 @@
     },
     "terms": {
       "2023_fall": "2023-2024 Güz Dönemi",
+      "2023_spring": "2023-2024 Bahar Dönemi",
       "2024_fall": "2024-2025 Güz Dönemi",
+      "2024_spring": "2024-2025 Bahar Dönemi",
       "2025_spring": "2025-2026 Bahar Dönemi",
       "2026_fall": "2026 Güz"
     },
@@ -256,6 +205,9 @@
       "grade_2": "2. Sınıf",
       "grade_3": "3. Sınıf",
       "grade_4": "4. Sınıf"
+    },
+    "departments": {
+      "computerEngineering": "Bilgisayar Mühendisliği"
     }
   }
 }

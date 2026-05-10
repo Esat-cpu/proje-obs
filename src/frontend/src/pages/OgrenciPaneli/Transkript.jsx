@@ -29,7 +29,7 @@ const Transcript = () => {
         <div>
           <h2>{t('studentDashboard.transcript.title')}</h2>
           <p>Victor Osimhen - 4242424242</p>
-          <p style={{ margin: 0, opacity: 0.8, fontSize: '14px' }}>Bilgisayar Mühendisliği</p>
+          <p style={{ margin: 0, opacity: 0.8, fontSize: '14px' }}>{t('data.departments.computerEngineering')}</p>
         </div>
         <button className="btn-white">
           <Download size={18} /> {t('studentDashboard.transcript.download')}
@@ -63,7 +63,7 @@ const Transcript = () => {
         <div key={term.id} className="card-container no-padding" style={{ marginTop: '24px' }}>
           <div className="term-header">
             <div>
-              <h3>{term.name}</h3>
+              <h3>{t(`data.terms.${term.id}`)}</h3>
               <p>{term.count} {t('studentDashboard.transcript.listed')}</p>
             </div>
             <div className="term-gpa">

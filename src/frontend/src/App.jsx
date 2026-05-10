@@ -35,14 +35,14 @@ function App() {
       return (
         <div className="nav-brand">
           <Home size={20} color="var(--primary-blue)" />
-          <span>{t('anasayfa', 'Anasayfa')}</span>
+          <span>{t('nav.home')}</span>
         </div>
       );
     } else if (location.pathname.startsWith('/login/')) {
       return (
         <Link to="/" className="nav-brand">
           <Home size={20} color="var(--primary-blue)" />
-          <span>{t('anasayfa', 'Anasayfa')}</span>
+          <span>{t('nav.home')}</span>
         </Link>
       );
     }
