@@ -214,6 +214,15 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.panel-title-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .panel-logo-box {
@@ -1141,60 +1150,113 @@ body {
 
   /* 1. LAYOUT & HEADER */
   .panel-header {
-    padding: 8px 10px;
     position: sticky !important;
     top: 0 !important;
     left: 0;
     right: 0;
-    z-index: 1001 !important; /* Nav bar'dan daha üstte olmalı */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    gap: 2px;
-    height: 60px;
+    z-index: 1100 !important;
     background-color: var(--card-bg);
-    width: 100%;
-    box-sizing: border-box;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 0 10px !important;
+    height: 60px !important;
     display: flex !important;
+    align-items: center !important;
     justify-content: space-between !important;
+    width: 100% !important;
+    box-sizing: border-box;
   }
+
   .panel-header-left {
-    gap: 6px !important;
-    min-width: 0; /* Daralmaya izin ver */
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
   }
+
+  .panel-logo-box {
+    width: 26px !important;
+    height: 26px !important;
+    flex-shrink: 0 !important;
+    border-radius: 8px !important;
+    background-color: #eef2ff !important;
+  }
+
+  .panel-logo-box svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .panel-title-group {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    flex: 1 !important;
+  }
+
+  .panel-title {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    color: var(--text-main) !important;
+  }
+
+  .panel-subtitle {
+    font-size: 9px !important;
+    white-space: nowrap !important;
+    overflow: visible !important; /* İsmin tam görünmesi için */
+    margin: 2px 0 0 !important;
+    line-height: 1.2 !important;
+    color: var(--text-muted) !important;
+  }
+
   .panel-header-right {
     display: flex !important;
-    flex-direction: row !important;
-    gap: 3px !important; 
     align-items: center !important;
-    flex-shrink: 0;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
   }
+
   .theme-toggle-btn {
-    padding: 6px !important;
+    padding: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
+
   .lang-switcher {
-    padding: 4px 8px !important;
-    border-radius: 12px !important;
+    padding: 4px 6px !important;
+    border-radius: 20px !important;
+    background: rgba(59, 111, 212, 0.05) !important;
+    border: 1px solid rgba(59, 111, 212, 0.1) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
   }
-  .lang-select {
-    padding: 0 !important;
-    font-size: 11px !important;
-  }
+
+
+
   .logout-btn {
-    padding: 6px 10px !important;
-    font-size: 0 !important; /* Yazıyı gizle sadece ikon kalsın */
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     background-color: #fee2e2 !important;
     color: #ef4444 !important;
-    min-width: 36px;
-    height: 36px;
-    display: flex;
-    justify-content: center;
+    border: 2px solid white !important;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2) !important;
+    padding: 0 !important;
+    font-size: 0 !important;
   }
-  .logout-btn span { display: none !important; }
-  .logout-btn svg { width: 18px !important; height: 18px !important; margin: 0 !important; }
   
-  .panel-logo-box { width: 28px !important; height: 28px !important; flex-shrink: 0; margin: 0 !important; }
-  .panel-logo-box svg { width: 16px !important; height: 16px !important; }
-  .panel-title { font-size: 13px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
-  .panel-subtitle { font-size: 9px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+
   
   .panel-nav-container {
     margin: 0 !important;
@@ -1509,5 +1571,12 @@ body {
 /* Masaüstünde gizle */
 @media (min-width: 769px) {
   .mobile-view { display: none !important; }
+  .mobile-only { display: none !important; }
   .mobile-sticky-basket { display: none !important; }
+  .desktop-only { display: block !important; }
+}
+
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: block !important; }
 }

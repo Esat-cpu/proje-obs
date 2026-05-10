@@ -45,7 +45,7 @@ const AkademisyenPaneli = () => {
       title={t('academician.panelTitle', 'Akademisyen Paneli')}
       userName={mockUserName}
       navItems={navItems}
-      logoColor="#10b981" // Akademisyen temasına özel yeşil kep ikonu
+      logoColor="#10b981" 
     >
       <Routes>
         {/* 1. Dashboard Ekranı: İstatistikler ve Ders Özetleri */}

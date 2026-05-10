@@ -1,35 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from "../../context/AuthContext";//
-import { GraduationCap, Moon, Sun, LogOut, Menu, X } from 'lucide-react';
+import { useAuth } from "../../context/AuthContext";
+import { GraduationCap, LogOut, Menu, X } from 'lucide-react';
+import LanguageSwitcher from './LanguageSwitcher';
+import ThemeToggle from './ThemeToggle';
 
 const PanelLayout = ({ title, userName, navItems, children, logoColor = "var(--primary-blue)" }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { logout } = useAuth(); //
+  const { logout } = useAuth(); 
   const handleLogout = () => {
-    logout();      // 1. Önce token'ları temizle
-    navigate("/"); // 2. App.jsx'teki anasayfa rotasına (LoginHomePage) yönlendir
+    logout();     
+    navigate("/"); 
   };
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-  };
-
-  const toggleLanguage = (e) => {
-    i18n.changeLanguage(e.target.value);
-  };
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   return (
     <div className="panel-wrapper">
@@ -37,30 +23,26 @@ const PanelLayout = ({ title, userName, navItems, children, logoColor = "var(--p
         <div className="panel-header-left">
           {/* Sidebar'ı tetikleyen buton */}
           <button className="sidebar-toggle-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            <Menu size={24} />
+            {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
           <div className="panel-logo-box">
             <GraduationCap size={28} color={logoColor} />
           </div>
-          <div>
+          <div className="panel-title-group">
             <h1 className="panel-title">{title}</h1>
-            <p className="panel-subtitle">{t('dashboard.welcomeMessage', { name: userName })}</p>
+            <p className="panel-subtitle">
+              <span className="desktop-only">{t('dashboard.welcomeMessage', { name: userName })}</span>
+              <span className="mobile-only">{userName}</span>
+            </p>
           </div>
         </div>
 
         <div className="panel-header-right">
-          <button onClick={toggleTheme} className="theme-toggle-btn">
-            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
-          <div className="lang-switcher">
-            <select value={i18n.language} onChange={toggleLanguage} className="lang-select">
-              <option value="tr">Türkçe</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-          <button onClick={handleLogout} className="logout-btn">
-            <LogOut size={16} />
+          <ThemeToggle />
+          <LanguageSwitcher />
+          <button onClick={handleLogout} className="logout-btn" title={t('auth.logoutButton', 'Çıkış Yap')}>
+            <LogOut size={18} />
             <span>{t('auth.logoutButton', 'Çıkış Yap')}</span>
           </button>
         </div>
