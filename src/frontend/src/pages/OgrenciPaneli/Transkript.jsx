@@ -36,7 +36,7 @@ const Transcript = () => {
         </button>
       </div>
       {/* Özet Kartları */}
-      <div className="summary-grid">
+      <div className="summary-grid transcript-summary-grid">
         <div className="summary-card">
           <div className="icon-box bg-green-light"><Award color="#059669" /></div>
           <div>
@@ -71,7 +71,7 @@ const Transcript = () => {
               <h3>{term.avg}</h3>
             </div>
           </div>
-          <div className="grades-table-container">
+          <div className="transcript-table-container grades-table-container">
             <DataTable
               columns={[
                 {
@@ -126,44 +126,46 @@ const Transcript = () => {
           </div>
         </div>
 
-        <DataTable
-          columns={[
-            {
-              header: t('studentDashboard.transcript.code'),
-              accessor: 'kodu'
-            },
-            {
-              header: t('studentDashboard.transcript.name'),
-              render: (row) => t(`data.courses.${row.kodu}`)
-            },
-            {
-              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.credit')}</div>,
-              render: (row) => <div style={{ textAlign: 'center' }}>{row.kredi}</div>
-            },
-            {
-              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.letter')}</div>,
-              render: (row) => {
-                // Nota göre dinamik renk ataması
-                let badgeClass = 'badge-success'; // AA, BA için yeşil
-                if (row.harf === 'BB' || row.harf === 'CB') badgeClass = 'badge-warning'; // Sarı
-                if (row.harf === 'CC' || row.harf === 'DC') badgeClass = 'badge-blue'; // Mavi
-                if (row.harf === 'DD' || row.harf === 'FD' || row.harf === 'FF') badgeClass = 'badge-danger'; // Kırmızı
-
-                return (
-                  // display: flex ile rozeti hücrenin tam ortasına hizaladık
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <span className={`badge ${badgeClass}`}>{row.harf}</span>
-                  </div>
-                );
+        <div className="transcript-table-container grades-table-container">
+          <DataTable
+            columns={[
+              {
+                header: t('studentDashboard.transcript.code'),
+                accessor: 'kodu'
+              },
+              {
+                header: t('studentDashboard.transcript.name'),
+                render: (row) => t(`data.courses.${row.kodu}`)
+              },
+              {
+                header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.credit')}</div>,
+                render: (row) => <div style={{ textAlign: 'center' }}>{row.kredi}</div>
+              },
+              {
+                header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.letter')}</div>,
+                render: (row) => {
+                  // Nota göre dinamik renk ataması
+                  let badgeClass = 'badge-success'; // AA, BA için yeşil
+                  if (row.harf === 'BB' || row.harf === 'CB') badgeClass = 'badge-warning'; // Sarı
+                  if (row.harf === 'CC' || row.harf === 'DC') badgeClass = 'badge-blue'; // Mavi
+                  if (row.harf === 'DD' || row.harf === 'FD' || row.harf === 'FF') badgeClass = 'badge-danger'; // Kırmızı
+  
+                  return (
+                    // display: flex ile rozeti hücrenin tam ortasına hizaladık
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <span className={`badge ${badgeClass}`}>{row.harf}</span>
+                    </div>
+                  );
+                }
+              },
+              {
+                header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.value')}</div>,
+                render: (row) => <div style={{ textAlign: 'center' }}>{row.puan}</div>
               }
-            },
-            {
-              header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.value')}</div>,
-              render: (row) => <div style={{ textAlign: 'center' }}>{row.puan}</div>
-            }
-          ]}
-          data={transcriptData}
-        />
+            ]}
+            data={transcriptData}
+          />
+        </div>
       </div>
     </div>
   );

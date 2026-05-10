@@ -49,8 +49,24 @@ const Derslerim = () => {
       <div style={{ padding: '24px' }}>
         <h2 className="dash-section-title">{t('studentDashboard.courses.title')}</h2>
       </div>
-      <div className="grades-table-container">
+      {/* Masaüstü Görünümü (Tablo) */}
+      <div className="grades-table-container desktop-only">
         <DataTable columns={columns} data={studentCourses} />
+      </div>
+
+      {/* Mobil Görünümü (Kartlar) */}
+      <div className="mobile-view" style={{ padding: '0 16px 16px' }}>
+        {studentCourses.map((course) => (
+          <div key={course.kodu} className="mobile-course-card">
+            <div className="course-name">{t(`data.courses.${course.kodu}`)}</div>
+            <div className="course-instructor">{course.hoca}</div>
+            <div className="course-badges">
+              <span className="badge-pill">{course.kredi} {t('studentDashboard.courses.credit')}</span>
+              <span className="badge-pill">{t(`data.terms.${course.donem}`)}</span>
+              <span className="badge-pill">{t(`data.classes.${course.sinif}`)}</span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
