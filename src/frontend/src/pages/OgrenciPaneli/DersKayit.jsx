@@ -87,15 +87,15 @@ const DersKayit = () => {
                 </div>
                 {selectedCourses.find(c => c.kodu === course.kodu) ? (
                   <button 
-                    className="btn-remove-mobile mobile-full-width"
+                    className="btn-remove-mobile"
                     onClick={() => handleRemoveCourse(course.kodu)}
-                    style={{ backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    style={{ backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                   >
                     <Trash2 size={18} /> {t('common.remove')}
                   </button>
                 ) : (
                   <button 
-                    className="btn-add mobile-full-width"
+                    className="btn-add"
                     disabled={selectedCourses.find(c => c.kodu === course.kodu)}
                     onClick={() => handleAddCourse(course)}
                     style={{ opacity: selectedCourses.find(c => c.kodu === course.kodu) ? 0.5 : 1, cursor: selectedCourses.find(c => c.kodu === course.kodu) ? 'not-allowed' : 'pointer' }}
