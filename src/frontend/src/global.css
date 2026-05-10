@@ -313,52 +313,6 @@ body {
   width: 100%;
 }
 
-/* Mobil Uyumluluk */
-@media (max-width: 768px) {
-  .panel-header-right { display: none; }
-  .mobile-toggle-btn { display: block; }
-  
-  .panel-nav-container {
-    display: none;
-    flex-direction: column;
-    padding: 16px;
-    position: absolute;
-    top: 80px;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    background-color: var(--card-bg);
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  }
-  
-  .panel-nav-container.open { display: flex; }
-  
-  .panel-nav { flex-direction: column; }
-  
-  .panel-nav-link {
-    border-bottom: none;
-    border-left: 3px solid transparent;
-    padding: 12px 16px;
-    border-radius: 8px;
-  }
-  
-  .panel-nav-link.active {
-    border-bottom-color: transparent;
-    background-color: rgba(59, 111, 212, 0.08);
-    border-left-color: var(--primary-blue);
-  }
-
-  .mobile-only-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-color);
-  }
-}
 /* =========================================
    GENEL BAKIŞ (DASHBOARD) STİLLERİ
    ========================================= */
@@ -786,7 +740,7 @@ body {
   gap: 8px;
 }
 /* Özet Kartları Yan Yana Dizilimi */
-.summary-grid {
+.summary-grid, .transcript-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr); 
   gap: 20px;
@@ -1161,85 +1115,261 @@ body {
    MOBİL UYUM (RESPONSIVE) DÜZELTMELERİ
    ========================================= */
 @media (max-width: 768px) {
-  
-  /* 1. TABLOLARIN TAŞMASINI ENGELLE (Yatay Scroll Ekle) */
-  .grades-table-container {
-    overflow-x: auto !important;
-    width: 100%;
-  }
-  .grades-table {
-    min-width: 600px !important; /* Tablo sıkışmasın, parmakla kaydırılsın */
-  }
+  /* 0. Temel Görünürlük Ayarları */
+  .desktop-view { display: none !important; }
+  .mobile-view { display: block !important; }
+  .desktop-only { display: none !important; }
 
-  /* 2. KARTLARI VE İSTATİSTİKLERİ TEK SÜTUNA DÜŞÜR */
-  .summary-grid, 
-  .stats-grid {
-    grid-template-columns: 1fr !important;
+  /* 1. LAYOUT & HEADER */
+  .panel-header {
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   }
-
-  /* 3. ARAMA VE FİLTRE ÇUBUĞUNU ALT ALTA AL */
-  .filter-row {
+  .panel-header-right {
+    display: flex !important;
     flex-direction: column !important;
+    gap: 4px !important;
+    align-items: flex-end !important;
   }
-  .search-input-wrapper, 
-  .status-select {
-    width: 100% !important;
-    flex: none !important;
+  .lang-select {
+    padding: 2px 8px !important;
+    font-size: 11px !important;
+    height: auto !important;
+  }
+  .logout-btn {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+  }
+  .logout-btn span { font-size: 11px !important; }
+  .logout-btn svg { width: 14px !important; height: 14px !important; }
+  
+  .panel-logo-box { width: 36px; height: 36px; }
+  .panel-title { font-size: 15px; }
+  .panel-subtitle { font-size: 11px; }
+  
+  .panel-nav-container {
+    margin: 12px 16px 0 16px !important;
+    padding: 0 8px;
+    display: block !important; 
+    position: static !important;
+    box-shadow: none;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .panel-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 4px;
+    width: max-content !important;
+  }
+  .panel-nav-link {
+    padding: 12px 12px !important;
+    font-size: 13px;
+    border-bottom: 2px solid transparent !important;
+    border-left: none !important;
+    white-space: nowrap;
+  }
+  .panel-nav-link.active {
+    background-color: transparent !important;
+    border-bottom-color: var(--primary-blue) !important;
   }
 
-  /* 4. AKADEMİSYEN: KAYIT ONAYLARI KARTLARINI DÜZENLE */
+  .panel-main-content { padding: 16px !important; }
+
+  /* 2. GENEL BAKIŞ (ÖĞRENCİ) & AKADEMİSYEN ÖZET */
+  .stats-grid,
+  .summary-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  .stat-card,
+  .summary-card { padding: 16px; text-align: center; }
+  .stat-value,
+  .summary-value { font-size: 20px; }
+  .stat-label,
+  .summary-label { font-size: 12px; }
+  .icon-wrapper { width: 36px; height: 36px; margin: 0 auto 8px; }
+  .icon-wrapper svg { width: 18px; height: 18px; }
+
+  .course-info-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .course-code { display: none !important; }
+  .course-credit-badge {
+    background: #f3f4f6;
+    color: #6b7280;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .active-course-card { padding: 14px; margin-bottom: 12px; }
+  .active-course-card .course-name { font-size: 14px; }
+  .active-course-card .teacher { margin: 4px 0 16px !important; font-size: 12px; }
+
+  /* 3. DERSLERİM (MOBİL KARTLAR) */
+  .mobile-course-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .mobile-course-card .course-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .mobile-course-card .course-instructor { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+  .mobile-course-card .course-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge-pill {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  /* 4. DERS KAYIT */
+  .sticky-search {
+    position: sticky !important;
+    top: 70px; /* Header yüksekliğine göre ayarlandı */
+    z-index: 90;
+    background: var(--card-bg) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-top: -8px;
+    margin-bottom: 16px !important;
+  }
+  .mobile-full-width {
+    width: 100% !important;
+    margin-top: 8px;
+    padding: 14px !important;
+    font-size: 15px;
+  }
+  .mobile-sticky-basket {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.1);
+    z-index: 1001;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .basket-info { display: flex; flex-direction: column; gap: 2px; }
+  .basket-label { font-size: 12px; color: var(--text-muted); }
+  .basket-value { font-size: 17px; font-weight: 800; color: var(--primary-blue); }
+  .btn-save-mobile {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .registration-grid { grid-template-columns: 1fr !important; }
+
+  /* 5. TRANSKRİPT */
+  .banner-purple {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+    text-align: center;
+  }
+  .banner-purple .btn-white { width: 100%; justify-content: center; padding: 14px; }
+  .summary-grid .summary-card:first-child { grid-column: auto; }
+  .transcript-summary-grid .summary-card:first-child { grid-column: span 2; } /* Sadece transkriptte GNO tam genişlik */
+  
+  /* Transkript tablosunda gereksizleri gizle */
+  .transcript-table-container .grades-table td:nth-child(1),
+  .transcript-table-container .grades-table th:nth-child(1),
+  .transcript-table-container .grades-table td:nth-child(5),
+  .transcript-table-container .grades-table th:nth-child(5) {
+    display: none !important;
+  }
+
+  /* 6. NOT GİRİŞİ & KAYIT ONAYLARI (AKADEMİSYEN) */
+  .mobile-grade-entry-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .mobile-grade-entry-card .course-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .mobile-grade-entry-card .course-info { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+  .btn-grade-entry-mobile {
+    width: 100%;
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+
   .approval-card {
     flex-direction: column !important;
-    gap: 16px;
+    padding: 16px !important;
   }
-  /* Yan yana yaptığımız Ders, Kredi, GNO'yu mobilde alt alta al */
-  .approval-card-left .course-info-section {
+  .approval-card .course-info-section {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 12px !important;
+    padding: 0 !important;
   }
   .approval-actions {
-    flex-direction: row !important; /* Butonları alt alta değil, yan yana al */
+    flex-direction: row !important;
     width: 100%;
+    margin-top: 16px;
+    gap: 8px !important;
   }
-  .btn-approve, .btn-reject {
-    flex: 1; /* Butonlar ekranı eşit paylaşsın */
-    justify-content: center;
+  .approval-actions button { flex: 1; justify-content: center; padding: 12px !important; }
+
+  .filter-row { 
+    display: flex !important;
+    flex-direction: column !important; 
+    align-items: center !important; 
+    gap: 12px !important; 
+    margin: 20px 0 32px 0 !important; 
+  }
+  .search-input-wrapper { 
+    width: 90% !important; 
+    margin: 0 auto !important;
+    height: 52px !important;
+  }
+  .search-input-wrapper input {
+    text-align: center !important;
+  }
+  div.filter-row select.status-select { 
+    display: block !important;
+    width: 90% !important; 
+    height: 52px !important;
+    padding: 0 16px !important;
+    border-radius: 12px !important;
+    margin: 0 auto !important;
+    border: 1px solid var(--border-color) !important;
+    background-color: var(--card-bg) !important;
+    font-size: 15px !important;
+    text-align: center !important;
+    text-align-last: center !important;
   }
 
-  /* 5. ÖĞRENCİ: DERS KAYIT SAYFASI DÜZENİ */
-  .registration-grid {
-    grid-template-columns: 1fr !important;
+  /* 7. TABLOLAR (GENEL) */
+  .grades-table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
-  .reg-course-card {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px;
-  }
-  .reg-course-card .btn-add {
-    width: 100%;
-  }
+  .grades-table { min-width: 500px; }
+}
 
-  /* 6. BANNER VE BAŞLIKLARI DÜZENLE */
-  .banner {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 16px;
-  }
-  .term-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px;
-  }
-  .term-gpa {
-    text-align: left !important;
-  }
-
-  /* 7. BOŞ SİDEBAR EKRANI BOZMASIN (Mobilde üstte yüzer menü gibi davransın) */
-  .empty-left-sidebar.open {
-    position: absolute;
-    z-index: 100;
-    height: 100%;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-  }
+/* Masaüstünde gizle */
+@media (min-width: 769px) {
+  .mobile-view { display: none !important; }
+  .mobile-sticky-basket { display: none !important; }
 }

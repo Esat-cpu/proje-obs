@@ -63,22 +63,38 @@ const VerdigimDersler = () => {
   return (
     <div className="card-container no-padding">
       <div style={{ padding: '24px' }}><h2 className="dash-section-title">{t('academician.courses.title')}</h2></div>
-      <DataTable 
-        columns={[
-          { header: t('academician.courses.code'), accessor: 'kodu', render: (row) => <strong>{row.kodu}</strong> },
-          { 
-            header: t('academician.courses.name'), 
-            // TABLODAKİ DERS ADI BURADA ÇEVRİLİYOR
-            render: (row) => t(`data.courses.${row.kodu}`) 
-          },
-          { header: t('academician.courses.class'), render: (row) => t(`data.classes.${row.sinif}`) },
-          { header: t('academician.courses.studentCount'), accessor: 'ogrenciSayisi' },
-          { header: '', render: (row) => (
-            <button className="btn-add" onClick={() => setSelectedCourse(row)}>{t('academician.courses.actionBtn')}</button>
-          )}
-        ]} 
-        data={courses} 
-      />
+      {/* Masaüstü Görünümü */}
+      <div className="desktop-only">
+        <DataTable 
+          columns={[
+            { header: t('academician.courses.code'), accessor: 'kodu', render: (row) => <strong>{row.kodu}</strong> },
+            { 
+              header: t('academician.courses.name'), 
+              // TABLODAKİ DERS ADI BURADA ÇEVRİLİYOR
+              render: (row) => t(`data.courses.${row.kodu}`) 
+            },
+            { header: t('academician.courses.class'), render: (row) => t(`data.classes.${row.sinif}`) },
+            { header: t('academician.courses.studentCount'), accessor: 'ogrenciSayisi' },
+            { header: '', render: (row) => (
+              <button className="btn-add" onClick={() => setSelectedCourse(row)}>{t('academician.courses.actionBtn')}</button>
+            )}
+          ]} 
+          data={courses} 
+        />
+      </div>
+
+      {/* Mobil Görünümü */}
+      <div className="mobile-view" style={{ padding: '0 16px 16px' }}>
+        {courses.map((course) => (
+          <div key={course.id} className="mobile-grade-entry-card">
+            <h4 className="course-name">{t(`data.courses.${course.kodu}`)}</h4>
+            <div className="course-info">{course.kodu} • {t(`data.classes.${course.sinif}`)} • {course.ogrenciSayisi} {t('academician.courses.studentCount')}</div>
+            <button className="btn-grade-entry-mobile" onClick={() => setSelectedCourse(course)}>
+              {t('academician.courses.actionBtn')}
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -52,30 +52,29 @@ const GenelBakis = () => {
           <h2 className="dash-section-title">{t('studentDashboard.overview.activeCoursesNotes')}</h2>
           <p className="dash-section-subtitle">{t('data.terms.2025_spring')}</p>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="active-courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {activeCourses.map((course) => (
               <div key={course.kodu} className="active-course-card">
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                  <span className="course-code">{course.kodu}</span>
-                  <span className="course-credit" style={{ backgroundColor: '#f3f4f6', color: '#6b7280', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '600' }}>
-                    {course.kredi} {t('studentDashboard.overview.credits')}
-                  </span>
+                <div className="course-card-top">
+                  <div className="course-info-header" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <span className="course-code">{course.kodu}</span>
+                    <h4 className="course-name" style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: 'var(--text-main)' }}>{t(`data.courses.${course.kodu}`)}</h4>
+                    <span className="course-credit-badge" style={{ backgroundColor: '#f3f4f6', color: '#6b7280', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '600' }}>
+                      {course.kredi} {t('studentDashboard.overview.credits')}
+                    </span>
+                  </div>
                 </div>
                 
-                {/* Ders adı data.courses'dan dinamik çekiliyor */}
-                <h4 className="course-name">{t(`data.courses.${course.kodu}`)}</h4>
-                
-                {/* Öğretim Üyesi ünvanı data.titles'dan çekiliyor */}
                 <p className="teacher" style={{ margin: '4px 0 24px', fontSize: '13px', color: 'var(--text-muted)' }}>
                   {t(`data.titles.${course.unvan}`)} {course.hoca}
                 </p>
                 
                 <div className="course-grades" style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                  <div>
+                  <div className="grade-item">
                     <span className="grade-label">{t('studentDashboard.overview.midterm')}</span>
                     <span className="grade-value text-blue">{course.vize}</span>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
+                  <div className="grade-item" style={{ textAlign: 'right' }}>
                     <span className="grade-label">{t('studentDashboard.overview.final')}</span>
                     <span className="grade-value" style={{ color: 'var(--text-muted)' }}>{course.final}</span>
                   </div>
@@ -90,7 +89,7 @@ const GenelBakis = () => {
           <h2 className="dash-section-title">{t('studentDashboard.overview.currentGradesTitle')}</h2>
           <p className="dash-section-subtitle">{t('studentDashboard.overview.currentTerm')}</p>
           
-          <div className="card-container no-padding">
+          <div className="grades-table-container card-container no-padding">
             <DataTable 
               columns={[
                 { 

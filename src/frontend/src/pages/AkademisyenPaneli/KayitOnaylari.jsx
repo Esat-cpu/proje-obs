@@ -67,19 +67,21 @@ const KayitOnaylari = () => {
             <div className="course-info-section" style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
               
               {/* CS301 Ders Kartı (Pill) */}
-              <div className="course-pill" style={{ margin: 0 }}>
+              <div className="course-pill">
                 <BookOpen size={14} color="#3b82f6" />
                 <span>
                   {req.course} - {t(`data.courses.${req.course}`)} | <strong className="text-green">{t(`data.classes.${req.grade}`)}</strong>
                 </span>
               </div>
 
-              {/* Toplam Kredi Buraya Taşındı */}
-              <div className="stat-item">
+              {/* Toplam Kredi */}
+              <div className="stat-item credits-stat">
                 <label>{t('academician.approvals.totalCredits')}</label>
                 <span>{req.totalCredits}</span>
               </div>
-              <div className="stat-item">
+              
+              {/* GPA Bilgisi */}
+              <div className="stat-item gpa-stat">
                 <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)' }}>
                   {t('academician.approvals.gpa')}
                 </label>

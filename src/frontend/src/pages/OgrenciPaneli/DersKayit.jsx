@@ -53,8 +53,8 @@ const DersKayit = () => {
             <span className="badge-gray">4 {t('studentDashboard.registration.left')}</span>
           </div>
 
-          {/* Arama Kutusu */}
-          <div className="search-box">
+          {/* Arama Kutusu (Sticky) */}
+          <div className="search-box sticky-search">
             <Search size={18} color="var(--text-muted)" />
             <input 
               type="text" 
@@ -74,11 +74,9 @@ const DersKayit = () => {
                       {course.kontenjan} {t('studentDashboard.registration.quota')}
                     </span>
                   </div>
-                  {/* Ders adı data bloğundan dinamik olarak çekiliyor */}
                   <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: 'var(--text-main)' }}>
                     {t(`data.courses.${course.kodu}`)}
                   </h4>
-                  {/* Öğretim Üyesi ünvanı data.titles'dan çekiliyor */}
                   <p className="teacher" style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--text-muted)' }}>
                     {t(`data.titles.${course.unvan}`)} {course.hoca}
                   </p>
@@ -87,20 +85,30 @@ const DersKayit = () => {
                     {t('studentDashboard.courses.classLevel')}: {t(`data.classes.${course.sinif}`)}
                   </p>
                 </div>
-                <button 
-                  className="btn-add"
-                  disabled={selectedCourses.find(c => c.kodu === course.kodu)}
-                  onClick={() => handleAddCourse(course)}
-                  style={{ opacity: selectedCourses.find(c => c.kodu === course.kodu) ? 0.5 : 1, cursor: selectedCourses.find(c => c.kodu === course.kodu) ? 'not-allowed' : 'pointer' }}
-                >
-                  <Plus size={18} /> {t('studentDashboard.registration.add')}
-                </button>
+                {selectedCourses.find(c => c.kodu === course.kodu) ? (
+                  <button 
+                    className="btn-remove-mobile mobile-full-width"
+                    onClick={() => handleRemoveCourse(course.kodu)}
+                    style={{ backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  >
+                    <Trash2 size={18} /> {t('common.remove')}
+                  </button>
+                ) : (
+                  <button 
+                    className="btn-add mobile-full-width"
+                    disabled={selectedCourses.find(c => c.kodu === course.kodu)}
+                    onClick={() => handleAddCourse(course)}
+                    style={{ opacity: selectedCourses.find(c => c.kodu === course.kodu) ? 0.5 : 1, cursor: selectedCourses.find(c => c.kodu === course.kodu) ? 'not-allowed' : 'pointer' }}
+                  >
+                    <Plus size={18} /> {t('studentDashboard.registration.add')}
+                  </button>
+                )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* 3. Sağ Taraf: Seçilen Dersler Özeti */}
+        {/* 3. Sağ Taraf: Seçilen Dersler Özeti (Masaüstü: Sağda, Mobil: Altta) */}
         <div className="reg-right">
           <h3 style={{ margin: '0 0 20px 0', color: 'var(--text-main)' }}>{t('studentDashboard.registration.selected')}</h3>
           
@@ -131,6 +139,17 @@ const DersKayit = () => {
             {t('common.save')}
           </button>
         </div>
+      </div>
+
+      {/* Mobil Yapışkan Sepet (Sticky Bottom Bar) */}
+      <div className="mobile-sticky-basket">
+        <div className="basket-info">
+          <span className="basket-label">{t('studentDashboard.registration.totalCredit')}:</span>
+          <span className="basket-value">{totalCredits} / 30</span>
+        </div>
+        <button className="btn-save-mobile">
+          {t('common.save')}
+        </button>
       </div>
     </div>
   );
