@@ -8,6 +8,7 @@ from apps.enrollments.views import (
     OgrenciDersKayitView,
     OgrenciDersListeView,
     OgrenciTranskriptView,
+    OgrenciTranskriptPDFView,
 )
 
 app_name = "enrollments"
@@ -20,6 +21,9 @@ urlpatterns = [
 
     # GET  /api/student/transcript/
     path("student/transcript/", OgrenciTranskriptView.as_view(), name="ogrenci-transkript"),
+
+    # GET /api/student/transcript/pdf/
+    path('student/transcript/pdf/', OgrenciTranskriptPDFView.as_view(), name='ogrenci-transkript-pdf'),
 
     # POST /api/student/enrollments/
     path("student/enrollments/", OgrenciDersKayitView.as_view(), name="ogrenci-ders-kayit"),

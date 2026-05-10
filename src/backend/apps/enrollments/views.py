@@ -3,11 +3,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.http import HttpResponse
+
 from apps.enrollments.models import DersKaydi
 from apps.enrollments.serializers import (
     DersKaydiOkuSerializer,
     NotGuncellemeSerializer,
-    TranskriptKaydiSerializer,
     TranskriptSerializer,
 )
 from apps.enrollments.services import EnrollmentService, GradeService
@@ -86,6 +87,28 @@ class OgrenciTranskriptView(APIView):
         }
         serializer = TranskriptSerializer(data)
         return Response(serializer.data)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  ÖĞRENCİ — transkript pdf indir
+#  GET /api/student/transcript/pdf/
+# ─────────────────────────────────────────────────────────────────────────────
+
+class OgrenciTranskriptPDFView(APIView):
+    """
+    GET /api/student/transcript/pdf/
+    Öğrencinin transkriptini PDF olarak indirir.
+    """
+    permission_classes = [IsOgrenci]
+
+    def get(self, request):
+        ogrenci = request.user.ogrenci
+        pdf_buffer = EnrollmentService.transkript_pdf(ogrenci)
+
+        # Response
+        response = HttpResponse(pdf_buffer, content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="transkript_{ogrenci.ogr_no}.pdf"'
+        return response
 
 
 # ─────────────────────────────────────────────────────────────────────────────
