@@ -112,8 +112,11 @@ body {
   font-weight: 500;
   cursor: pointer;
   outline: none;
+  appearance: none; /* Standart ok işaretini gizle */
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
-.lang-option {
+.lang-select option {
   background-color: var(--card-bg);
   color: var(--text-main);
 }
@@ -1122,35 +1125,51 @@ body {
 
   /* 1. LAYOUT & HEADER */
   .panel-header {
-    padding: 12px 16px;
+    padding: 10px 12px; /* Daha dar padding */
     position: sticky;
     top: 0;
     z-index: 1000;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    gap: 8px; /* Elemanlar arası boşluk */
+  }
+  .panel-header-left {
+    gap: 10px !important;
+    min-width: 0; /* Daralmaya izin ver */
   }
   .panel-header-right {
     display: flex !important;
-    flex-direction: column !important;
-    gap: 4px !important;
-    align-items: flex-end !important;
+    flex-direction: row !important; /* Yan yana tutalım ama küçültelim */
+    gap: 8px !important;
+    align-items: center !important;
+  }
+  .theme-toggle-btn {
+    padding: 6px !important;
+  }
+  .lang-switcher {
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
   }
   .lang-select {
-    padding: 2px 8px !important;
-    font-size: 11px !important;
-    height: auto !important;
+    padding: 0 !important;
+    font-size: 12px !important;
   }
   .logout-btn {
-    padding: 4px 10px !important;
-    font-size: 11px !important;
-    background-color: rgba(239, 68, 68, 0.1) !important;
+    padding: 6px 10px !important;
+    font-size: 0 !important; /* Yazıyı gizle sadece ikon kalsın */
+    background-color: #fee2e2 !important;
     color: #ef4444 !important;
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
   }
-  .logout-btn span { font-size: 11px !important; }
-  .logout-btn svg { width: 14px !important; height: 14px !important; }
+  .logout-btn span { display: none !important; }
+  .logout-btn svg { width: 18px !important; height: 18px !important; margin: 0 !important; }
   
-  .panel-logo-box { width: 36px; height: 36px; }
-  .panel-title { font-size: 15px; }
-  .panel-subtitle { font-size: 11px; }
+  .panel-logo-box { width: 32px !important; height: 32px !important; flex-shrink: 0; }
+  .panel-logo-box svg { width: 18px !important; height: 18px !important; }
+  .panel-title { font-size: 14px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .panel-subtitle { font-size: 10px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
   
   .panel-nav-container {
     margin: 12px 16px 0 16px !important;
@@ -1179,7 +1198,10 @@ body {
     border-bottom-color: var(--primary-blue) !important;
   }
 
-  .panel-main-content { padding: 16px !important; }
+  .panel-main-content { 
+    padding: 16px !important; 
+    padding-bottom: 80px !important; /* Alt barın (sticky basket) içeriği kapatmaması için */
+  }
 
   /* 2. GENEL BAKIŞ (ÖĞRENCİ) & AKADEMİSYEN ÖZET */
   .stats-grid,
@@ -1273,6 +1295,19 @@ body {
     font-size: 15px;
   }
   .registration-grid { grid-template-columns: 1fr !important; }
+  
+  /* Mobilde sağ taraftaki (akış içindeki) kaydet butonunu gizle, çünkü altta sabit bar var */
+  .reg-right .btn-add {
+    display: none !important;
+  }
+
+  .credit-summary {
+    margin-top: 24px !important;
+    background: rgba(59, 111, 212, 0.05);
+    padding: 12px !important;
+    border-radius: 8px;
+    border: none !important;
+  }
 
   /* 5. TRANSKRİPT */
   .banner-purple {
@@ -1282,8 +1317,36 @@ body {
     text-align: center;
   }
   .banner-purple .btn-white { width: 100%; justify-content: center; padding: 14px; }
-  .summary-grid .summary-card:first-child { grid-column: auto; }
-  .transcript-summary-grid .summary-card:first-child { grid-column: span 2; } /* Sadece transkriptte GNO tam genişlik */
+  .transcript-summary-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+  .transcript-summary-grid .summary-card {
+    padding: 12px 4px !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    min-height: 90px;
+    justify-content: center;
+  }
+  .transcript-summary-grid .summary-card .icon-box {
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 auto !important;
+  }
+  .transcript-summary-grid .summary-card .icon-box svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .transcript-summary-grid .summary-card h3 {
+    font-size: 15px !important;
+    margin: 0 !important;
+  }
+  .transcript-summary-grid .summary-card p {
+    font-size: 10px !important;
+    margin: 0 !important;
+    white-space: nowrap;
+  }
+  .transcript-summary-grid .summary-card:first-child { grid-column: auto !important; }
   
   /* Transkript tablosunda gereksizleri gizle */
   .transcript-table-container .grades-table td:nth-child(1),
@@ -1338,26 +1401,33 @@ body {
     gap: 12px !important; 
     margin: 20px 0 32px 0 !important; 
   }
-  .search-input-wrapper { 
+  .panel-main-content .filter-row .search-input-wrapper { 
     width: 90% !important; 
     margin: 0 auto !important;
-    height: 52px !important;
+    height: 60px !important;
   }
-  .search-input-wrapper input {
-    text-align: center !important;
-  }
-  div.filter-row select.status-select { 
+  .panel-main-content .filter-row .status-select { 
     display: block !important;
-    width: 90% !important; 
-    height: 52px !important;
-    padding: 0 16px !important;
+    appearance: none !important; 
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 90% !important; /* Eski haline (%90) geri getirildi */
+    height: 35px !important; 
+    line-height: 35px !important; 
+    padding: 0 40px 0 16px !important; 
     border-radius: 12px !important;
-    margin: 0 auto !important;
+    margin: 16px auto !important; 
     border: 1px solid var(--border-color) !important;
     background-color: var(--card-bg) !important;
-    font-size: 15px !important;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 16px center !important;
+    background-size: 12px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
     text-align: center !important;
     text-align-last: center !important;
+    outline: none !important;
   }
 
   /* 7. TABLOLAR (GENEL) */

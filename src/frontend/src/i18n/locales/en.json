@@ -4,6 +4,7 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
+    "remove": "Remove",
     "loading": "Loading...",
     "error": "An unexpected error occurred.",
     "success": "Operation completed successfully."
@@ -41,6 +42,7 @@
       "currentTerm": "2025-2026 Spring Term",
       "midterm": "Midterm",
       "final": "Final",
+      "currentGradesTitle": "Current Term Grades",
       "pastGrades": "Past Term Grades",
       "pastTerm": "2024-2025 Fall Term",
       "course": "Course",
@@ -142,7 +144,7 @@
   },
   "nav": {
     "home": "Home",
-    "languageSelect": "Language",
+    "languageSelect": "Language Selection",
     "backToHome": "Back to Home"
   },
   "app": {
@@ -154,7 +156,7 @@
     "studentDesc": "Course selection, grades and transcript",
     "academician": "Academician",
     "academicianDesc": "Course management and grade entry",
-    "admin": "Admin",
+    "admin": "Administrator",
     "adminDesc": "System and user management"
   },
   "form": {
@@ -169,7 +171,7 @@
     "required": "This field is required.",
     "login": "Login failed."
   },
-"data": {
+  "data": {
     "courses": {
       "CS101": "Introduction to Programming",
       "MATH101": "Mathematics I",
@@ -192,7 +194,9 @@
     },
     "terms": {
       "2023_fall": "Fall 2023-2024",
+      "2023_spring": "Spring 2023-2024",
       "2024_fall": "Fall 2024-2025",
+      "2024_spring": "Spring 2024-2025",
       "2025_spring": "Spring 2025-2026",
       "2026_fall": "Fall 2026"
     },
@@ -201,6 +205,9 @@
       "grade_2": "2nd Grade",
       "grade_3": "3rd Grade",
       "grade_4": "4th Grade"
+    },
+    "departments": {
+      "computerEngineering": "Computer Engineering"
     }
   }
 }

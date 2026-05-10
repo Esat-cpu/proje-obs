@@ -5,18 +5,29 @@ build/
 dist/
 wheels/
 *.egg-info
+*.log
 
 # Virtual environments
-.venv
+.venv/
+venv/
+src/backend/venv/
+ENV/
 
 # env
 .env
+.env.local
 
 # db
 db.sqlite3
 
 # vs code
 .vscode/
+
+# Node.js
+node_modules/
+src/frontend/node_modules/
+dist/
+build/
 
 # staticfiles
 staticfiles/

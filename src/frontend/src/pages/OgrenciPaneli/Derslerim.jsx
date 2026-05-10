@@ -8,10 +8,10 @@ const Derslerim = () => {
   // Öğrenci ders verisi
   // NOT: 'donem' ve 'sinif' değerleri dil dosyasındaki anahtarlar (key) ile birebir aynı olmalıdır.
   const studentCourses = [
-    { kodu: 'CS301', hoca: 'Prof. Dr. Ahmet Yılmaz', donem: '2026_fall', sinif: 'grade_2', kredi: 6 },
-    { kodu: 'CS302', hoca: 'Doç. Dr. Ayşe Kaya', donem: '2026_fall', sinif: 'grade_2', kredi: 5 },
-    { kodu: 'CS303', hoca: 'Prof. Dr. Mehmet Demir', donem: '2026_fall', sinif: 'grade_2', kredi: 6 },
-    { kodu: 'CS304', hoca: 'Dr. Öğr. Üyesi Fatma Şahin', donem: '2026_fall', sinif: 'grade_2', kredi: 5 }
+    { kodu: 'CS301', unvan: 'prof', hoca: 'Ahmet Yılmaz', donem: '2026_fall', sinif: 'grade_2', kredi: 6 },
+    { kodu: 'CS302', unvan: 'doc', hoca: 'Ayşe Kaya', donem: '2026_fall', sinif: 'grade_2', kredi: 5 },
+    { kodu: 'CS303', unvan: 'prof', hoca: 'Mehmet Demir', donem: '2026_fall', sinif: 'grade_2', kredi: 6 },
+    { kodu: 'CS304', unvan: 'asst', hoca: 'Fatma Şahin', donem: '2026_fall', sinif: 'grade_2', kredi: 5 }
   ];
 
   const columns = [
@@ -21,21 +21,18 @@ const Derslerim = () => {
     },
     { 
       header: t('studentDashboard.courses.name'), 
-      // t(`data.courses.CS301`) -> "Veri Yapıları" veya "Data Structures"
       render: (row) => t(`data.courses.${row.kodu}`) 
     },
     { 
       header: t('studentDashboard.courses.instructor'), 
-      accessor: 'hoca' 
+      render: (row) => `${t(`data.titles.${row.unvan}`)} ${row.hoca}`
     },
     { 
       header: t('studentDashboard.courses.term'), 
-      // t(`data.terms.2026_fall`) -> "2026 Güz" veya "Fall 2026"
       render: (row) => t(`data.terms.${row.donem}`) 
     },
     { 
       header: t('studentDashboard.courses.classLevel'), 
-      // t(`data.classes.grade_2`) -> "2. Sınıf" veya "2nd Grade"
       render: (row) => t(`data.classes.${row.sinif}`) 
     },
     { 
@@ -59,7 +56,7 @@ const Derslerim = () => {
         {studentCourses.map((course) => (
           <div key={course.kodu} className="mobile-course-card">
             <div className="course-name">{t(`data.courses.${course.kodu}`)}</div>
-            <div className="course-instructor">{course.hoca}</div>
+            <div className="course-instructor">{t(`data.titles.${course.unvan}`)} {course.hoca}</div>
             <div className="course-badges">
               <span className="badge-pill">{course.kredi} {t('studentDashboard.courses.credit')}</span>
               <span className="badge-pill">{t(`data.terms.${course.donem}`)}</span>
