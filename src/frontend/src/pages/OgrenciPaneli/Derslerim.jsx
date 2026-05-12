@@ -1,67 +1,52 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import DataTable from '../../components/ui/DataTable';
 
 const Derslerim = () => {
   const { t } = useTranslation();
 
-  // Öğrenci ders verisi
-  // NOT: 'donem' ve 'sinif' değerleri dil dosyasındaki anahtarlar (key) ile birebir aynı olmalıdır.
   const studentCourses = [
     { kodu: 'CS301', unvan: 'prof', hoca: 'Ahmet Yılmaz', donem: '2026_fall', sinif: 'grade_2', kredi: 6 },
     { kodu: 'CS302', unvan: 'doc', hoca: 'Ayşe Kaya', donem: '2026_fall', sinif: 'grade_2', kredi: 5 },
     { kodu: 'CS303', unvan: 'prof', hoca: 'Mehmet Demir', donem: '2026_fall', sinif: 'grade_2', kredi: 6 },
-    { kodu: 'CS304', unvan: 'asst', hoca: 'Fatma Şahin', donem: '2026_fall', sinif: 'grade_2', kredi: 5 }
-  ];
-
-  const columns = [
-    { 
-      header: t('studentDashboard.courses.code'), 
-      accessor: 'kodu' 
-    },
-    { 
-      header: t('studentDashboard.courses.name'), 
-      render: (row) => t(`data.courses.${row.kodu}`) 
-    },
-    { 
-      header: t('studentDashboard.courses.instructor'), 
-      render: (row) => `${t(`data.titles.${row.unvan}`)} ${row.hoca}`
-    },
-    { 
-      header: t('studentDashboard.courses.term'), 
-      render: (row) => t(`data.terms.${row.donem}`) 
-    },
-    { 
-      header: t('studentDashboard.courses.classLevel'), 
-      render: (row) => t(`data.classes.${row.sinif}`) 
-    },
-    { 
-      header: t('studentDashboard.courses.credit'), 
-      accessor: 'kredi' 
-    }
+    { kodu: 'CS304', unvan: 'asst', hoca: 'Fatma Şahin', donem: '2026_fall', sinif: 'grade_2', kredi: 4 },
   ];
 
   return (
-    <div className="card-container no-padding">
-      <div style={{ padding: '24px' }}>
-        <h2 className="dash-section-title">{t('studentDashboard.courses.title')}</h2>
-      </div>
-      {/* Masaüstü Görünümü (Tablo) */}
-      <div className="grades-table-container desktop-only">
-        <DataTable columns={columns} data={studentCourses} />
-      </div>
+    <div className="dashboard-container">
+      <h2 className="dash-section-title">{t('studentDashboard.tabs.myCourses')}</h2>
+      <p className="dash-section-subtitle">{t('data.terms.2026_fall')}</p>
 
-      {/* Mobil Görünümü (Kartlar) */}
-      <div className="mobile-view" style={{ padding: '0 16px 16px' }}>
+      <div className="active-courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {studentCourses.map((course) => (
-          <div key={course.kodu} className="mobile-course-card">
-            <div className="course-name">{t(`data.courses.${course.kodu}`)}</div>
-            <div className="course-instructor">{t(`data.titles.${course.unvan}`)} {course.hoca}</div>
-            <div className="course-badges">
-              <span className="badge-pill">{course.kredi} {t('studentDashboard.courses.credit')}</span>
-              <span className="badge-pill">{t(`data.terms.${course.donem}`)}</span>
-              <span className="badge-pill">{t(`data.classes.${course.sinif}`)}</span>
+          <div key={course.kodu} className="active-course-card">
+
+            <div className="course-card-top">
+              <div className="course-info-header" style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span className="course-code">{course.kodu}</span>
+                <h4 className="course-name" style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: 'var(--text-main)' }}>
+                  {t(`data.courses.${course.kodu}`)}
+                </h4>
+                <span className="course-credit-badge" style={{ backgroundColor: '#f3f4f6', color: '#6b7280', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '600' }}>
+                  {course.kredi} {t('studentDashboard.courses.credit')}
+                </span>
+              </div>
             </div>
+
+            <p className="teacher" style={{ margin: '4px 0 24px', fontSize: '13px', color: 'var(--text-muted)' }}>
+              {t(`data.titles.${course.unvan}`)} {course.hoca}
+            </p>
+
+            <div className="course-grades" style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+              <div className="grade-item">
+                <span className="grade-label">{t('studentDashboard.courses.term')}</span>
+                <span className="grade-value text-blue">{t(`data.terms.${course.donem}`)}</span>
+              </div>
+              <div className="grade-item" style={{ textAlign: 'right' }}>
+                <span className="grade-label">{t('studentDashboard.courses.classLevel')}</span>
+                <span className="grade-value" style={{ color: 'var(--text-muted)' }}>{t(`data.classes.${course.sinif}`)}</span>
+              </div>
+            </div>
+
           </div>
         ))}
       </div>
