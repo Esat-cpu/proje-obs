@@ -6,13 +6,11 @@ import DataTable from '../../components/ui/DataTable';
 const GenelBakis = () => {
   const { t } = useTranslation();
 
-  // Mockup'a uygun Aktif Dersler Dizisi (Ünvanlar ayrılmış şekilde)
   const activeCourses = [
     { kodu: 'CS301', kredi: 6, unvan: 'prof', hoca: 'Ahmet Yılmaz', vize: 85, final: '-' },
     { kodu: 'CS302', kredi: 5, unvan: 'doc', hoca: 'Ayşe Kaya', vize: 90, final: '-' }
   ];
-  
-  // Geçmiş Dönem Notları
+
   const pastGrades = [
     { kodu: 'CS201', vize: 85, final: 90, harf: 'AA' },
     { kodu: 'CS202', vize: 75, final: 80, harf: 'BB' },
@@ -20,9 +18,75 @@ const GenelBakis = () => {
     { kodu: 'CS204', vize: 80, final: 85, harf: 'BA' }
   ];
 
+  const activeColumns = [
+    {
+      header: t('studentDashboard.overview.course'),
+      render: (row) => (
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontWeight: '700', color: 'var(--text-main)', marginBottom: '2px' }}>{row.kodu}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{t(`data.courses.${row.kodu}`)}</div>
+        </div>
+      )
+    },
+    {
+      header: t('studentDashboard.courses.instructor'),
+      render: (row) => (
+        <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+          {t(`data.titles.${row.unvan}`)} {row.hoca}
+        </span>
+      )
+    },
+    {
+      header: t('studentDashboard.overview.credits'),
+      render: (row) => (
+        <span className="badge-pill">{row.kredi}</span>
+      )
+    },
+    { header: t('studentDashboard.overview.midterm'), accessor: 'vize' },
+    { header: t('studentDashboard.overview.final'), accessor: 'final' },
+  ];
+
+  const pastColumns = [
+    {
+      header: t('studentDashboard.overview.course'),
+      render: (row) => (
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontWeight: '700', color: 'var(--text-main)', marginBottom: '2px' }}>{row.kodu}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{t(`data.courses.${row.kodu}`)}</div>
+        </div>
+      )
+    },
+    { header: t('studentDashboard.overview.midterm'), accessor: 'vize' },
+    { header: t('studentDashboard.overview.final'), accessor: 'final' },
+    {
+      header: t('studentDashboard.overview.grade'),
+      render: (row) => {
+        const colors = {
+          'AA': { bg: '#d1fae5', text: '#065f46' },
+          'BA': { bg: '#dbeafe', text: '#1e40af' },
+          'BB': { bg: '#fef3c7', text: '#92400e' }
+        };
+        const style = colors[row.harf] || { bg: '#f3f4f6', text: '#374151' };
+        return (
+          <span style={{
+            backgroundColor: style.bg,
+            color: style.text,
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontWeight: '700',
+            fontSize: '12px',
+            display: 'inline-block',
+            minWidth: '40px'
+          }}>
+            {row.harf}
+          </span>
+        );
+      }
+    }
+  ];
+
   return (
     <div className="dashboard-container">
-      {/* 1. Üst İstatistik Kartları */}
       <div className="stats-grid">
         <div className="stat-card">
           <div className="icon-wrapper bg-blue-soft"><BookOpen size={24} color="#3b82f6" /></div>
@@ -47,91 +111,36 @@ const GenelBakis = () => {
       </div>
 
       <div className="dashboard-grid">
-        {/* 2. Sol Sütun: Aktif Dersler */}
         <div>
           <h2 className="dash-section-title">{t('studentDashboard.overview.activeCoursesNotes')}</h2>
           <p className="dash-section-subtitle">{t('data.terms.2025_spring')}</p>
-          
-          <div className="active-courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+          <div className="grades-table-container desktop-only card-container no-padding">
+            <DataTable columns={activeColumns} data={activeCourses} />
+          </div>
+
+          <div className="mobile-view" style={{ padding: '0 0 16px' }}>
             {activeCourses.map((course) => (
-              <div key={course.kodu} className="active-course-card">
-                <div className="course-card-top">
-                  <div className="course-info-header" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                    <span className="course-code">{course.kodu}</span>
-                    <h4 className="course-name" style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: 'var(--text-main)' }}>{t(`data.courses.${course.kodu}`)}</h4>
-                    <span className="course-credit-badge" style={{ backgroundColor: '#f3f4f6', color: '#6b7280', padding: '4px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: '600' }}>
-                      {course.kredi} {t('studentDashboard.overview.credits')}
-                    </span>
-                  </div>
-                </div>
-                
-                <p className="teacher" style={{ margin: '4px 0 24px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                  {t(`data.titles.${course.unvan}`)} {course.hoca}
-                </p>
-                
-                <div className="course-grades" style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                  <div className="grade-item">
-                    <span className="grade-label">{t('studentDashboard.overview.midterm')}</span>
-                    <span className="grade-value text-blue">{course.vize}</span>
-                  </div>
-                  <div className="grade-item" style={{ textAlign: 'right' }}>
-                    <span className="grade-label">{t('studentDashboard.overview.final')}</span>
-                    <span className="grade-value" style={{ color: 'var(--text-muted)' }}>{course.final}</span>
-                  </div>
+              <div key={course.kodu} className="mobile-course-card">
+                <div className="course-name">{t(`data.courses.${course.kodu}`)}</div>
+                <div className="course-instructor">{t(`data.titles.${course.unvan}`)} {course.hoca}</div>
+                <div className="course-badges">
+                  <span className="badge-pill">{course.kredi} {t('studentDashboard.overview.credits')}</span>
+                  <span className="badge-pill">{t('studentDashboard.overview.midterm')}: {course.vize}</span>
+                  <span className="badge-pill">{t('studentDashboard.overview.final')}: {course.final}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* 3. Sağ Sütun: Geçmiş Dönem Notları Tablosu */}
         <div>
           <h2 className="dash-section-title">{t('studentDashboard.overview.currentGradesTitle')}</h2>
           <p className="dash-section-subtitle">{t('studentDashboard.overview.currentTerm')}</p>
-          
-          <div className="grades-table-container card-container no-padding">
-            <DataTable 
-              columns={[
-                { 
-                  header: t('studentDashboard.overview.course'), 
-                  render: (row) => (
-                    <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontWeight: '700', color: 'var(--text-main)', marginBottom: '2px' }}>{row.kodu}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                        {t(`data.courses.${row.kodu}`)}
-                      </div>
-                    </div>
-                  )
-                },
-                { header: t('studentDashboard.overview.midterm'), accessor: 'vize' },
-                { header: t('studentDashboard.overview.final'), accessor: 'final' },
-                                { 
-                  header: t('studentDashboard.overview.grade'), 
-                  render: (row) => {
-                    const colors = {
-                      'AA': { bg: '#d1fae5', text: '#065f46' },
-                      'BA': { bg: '#dbeafe', text: '#1e40af' },
-                      'BB': { bg: '#fef3c7', text: '#92400e' }
-                    };
-                    const style = colors[row.harf] || { bg: '#f3f4f6', text: '#374151' };
-                    return (
-                      <span style={{
-                        backgroundColor: style.bg,
-                        color: style.text,
-                        padding: '6px 12px',
-                        borderRadius: '20px',
-                        fontWeight: '700',
-                        fontSize: '12px',
-                        display: 'inline-block',
-                        minWidth: '40px'
-                      }}>
-                        {row.harf}
-                      </span>
-                    );
-                  } 
-                }
 
-              ]}
+          <div className="grades-table-container card-container no-padding">
+            <DataTable
+              columns={pastColumns}
               data={pastGrades}
               footer={
                 <tr className="table-footer-row">
