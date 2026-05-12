@@ -1,15 +1,35 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Book, Users, ClipboardCheck, Clock } from 'lucide-react';
+import {useQuery} from '@tanstack/react-query';
+import { academicianService } from '../../shared/api/academicianService';
 
 const GenelBakis = () => {
   const { t } = useTranslation();
+  const {data, isLoading, isError} = useQuery({
+    queryKey: ['academicianDashboardSummary'],
+    queryFn: academicianService.getDashboardSummary,
+  })
 
+  if(isLoading){
+      return(
+      <div className='dashboard-container' style= {{display:'flex', justifyContent:'center', minHeight: '60vh'}}>
+        <h3> {t('common.loading', 'Yükleniyor...')} </h3>
+      </div>
+      );
+  }
+  if(isError){
+    return(
+      <div className='dashboard-container'>
+        <div style={{padding: '20px', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px'}}>
+          {t('common.error', 'veriler çekilirken hata oluştu.')}
+        </div>
+      </div>
+    );
+  }
+  const stats = data?.stats || {activeCourses: 0, totalStudents: 0, pendingGrades: 0, pendingApprovals: 0};
+  const courses = data?.courses || [];
   // Sabit Türkçe isimler silindi, sadece kodları (CS301, CS401) tutuyoruz
-  const courses = [
-    { id: 1, kodu: 'CS301', sinif: 'grade_3', kredi: 6, ogrenci: 45 },
-    { id: 2, kodu: 'CS401', sinif: 'grade_4', kredi: 6, ogrenci: 32 }
-  ];
 
   return (
     <div className="dashboard-container">
@@ -17,29 +37,31 @@ const GenelBakis = () => {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="icon-wrapper bg-green-soft"><Book size={24} color="#10b981" /></div>
-          <h3 className="stat-value">2</h3>
+          <h3 className="stat-value">{stats.activeCourses}</h3>
           <p className="stat-label">{t('academician.dashboard.activeCourses')}</p>
         </div>
         <div className="stat-card">
           <div className="icon-wrapper bg-blue-soft"><Users size={24} color="#2563eb" /></div>
-          <h3 className="stat-value">77</h3>
+          <h3 className="stat-value">{stats.totalStudents}</h3>
           <p className="stat-label">{t('academician.dashboard.totalStudents')}</p>
         </div>
         <div className="stat-card">
           <div className="icon-wrapper bg-purple-soft"><ClipboardCheck size={24} color="#8b5cf6" /></div>
-          <h3 className="stat-value">12</h3>
-          <p className="stat-label">{t('academician.dashboard.pendingGrades','Giriş Bekleyen Not')}</p>
+          <h3 className="stat-value">{stats.pendingGrades}</h3>
+          <p className="stat-label">{t('academician.dashboard.pendingGrades', 'Giriş Bekleyen Not')}</p>
         </div>
         <div className="stat-card">
           <div className="icon-wrapper bg-orange-soft"><Clock size={24} color="#ea580c" /></div>
-          <h3 className="stat-value">4</h3>
-          <p className="stat-label">{t('academician.dashboard.pendingApprovals','Kayıt Onayı Bekleyen')}</p>
+          <h3 className="stat-value">{stats.pendingApprovals}</h3>
+          <p className="stat-label">{t('academician.dashboard.pendingApprovals', 'Kayıt Onayı Bekleyen')}</p>
         </div>
       </div>
       
-        <div className="active-courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
-          {courses.map(course => (
-            <div key={course.id} className="active-course-card">
+      {/* Aktif Dersler Listesi */}
+      <div className="active-courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
+        {courses.length > 0 ? (
+          courses.map((course, index) => (
+            <div key={index} className="active-course-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="course-content-left">
                   <div className="course-head">
@@ -49,20 +71,24 @@ const GenelBakis = () => {
                       {course.kredi} {t('studentDashboard.overview.credits', 'Kredi')}
                     </span>
                   </div>
-                  {/* DERS ADI BURADA ÇEVRİLİYOR */}
                   <h4 className="course-name" style={{ marginTop: '8px', marginBottom: '4px', color: 'var(--text-main)' }}>
                     {t(`data.courses.${course.kodu}`)}
                   </h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '13px' }}>
                     <Users size={14} />
-                    <span>{course.ogrenci} {t('academician.courses.studentCount')}</span>
+                    <span>{course.ogrenci_sayisi} {t('academician.courses.studentCount')}</span>
                   </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        ) : (
+          <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>
+            Henüz aktif bir dersiniz bulunmuyor.
+          </div>
+        )}
       </div>
+    </div>
   );
 };
 
