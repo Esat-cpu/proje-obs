@@ -5,7 +5,6 @@ from django.utils import timezone
 
 from io import BytesIO
 from django.template.loader import render_to_string
-from weasyprint import HTML
 
 from apps.courses.models import DonemDersi
 from apps.enrollments.models import DersKaydi, DersKayitDonemi
@@ -125,6 +124,73 @@ class EnrollmentService:
     def transkript_pdf(ogrenci) -> BytesIO:
         from collections import defaultdict
 
+        from reportlab.platypus import (
+            SimpleDocTemplate,
+            Paragraph,
+            Spacer,
+            Table,
+            TableStyle
+        )
+        from reportlab.lib import colors
+        from reportlab.lib.styles import ParagraphStyle
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+
+        # Font
+        pdfmetrics.registerFont(
+            TTFont("DejaVu", "fonts/DejaVuSans.ttf")
+        )
+        pdfmetrics.registerFont(
+            TTFont("DejaVu-Bold", "fonts/DejaVuSans-Bold.ttf")
+        )
+
+        base_style = ParagraphStyle(
+            name="Base",
+            fontName="DejaVu",
+            fontSize=9,
+            leading=11,
+            leftIndent=0,
+            spaceBefore=0,
+            spaceAfter=4
+        )
+
+        title_style = ParagraphStyle(
+            name="Title",
+            fontName="DejaVu-Bold",
+            fontSize=13,
+            alignment=1,
+            spaceAfter=10
+        )
+
+        buffer = BytesIO()
+
+        doc = SimpleDocTemplate(
+            buffer,
+            leftMargin=50,
+            rightMargin=50,
+            topMargin=40,
+            bottomMargin=40
+        )
+
+        elements = []
+
+        # 1. Başlık
+        elements.append(Paragraph("AKADEMİK TRANSKRİPT", title_style))
+        elements.append(Spacer(1, 8))
+
+        # 2. Öğrenci Bilgileri
+        info_text = f"""
+        <font name="DejaVu-Bold">Öğrenci No:</font> {ogrenci.ogr_no}<br/>
+        <font name="DejaVu-Bold">Ad Soyad:</font> {ogrenci.user.tam_ad()}<br/>
+        <font name="DejaVu-Bold">Bölüm:</font> {ogrenci.bolum.ad}<br/>
+        <font name="DejaVu-Bold">Sınıf:</font> {ogrenci.sinif}<br/>
+        <font name="DejaVu-Bold">GPA:</font> {ogrenci.gpa}
+        """
+
+        elements.append(Paragraph(info_text, base_style))
+        elements.append(Spacer(1, 12))
+
+        # 3. Gruplama
         kayitlar = EnrollmentService.transkript_getir(ogrenci)
 
         gruplar = defaultdict(list)
@@ -133,27 +199,82 @@ class EnrollmentService:
             key = (k.donem_dersi.yil, k.donem_dersi.donem)
             gruplar[key].append(k)
 
-        # template için uygun formata çevir
-        donem_listesi = [
-            {
-                "yil": yil,
-                "donem": donem,
-                "dersler": dersler
-            }
-            for (yil, donem), dersler in sorted(gruplar.items())
-        ]
+        donem_listesi = sorted(gruplar.items())
 
-        html = render_to_string(
-            "pdf/transkript.html",
-            {
-                "ogrenci": ogrenci,
-                "donem_listesi": donem_listesi,
-            }
-        )
+        # Dönemler ve Tablolar
+        for (yil, donem), dersler in donem_listesi:
 
-        pdf = HTML(string=html).write_pdf()
+            # dönem başlığı
+            donem_style = ParagraphStyle(
+                name="DonemStyle",
+                fontName="DejaVu-Bold",
+                fontSize=10,
+                leftIndent=0,
+                spaceBefore=4,
+                spaceAfter=6
+            )
+            elements.append(Paragraph(f"{yil} - {donem}", donem_style))
+            elements.append(Spacer(1, 4))
 
-        buffer = BytesIO(pdf)
+            data = [[
+                "Ders Kodu",
+                "Ders Adı",
+                "Kredi",
+                "Vize",
+                "Final",
+                "Ortalama",
+                "Harf"
+            ]]
+
+            for k in dersler:
+                data.append([
+                    k.donem_dersi.ders.ders_kodu,
+                    k.donem_dersi.ders.ad,
+                    str(k.donem_dersi.ders.kredi),
+                    str(k.vize_notu or "--"),
+                    str(k.final_notu or "--"),
+                    str(k.ortalama or "--"),
+                    str(k.harf_notu or "--")
+                ])
+
+            table = Table(
+                data,
+                repeatRows=1,
+                colWidths=[70, 165, 45, 45, 45, 55, 45]
+            )
+
+            table.setStyle(TableStyle([
+                # HEADER
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1f4e79")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, 0), "DejaVu-Bold"),
+                ("FONTSIZE", (0, 0), (-1, 0), 8),
+
+                # BODY
+                ("FONTNAME", (0, 1), (-1, -1), "DejaVu"),
+                ("FONTSIZE", (0, 1), (-1, -1), 7.5),
+
+                # ALIGNMENT
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("ALIGN", (1, 1), (1, -1), "LEFT"),
+
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+
+                # GRID
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+
+                # PADDING (temiz görünüm)
+                ("LEFTPADDING", (0, 0), (-1, -1), 3),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+                ("TOPPADDING", (0, 0), (-1, -1), 2),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+            ]))
+
+            elements.append(table)
+            elements.append(Spacer(1, 12))
+
+        doc.build(elements)
+
         buffer.seek(0)
         return buffer
 
