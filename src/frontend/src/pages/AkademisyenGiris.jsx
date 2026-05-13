@@ -4,7 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { Users, Eye, EyeOff, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
+import {useMutation} from "@tanstack/react-query";
 import axiosClient from "../shared/api/axiosClient";
+import authService from "../shared/api/authServices";
 
 const AkademisyenGiris = () => {
     const { t } = useTranslation();
@@ -27,7 +29,22 @@ const AkademisyenGiris = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setErrors({ ...errors, [e.target.name]: "" });
     };
-
+    const loginMutation = useMutation({
+        mutationFn: authService.login,
+        onSuccess: (data) => {
+            // Backend'in SimpleJWT yapısına göre access ve refresh döner
+            const token = data.access || data.token; 
+            const refreshToken = data.refresh || null;
+            const role = data.role || "Akademisyen";
+            
+            login(token, role, refreshToken);
+            navigate("/academician");
+        },
+        onError: (err) => {
+            console.error("Akademisyen giriş hatası:", err);
+            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
+        }
+    });
     const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validate();
@@ -35,22 +52,10 @@ const AkademisyenGiris = () => {
             setErrors(validationErrors);
             return;
         }
-        setLoading(true);
-        try {
-            const response = await axiosClient.post("/api/auth/token/", { //?
-                username: formData.username,
-                password: formData.sifre
-            });
-            const { token, role } = response.data;
-            login(token, role || "Akademisyen");
-            navigate("/academician");
-
-        } catch (err) {
-            console.error("Akademisyen giriş hatası:", err);
-            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
-        } finally {
-            setLoading(false);
-        }
+        loginMutation.mutate({
+            username: formData.username,
+            password: formData.sifre
+        });
     };
 
     return (
