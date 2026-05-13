@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer } from "react";
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 const initialState = {
     token: localStorage.getItem("access_token") || null,
