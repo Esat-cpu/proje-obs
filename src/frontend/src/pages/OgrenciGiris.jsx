@@ -4,7 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { User, Eye, EyeOff, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import axiosClient from "../shared/api/axiosClient";
+import authService from "../shared/api/authServices";
 
 const OgrenciGiris = () => {
     const { t } = useTranslation();
@@ -27,7 +29,21 @@ const OgrenciGiris = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setErrors({ ...errors, [e.target.name]: "" });
     };
-
+    const loginMutation = useMutation({
+        mutationFn: authService.login, // authService içindeki login metodunu kullanıyoruz
+        onSuccess: (data) => {
+            const token = data.access || data.token; 
+            const refreshToken = data.refresh || null;
+            const role = data.role || "Ogrenci";
+            
+            login(token, role, refreshToken);
+            navigate("/student");
+        },
+        onError: (err) => {
+            console.error("Öğrenci giriş hatası:", err);
+            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
+        }
+    });
     const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validate();
@@ -35,23 +51,10 @@ const OgrenciGiris = () => {
             setErrors(validationErrors);
             return;
         }
-        setLoading(true);
-        try {
-            const response = await axiosClient.post("/api/auth/token/", { //backende yönlendirilecek jwt kullanılacak mı ?
-                username: formData.ogr_no,
-                password: formData.sifre
-            });
-
-            const { token, role } = response.data;
-            login(token, role || "Ogrenci");
-            navigate("/student");
-
-        } catch (err) {
-            console.error("Öğrenci giriş hatası:", err);
-            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
-        } finally {
-            setLoading(false);
-        }
+        loginMutation.mutate({
+            username: formData.ogr_no, // Backend username beklediği için eşleştiriyoruz
+            password: formData.sifre
+        });
     };
 
     return (

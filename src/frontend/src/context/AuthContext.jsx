@@ -3,9 +3,9 @@ import { createContext, useContext, useReducer } from "react";
 const AuthContext = createContext(null);
 
 const initialState = {
-    token: localStorage.getItem("token") || null,
+    token: localStorage.getItem("access_token") || null,
     role: localStorage.getItem("role") || null,
-    isAuthenticated: !!localStorage.getItem("token"),
+    isAuthenticated: !!localStorage.getItem("access_token"),
 };
 
 function authReducer(state, action) {
@@ -31,15 +31,15 @@ export function AuthProvider({ children }) {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
     const login = (token, role, refreshToken = null) => {
-        localStorage.setItem("token", token);
+        localStorage.setItem("access_token", token);
         localStorage.setItem("role", role);
-        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+        if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
         dispatch({ type: "LOGIN", payload: { token, role } });
     };
 
     const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         localStorage.removeItem("role");
         dispatch({ type: "LOGOUT" });
     };

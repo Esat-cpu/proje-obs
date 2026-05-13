@@ -10,7 +10,7 @@ const axiosClient = axios.create({
 // REQUEST interceptor — her isteğe token ekle
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,7 +27,7 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
 
     // Login isteği 401 aldıysa refresh deneme, hatayı direkt döndür
-    if (originalRequest.url?.includes("/api/auth/token/")) {
+    if (originalRequest.url?.includes("token")) {
       return Promise.reject(error);
     }
 
