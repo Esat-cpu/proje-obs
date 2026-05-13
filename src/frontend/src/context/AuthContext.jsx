@@ -33,13 +33,13 @@ export function AuthProvider({ children }) {
     const login = (token, role, refreshToken = null) => {
         localStorage.setItem("access_token", token);
         localStorage.setItem("role", role);
-        if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
         dispatch({ type: "LOGIN", payload: { token, role } });
     };
 
     const logout = () => {
         localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("role");
         dispatch({ type: "LOGOUT" });
     };
