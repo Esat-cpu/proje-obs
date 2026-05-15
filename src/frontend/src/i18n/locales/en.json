@@ -1,5 +1,8 @@
 {
   "common": {
+     "grade": "Grade",
+    "loading": "Loading...",
+    "error": "An error occurred.",
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
@@ -105,7 +108,8 @@
       "notEntry": "Grade Entry",
       "notEntered": "grades not entered",
       "goToGrades": "Go to Grade Entry",
-      "reviewRequests": "Review Requests"
+      "reviewRequests": "Review Requests",
+      "noActiveCourses": "You do not have any active courses yet."
     },
     "courses": {
       "title": "2025-2026 Fall Semester Active Courses",
@@ -115,7 +119,9 @@
       "studentCount": "Student Count",
       "actionBtn": "Student List / Enter Grade",
       "backBtn": "Back to Courses",
-      "saveBtn": "Save Grades"
+      "saveBtn": "Save Grades",
+      "student": "Students",
+      "quota": "Quota"
     },
     "approvals": {
       "bannerTitle": "Course Registration Approval System",

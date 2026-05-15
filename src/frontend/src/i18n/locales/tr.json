@@ -7,7 +7,10 @@
     "remove": "Kaldır",
     "loading": "Yükleniyor...",
     "error": "Beklenmeyen bir hata oluştu.",
-    "success": "İşlem başarıyla tamamlandı."
+    "success": "İşlem başarıyla tamamlandı.",
+    "grade": "Sınıf",
+    "loading": "Yükleniyor...",
+    "error": "Veriler çekilirken hata oluştu."
   },
   "auth": {
     "loginTitle": "OBS Giriş",
@@ -98,8 +101,8 @@
     "dashboard": {
       "activeCourses": "Aktif Ders",
       "totalStudents": "Toplam Öğrenci",
-      "pendingGrades": "Giriş Bekleyen Not",
-      "pendingApprovals": "Kayıt Onayı Bekleyen",
+      "pendingGrades": "Giriş Bekleyen Notlar",
+      "pendingApprovals": "Bekleyen Kayıt Onayları",
       "myCourses": "Verdiğim Dersler",
       "currentSemester": "2025-2026 Bahar Dönemi",
       "notEntry": "Not Girişi",
@@ -115,7 +118,9 @@
       "studentCount": "Öğrenci Sayısı",
       "actionBtn": "Öğrenci Listesi / Not Gir",
       "backBtn": "Derslere Dön",
-      "saveBtn": "Notları Kaydet"
+      "saveBtn": "Notları Kaydet",
+      "student": "Öğrenci",
+      "quota": "Kontenjan"
     },
     "approvals": {
       "bannerTitle": "Ders Kaydı Onay Sistemi",
@@ -140,7 +145,8 @@
     }
   },
   "dashboard": {
-    "welcomeMessage": "Hoş Geldiniz, {{name}}"
+    "welcomeMessage": "Hoş Geldiniz, {{name}}",
+    "noActiveCourses": "Henüz aktif bir dersiniz bulunmuyor."
   },
   "nav": {
     "home": "Anasayfa",
