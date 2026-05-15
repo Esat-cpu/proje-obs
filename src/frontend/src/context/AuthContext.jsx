@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer } from "react";
+import authService from "../shared/api/authServices";
 const AuthContext = createContext(null);
 
 const initialState = {
@@ -36,11 +37,17 @@ export function AuthProvider({ children }) {
         dispatch({ type: "LOGIN", payload: { token, role } });
     };
 
-    const logout = () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("role");
-        dispatch({ type: "LOGOUT" });
+    const logout = async () => {
+        try {
+            await authService.logout();
+        } catch (error) {
+            console.warn("Logout request failed:", error);
+        } finally {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("role");
+            dispatch({ type: "LOGOUT" });
+        }
     };
 
     return (
