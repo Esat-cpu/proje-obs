@@ -10,9 +10,9 @@ const PanelLayout = ({ title, userName, navItems, children, logoColor = "var(--p
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { logout } = useAuth(); 
-  const handleLogout = () => {
-    logout();     
-    navigate("/"); 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
