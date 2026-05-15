@@ -35,7 +35,7 @@ axiosClient.interceptors.response.use(
       const refreshToken = localStorage.getItem("refreshToken");
 
       if (!refreshToken) {
-        localStorage.removeItem("token");
+        localStorage.removeItem("access_token");
         localStorage.removeItem("role");
         window.location.href = "/";
         return Promise.reject(error);
@@ -50,12 +50,16 @@ axiosClient.interceptors.response.use(
           { refresh: refreshToken }
         );
         const newToken = response.data.access;
-        localStorage.setItem("token", newToken);
+        const newRefreshToken = response.data.refresh;
+        localStorage.setItem("access_token", newToken);
+        if (newRefreshToken) {
+            localStorage.setItem("refreshToken", newRefreshToken);
+        }
         axiosClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosClient(originalRequest);
       } catch (refreshError) {
-        localStorage.removeItem("token");
+        localStorage.removeItem("access_token");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("role");
         window.location.href = "/";
