@@ -1,36 +1,53 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Book, Users, ClipboardCheck, Clock } from 'lucide-react';
-import {useQuery} from '@tanstack/react-query';
-import { academicianService } from '../../shared/api/academicianService';
+import { useQuery } from '@tanstack/react-query';
+import academicianService from '../../shared/api/academicianService.js';
 
 const GenelBakis = () => {
   const { t } = useTranslation();
-  const {data, isLoading, isError} = useQuery({
-    queryKey: ['academicianDashboardSummary'],
-    queryFn: academicianService.getDashboardSummary,
-  })
+  const { data: coursesData, isLoading: isCoursesLoading, isError: isCoursesError } = useQuery({
+    queryKey: ['academicianCourses'],
+    queryFn: academicianService.getDersler,
+  });
 
-  if(isLoading){
-      return(
-      <div className='dashboard-container' style= {{display:'flex', justifyContent:'center', minHeight: '60vh'}}>
+  // 2. GERÇEK VERİ: Kayıt İstekleri
+  const { data: requestsData, isLoading: isRequestsLoading, isError: isRequestsError } = useQuery({
+    queryKey: ['academicianRequests'],
+    queryFn: academicianService.getKayitIstekleri,
+  });
+
+  // Herhangi biri yükleniyorsa loading göster
+  if (isCoursesLoading || isRequestsLoading) {
+    return (
+      <div className='dashboard-container' style={{ display: 'flex', justifyContent: 'center', minHeight: '60vh' }}>
         <h3> {t('common.loading', 'Yükleniyor...')} </h3>
       </div>
-      );
+    );
   }
-  if(isError){
-    return(
+  
+  // Herhangi birinde hata varsa error göster
+  if (isCoursesError || isRequestsError) {
+    return (
       <div className='dashboard-container'>
-        <div style={{padding: '20px', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px'}}>
-          {t('common.error', 'veriler çekilirken hata oluştu.')}
+        <div style={{ padding: '20px', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px' }}>
+          {t('common.error', 'Veriler çekilirken hata oluştu.')}
         </div>
       </div>
     );
   }
-  const stats = data?.stats || {activeCourses: 0, totalStudents: 0, pendingGrades: 0, pendingApprovals: 0};
-  const courses = data?.courses || [];
-  // Sabit Türkçe isimler silindi, sadece kodları (CS301, CS401) tutuyoruz
 
+  // Gelen verileri al (Yoksa boş dizi olarak ayarla)
+  const courses = coursesData || [];
+  const requests = requestsData || [];
+
+  // İstatistikleri dinamik olarak hesapla!
+  const stats = {
+    activeCourses: courses.length, // Ders dizisinin uzunluğu
+    totalStudents: courses.reduce((toplam, course) => toplam + (course.ogrenci_sayisi || 0), 0), // Derslerdeki toplam öğrenci sayısı
+    pendingGrades: 0, // Bu endpoint henüz yok, şimdilik sabit 0
+    pendingApprovals: requests.length, // İstek dizisinin uzunluğu
+  };
   return (
     <div className="dashboard-container">
       {/* İstatistik Kartları */}
@@ -48,15 +65,15 @@ const GenelBakis = () => {
         <div className="stat-card">
           <div className="icon-wrapper bg-purple-soft"><ClipboardCheck size={24} color="#8b5cf6" /></div>
           <h3 className="stat-value">{stats.pendingGrades}</h3>
-          <p className="stat-label">{t('academician.dashboard.pendingGrades', 'Giriş Bekleyen Not')}</p>
+          <p className="stat-label">{t('academician.dashboard.pendingGrades', 'Giriş Bekleyen Notlar')}</p>
         </div>
         <div className="stat-card">
           <div className="icon-wrapper bg-orange-soft"><Clock size={24} color="#ea580c" /></div>
           <h3 className="stat-value">{stats.pendingApprovals}</h3>
-          <p className="stat-label">{t('academician.dashboard.pendingApprovals', 'Kayıt Onayı Bekleyen')}</p>
+          <p className="stat-label">{t('academician.dashboard.pendingApprovals', 'Bekleyen Kayıt Onayları')}</p>
         </div>
       </div>
-      
+
       {/* Aktif Dersler Listesi */}
       <div className="active-courses-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
         {courses.length > 0 ? (
@@ -65,18 +82,18 @@ const GenelBakis = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="course-content-left">
                   <div className="course-head">
-                    <span className="course-code">{course.kodu}</span>
-                    <span className="course-credit">{t(`data.classes.${course.sinif}`)}</span>
+                    <span className="course-code">{course.ders.ders_kodu}</span>
+                    <span className="course-credit">{course.ders.min_sinif}. {t('common.grade', 'Sınıf')}</span>
                     <span className="course-credit" style={{ backgroundColor: 'rgba(59, 111, 212, 0.1)', color: 'var(--primary-blue)' }}>
-                      {course.kredi} {t('studentDashboard.overview.credits', 'Kredi')}
+                      {course.ders.kredi} {t('studentDashboard.overview.credits', 'Kredi')}
                     </span>
                   </div>
                   <h4 className="course-name" style={{ marginTop: '8px', marginBottom: '4px', color: 'var(--text-main)' }}>
-                    {t(`data.courses.${course.kodu}`)}
+                    {course.ders.ad}
                   </h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '13px' }}>
                     <Users size={14} />
-                    <span>{course.ogrenci_sayisi} {t('academician.courses.studentCount')}</span>
+                    <span>{course.ogrenci_sayisi||0} {t('academician.courses.student', 'Öğrenci')} / {course.kontenjan} {t('academician.courses.quota', 'Kontenjan')}</span>
                   </div>
                 </div>
               </div>
@@ -84,7 +101,7 @@ const GenelBakis = () => {
           ))
         ) : (
           <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-            Henüz aktif bir dersiniz bulunmuyor.
+            {t('academician.dashboard.noActiveCourses', 'Henüz aktif bir dersiniz bulunmuyor.')}
           </div>
         )}
       </div>
