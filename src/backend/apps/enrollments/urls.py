@@ -5,6 +5,7 @@ from apps.enrollments.views import (
     AkademisyenKayitIstekleriView,
     AkademisyenKayitIstekDetayView,
     AkademisyenNotGirView,
+    AktifKayitDonemiView,
     OgrenciDersKayitView,
     OgrenciDersListeView,
     OgrenciTranskriptView,
@@ -16,6 +17,9 @@ app_name = "enrollments"
 urlpatterns = [
 
     # ── Öğrenci ───────────────────────────────────────────────────────────────
+    # GET  /api/student/enrollment-period/
+    path("student/enrollment-period/", AktifKayitDonemiView.as_view(), name="aktif-kayit-donemi"),
+
     # GET  /api/student/courses/
     path("student/courses/", OgrenciDersListeView.as_view(), name="ogrenci-ders-liste"),
 

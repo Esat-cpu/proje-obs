@@ -1,6 +1,22 @@
 from rest_framework import serializers
 
-from apps.enrollments.models import DersKaydi
+from apps.enrollments.models import DersKaydi, DersKayitDonemi
+
+
+class DersKayitDonemiSerializer(serializers.ModelSerializer):
+    aktif = serializers.SerializerMethodField()
+    max_kredi = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DersKayitDonemi
+        fields = ["yil", "donem", "baslangic", "bitis", "aktif", "max_kredi"]
+
+    def get_aktif(self, obj):
+        return obj.aktif_mi()
+
+    def get_max_kredi(self, obj):
+        from apps.enrollments.services import MAX_KREDI
+        return MAX_KREDI
 
 
 class DersKaydiOkuSerializer(serializers.ModelSerializer):
