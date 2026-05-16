@@ -14,7 +14,7 @@ import KayitOnaylari from './KayitOnaylari';
 const AkademisyenPaneli = () => {
   const { t } = useTranslation();
   // Mockup'taki kullanıcı ismi (Normalde auth context'ten gelir)
-  const { data: profileData, isLoading: isProfileLoading } = useQuery({
+  const { data: profileData, isLoading: isProfileLoading, isError: isProfileError } = useQuery({
     queryKey: ['academicianProfile'],
     queryFn: academicianService.getProfil,
   });
@@ -27,10 +27,12 @@ const AkademisyenPaneli = () => {
         : "İsim Bulunamadı");
 
   // Bekleyen kayıt taleplerini getir
-  const { data: requestsData } = useQuery({
+  const { data: requestsData, isError: isRequestsError } = useQuery({
     queryKey: ['academicianRequests'],
     queryFn: academicianService.getKayitIstekleri,
   });
+
+  const hasError = isProfileError || isRequestsError;
 
   // Bekleyen talep sayısını hesapla
   const pendingRequestCount = requestsData?.filter(r => r.onay_durumu === 'beklemede').length;
@@ -62,6 +64,18 @@ const AkademisyenPaneli = () => {
       navItems={navItems}
       logoColor="#10b981"
     >
+      {hasError && (
+        <div style={{
+          padding: '16px',
+          marginBottom: '20px',
+          backgroundColor: '#fee2e2',
+          border: '1px solid #fca5a5',
+          color: '#b91c1c',
+          borderRadius: '10px'
+        }}>
+          {t('common.error', 'Veriler çekilirken hata oluştu.')}
+        </div>
+      )}
       <Routes>
         {/* 1. Dashboard Ekranı: İstatistikler ve Ders Özetleri */}
         <Route path="/" element={<GenelBakis />} />
