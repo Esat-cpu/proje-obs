@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { Users, Eye, EyeOff, GraduationCap } from "lucide-react";
-import { Link } from "react-router-dom";
 import {useMutation} from "@tanstack/react-query";
-import axiosClient from "../shared/api/axiosClient";
 import authService from "../shared/api/authServices";
 
 const AkademisyenGiris = () => {
@@ -15,7 +13,6 @@ const AkademisyenGiris = () => {
 
     const [formData, setFormData] = useState({ username: "", sifre: "" });
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const validate = () => {
@@ -42,7 +39,8 @@ const AkademisyenGiris = () => {
         },
         onError: (err) => {
             console.error("Akademisyen giriş hatası:", err);
-            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
+            const message = err?.response?.data?.detail || err?.response?.data?.message || t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+            setErrors({ general: message });
         }
     });
     const handleSubmit = async (e) => {
@@ -125,10 +123,10 @@ const AkademisyenGiris = () => {
 
                         <button
                             type="submit"
-                            disabled={loading}
-                            style={{ padding: "12px", borderRadius: "8px", border: "none", backgroundColor: "#2e9e6b", color: "#fff", fontSize: "15px", fontWeight: "600", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, marginTop: "4px" }}
+                            disabled={loginMutation.isLoading}
+                            style={{ padding: "12px", borderRadius: "8px", border: "none", backgroundColor: "#2e9e6b", color: "#fff", fontSize: "15px", fontWeight: "600", cursor: loginMutation.isLoading ? "not-allowed" : "pointer", opacity: loginMutation.isLoading ? 0.7 : 1, marginTop: "4px" }}
                         >
-                            {loading ? t("form.loading", "Giriş yapılıyor...") : t("form.loginBtn", "Giriş")}
+                            {loginMutation.isLoading ? t("form.loading", "Giriş yapılıyor...") : t("form.loginBtn", "Giriş")}
                         </button>
                     </form>
                 </div>

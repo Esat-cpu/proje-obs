@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Award, Layers, Calendar } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
+import studentService from '../../shared/api/studentService';
 
 const GenelBakis = () => {
   const { t } = useTranslation();

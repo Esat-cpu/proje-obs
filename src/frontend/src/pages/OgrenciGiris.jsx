@@ -5,7 +5,6 @@ import { useAuth } from "../context/AuthContext";
 import { User, Eye, EyeOff, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import axiosClient from "../shared/api/axiosClient";
 import authService from "../shared/api/authServices";
 
 const OgrenciGiris = () => {
@@ -15,7 +14,6 @@ const OgrenciGiris = () => {
 
     const [formData, setFormData] = useState({ ogr_no: "", sifre: "" });
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const validate = () => {
@@ -41,7 +39,8 @@ const OgrenciGiris = () => {
         },
         onError: (err) => {
             console.error("Öğrenci giriş hatası:", err);
-            setErrors({ general: t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.") });
+            const message = err?.response?.data?.detail || err?.response?.data?.message || t("error.login", "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+            setErrors({ general: message });
         }
     });
     const handleSubmit = async (e) => {
@@ -124,10 +123,10 @@ const OgrenciGiris = () => {
 
                         <button
                             type="submit"
-                            disabled={loading}
-                            style={{ padding: "12px", borderRadius: "8px", border: "none", backgroundColor: "var(--primary-blue)", color: "#fff", fontSize: "15px", fontWeight: "600", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, marginTop: "4px" }}
+                            disabled={loginMutation.isLoading}
+                            style={{ padding: "12px", borderRadius: "8px", border: "none", backgroundColor: "var(--primary-blue)", color: "#fff", fontSize: "15px", fontWeight: "600", cursor: loginMutation.isLoading ? "not-allowed" : "pointer", opacity: loginMutation.isLoading ? 0.7 : 1, marginTop: "4px" }}
                         >
-                            {loading ? t("form.loading", "Giriş yapılıyor...") : t("form.loginBtn", "Giriş")}
+                            {loginMutation.isLoading ? t("form.loading", "Giriş yapılıyor...") : t("form.loginBtn", "Giriş")}
                         </button>
                     </form>
                 </div>

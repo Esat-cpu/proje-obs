@@ -25,7 +25,7 @@ createRoot(document.getElementById('root')).render(
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
           <App />
-          <ReactQueryDevtools initialIsOpen={false}/>
+          {/* <ReactQueryDevtools initialIsOpen={false}/> */}
           </QueryClientProvider>
         </AuthProvider>
       </ThemeProvider>
