@@ -9,14 +9,15 @@ const VerdigimDersler = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [saveErrorMessage, setSaveErrorMessage] = useState(null);
 
   const [editedGrades, setEditedGrades] = useState({}); // { kayitId: { vize_notu: 50, final_notu: 60 } }
 
-  const { data: coursesData, isLoading: isCoursesLoading } = useQuery({
+  const { data: coursesData, isLoading: isCoursesLoading, isError: isCoursesError, error: coursesError } = useQuery({
     queryKey: ['academicianCourses'],
     queryFn: academicianService.getDersler,
   });
-  const { data: studentsData, isLoading: isStudentsLoading } = useQuery({
+  const { data: studentsData, isLoading: isStudentsLoading, isError: isStudentsError, error: studentsError } = useQuery({
     queryKey: ['courseStudents', selectedCourse?.id],
     queryFn: () => academicianService.getDersOgrencileri(selectedCourse.id),
     enabled: !!selectedCourse, // Eğer selectedCourse null ise bu sorguyu bekletir
@@ -50,12 +51,12 @@ const VerdigimDersler = () => {
       // Başarılı olursa listeyi yenile ve hafızayı temizle
       queryClient.invalidateQueries({ queryKey: ['courseStudents', selectedCourse?.id] });
       setEditedGrades({});
+      setSaveErrorMessage(null);
     },
     onError: (error) => {
-      // Hata olursa konsola kırmızıyla yaz ve ekrana pop-up çıkar
       console.error("🚨 NOT KAYDETME HATASI:", error);
       console.error("🚨 HATA DETAYI:", error.response?.data);
-      alert("Notlar kaydedilirken bir hata oluştu! F12 Konsoluna bak.");
+      setSaveErrorMessage(error.response?.data?.detail || error.response?.data?.message || 'Notlar kaydedilirken bir hata oluştu.');
     }
   });
 
@@ -106,15 +107,28 @@ const VerdigimDersler = () => {
           <button
             className="logout-btn"
             style={{ backgroundColor: '#64748b', color: 'white' }}
-            onClick={() => { setSelectedCourse(null); setEditedGrades({}); }}
+            onClick={() => { setSelectedCourse(null); setEditedGrades({}); setSaveErrorMessage(null); }}
           >
             <ChevronLeft size={18} /> {t('academician.courses.backBtn', 'Derslere Dön')}
           </button>
           <h2 style={{ margin: 0 }}>{selectedCourse.ders?.ders_kodu} - {selectedCourse.ders?.ad}</h2>
         </div>
 
+        {saveErrorMessage && (
+          <div style={{ padding: '16px', marginBottom: '20px', backgroundColor: '#fee2e2', border: '1px solid #fecaca', color: '#b91c1c', borderRadius: '8px' }}>
+            {saveErrorMessage}
+          </div>
+        )}
+
         {isStudentsLoading ? (
           <div style={{ textAlign: 'center', padding: '20px' }}>{t('common.loading', 'Öğrenciler yükleniyor...')}</div>
+        ) : isStudentsError ? (
+          <div style={{ padding: '20px', backgroundColor: '#fee2e2', borderRadius: '8px', color: '#b91c1c' }}>
+            {t('common.error', 'Öğrenciler yüklenirken bir hata oluştu.')}
+            <div style={{ marginTop: '8px', fontSize: '13px', color: '#7f1d1d' }}>
+              {studentsError?.response?.data?.detail || studentsError?.message}
+            </div>
+          </div>
         ) : (
           <>
             <DataTable
@@ -197,6 +211,22 @@ const VerdigimDersler = () => {
             </div>
           </>
         )}
+      </div>
+    );
+  }
+
+  if (isCoursesError) {
+    return (
+      <div className="card-container no-padding">
+        <div style={{ padding: '24px' }}>
+          <h2 className="dash-section-title">{t('academician.courses.title', 'Verdiğim Dersler')}</h2>
+        </div>
+        <div style={{ padding: '20px', backgroundColor: '#fee2e2', borderRadius: '8px', color: '#b91c1c' }}>
+          {t('common.error', 'Dersler yüklenirken bir hata oluştu.')}
+          <div style={{ marginTop: '8px', fontSize: '13px', color: '#7f1d1d' }}>
+            {coursesError?.response?.data?.detail || coursesError?.message}
+          </div>
+        </div>
       </div>
     );
   }
