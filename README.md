@@ -16,7 +16,7 @@ geliştirilen web tabanlı bir Öğrenci Bilgi Sistemi (OBS) prototipidir.
 ## Kurulum
 
 ### Gereksinimler
-- Python 3.11+
+- Python 3.12+
 - pip
 - Node.js ve npm
 - Git
