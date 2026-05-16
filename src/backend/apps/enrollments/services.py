@@ -66,11 +66,10 @@ class EnrollmentService:
         return kayit
 
     @staticmethod
-    def bekleyen_kayitlari_listele(akademisyen):
+    def kayit_isteklerini_listele(akademisyen):
         return DersKaydi.objects.filter(
             donem_dersi__akademisyen=akademisyen,
-            onay_durumu=DersKaydi.Durum.BEKLEMEDE,
-        ).select_related("ogrenci__user", "donem_dersi__ders")
+        ).select_related("ogrenci__user", "donem_dersi__ders").order_by("-id")
 
     @staticmethod
     def ders_kaydi_onayla(kayit_id, akademisyen):
