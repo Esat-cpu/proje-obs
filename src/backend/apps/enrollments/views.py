@@ -164,20 +164,20 @@ class OgrenciDersKayitView(APIView):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  AKADEMİSYEN — bekleyen kayıt isteklerini listele
+#  AKADEMİSYEN — kayıt isteklerini listele
 #  GET /api/academician/enrollment-requests/
 # ─────────────────────────────────────────────────────────────────────────────
 
 class AkademisyenKayitIstekleriView(APIView):
     """
     GET /api/academician/enrollment-requests/
-    Akademisyenin derslerine ait bekleyen kayıt isteklerini döner.
+    Akademisyenin derslerine ait tüm kayıt isteklerini döner.
     """
     permission_classes = [IsAkademisyen]
 
     def get(self, request):
         akademisyen = request.user.akademisyen
-        kayitlar = EnrollmentService.bekleyen_kayitlari_listele(akademisyen)
+        kayitlar = EnrollmentService.kayit_isteklerini_listele(akademisyen)
         serializer = DersKaydiOkuSerializer(kayitlar, many=True)
         return Response(serializer.data)
 

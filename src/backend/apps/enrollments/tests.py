@@ -304,19 +304,19 @@ class EnrollmentServiceOnayTestleri(TemelKurulum):
         with self.assertRaises(PermissionDenied):
             EnrollmentService.ders_kaydi_reddet(self.kayit.pk, self.akademisyen2)
 
-    def test_bekleyen_kayitlar_listelendi(self):
-        bekleyenler = EnrollmentService.bekleyen_kayitlari_listele(self.akademisyen)
-        self.assertEqual(bekleyenler.count(), 1)
+    def test_tum_kayitlar_listelendi(self):
+        kayitlar = EnrollmentService.kayit_isteklerini_listele(self.akademisyen)
+        self.assertEqual(kayitlar.count(), 1)
 
-    def test_onaylanan_bekleyenlerde_gorunmez(self):
+    def test_onaylanan_kayit_listede_gorunur(self):
         self.kayit.onay_durumu = DersKaydi.Durum.ONAYLANDI
         self.kayit.save()
-        bekleyenler = EnrollmentService.bekleyen_kayitlari_listele(self.akademisyen)
-        self.assertEqual(bekleyenler.count(), 0)
+        kayitlar = EnrollmentService.kayit_isteklerini_listele(self.akademisyen)
+        self.assertEqual(kayitlar.count(), 1)
 
-    def test_baska_akademisyenin_bekleyenleri_gorunmez(self):
-        bekleyenler = EnrollmentService.bekleyen_kayitlari_listele(self.akademisyen2)
-        self.assertEqual(bekleyenler.count(), 0)
+    def test_baska_akademisyenin_kayitlari_gorunmez(self):
+        kayitlar = EnrollmentService.kayit_isteklerini_listele(self.akademisyen2)
+        self.assertEqual(kayitlar.count(), 0)
 
 
 class EnrollmentServiceTranskriptTestleri(TemelKurulum):
