@@ -64,10 +64,10 @@ describe('AuthContext', () => {
             screen.getByText('Giriş').click()
         })
 
-        // Ekip access_token ve refresh_token kullanıyor
+        // Ekip access_token ve refreshToken kullanıyor
         expect(localStorage.getItem('access_token')).toBe('test-token')
         expect(localStorage.getItem('role')).toBe('Ogrenci')
-        expect(localStorage.getItem('refresh_token')).toBe('test-refresh')
+        expect(localStorage.getItem('refreshToken')).toBe('test-refresh')
     })
 
     test('logout çağrılınca isAuthenticated false olmalı', () => {
@@ -107,7 +107,7 @@ describe('AuthContext', () => {
 
         expect(localStorage.getItem('access_token')).toBeNull()
         expect(localStorage.getItem('role')).toBeNull()
-        expect(localStorage.getItem('refresh_token')).toBeNull()
+        expect(localStorage.getItem('refreshToken')).toBeNull()
     })
 
 })
