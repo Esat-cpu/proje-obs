@@ -8,11 +8,35 @@ from django.http import HttpResponse
 from apps.enrollments.models import DersKaydi
 from apps.enrollments.serializers import (
     DersKaydiOkuSerializer,
+    DersKayitDonemiSerializer,
     NotGuncellemeSerializer,
     TranskriptSerializer,
 )
 from apps.enrollments.services import EnrollmentService, GradeService
 from apps.users.permissions import IsAkademisyen, IsOgrenci
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  ÖĞRENCİ — aktif kayıt dönemi bilgisi
+#  GET /api/student/enrollment-period/
+# ─────────────────────────────────────────────────────────────────────────────
+
+class AktifKayitDonemiView(APIView):
+    """
+    GET /api/student/enrollment-period/
+    Aktif ders kayıt dönemini döner. Dönem yoksa 404 döner.
+    """
+    permission_classes = [IsOgrenci]
+
+    def get(self, request):
+        donem = EnrollmentService.aktif_kayit_donemi_getir()
+        if not donem:
+            return Response(
+                {"detail": "Aktif kayıt dönemi bulunmuyor."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        serializer = DersKayitDonemiSerializer(donem)
+        return Response(serializer.data)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
