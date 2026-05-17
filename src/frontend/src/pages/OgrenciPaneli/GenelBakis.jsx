@@ -127,19 +127,10 @@ const GenelBakis = () => {
     }
   ];
 
-  // Ortalama hesaplama
-  const calculateTermAverage = () => {
-    if (currentTermGrades.length === 0) return '0.00';
-    const gradePoints = {
-      'AA': 4.0, 'BA': 3.5, 'BB': 3.0, 'CB': 2.5,
-      'CC': 2.0, 'DC': 1.5, 'DD': 1.0, 'FF': 0.0
-    };
-    const totalPoints = currentTermGrades.reduce((sum, course) => {
-      const point = gradePoints[course.harf_notu] || 0;
-      return sum + (point * course.kredi);
-    }, 0);
-    const totalCredits = currentTermGrades.reduce((sum, course) => sum + course.kredi, 0);
-    return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+  // Backend'den gelen GPA değerini al
+  const getGPA = () => {
+    if (!profileData || !profileData.gpa) return '0.00';
+    return profileData.gpa;
   };
 
   return (
@@ -152,7 +143,7 @@ const GenelBakis = () => {
         </div>
         <div className="stat-card">
           <div className="icon-wrapper bg-green-soft"><Award size={24} color="#10b981" /></div>
-          <h3 className="stat-value">{calculateTermAverage()}</h3>
+          <h3 className="stat-value">{getGPA()}</h3>
           <p className="stat-label">{t('studentDashboard.overview.gpa')}</p>
         </div>
         <div className="stat-card">
@@ -181,7 +172,7 @@ const GenelBakis = () => {
               footer={
                 <tr className="table-footer-row">
                   <td colSpan="5" style={{ textAlign: 'left' }}>{t('studentDashboard.overview.termAvg')}</td>
-                  <td className="text-avg">{calculateTermAverage()}</td>
+                  <td className="text-avg">{getGPA()}</td>
                 </tr>
               }
             />
