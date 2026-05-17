@@ -96,6 +96,10 @@ const GenelBakis = () => {
       render: (row) => row.final_notu ?? '-'
     },
     {
+      header: t('studentDashboard.overview.average', 'Ortalama'),
+      render: (row) => row.ortalama ?? '-'
+    },
+    {
       header: t('studentDashboard.overview.grade'),
       render: (row) => {
         const colors = {
@@ -171,7 +175,7 @@ const GenelBakis = () => {
               data={currentTermGrades}
               footer={
                 <tr className="table-footer-row">
-                  <td colSpan="5" style={{ textAlign: 'left' }}>{t('studentDashboard.overview.termAvg')}</td>
+                  <td colSpan="6" style={{ textAlign: 'left' }}>{t('studentDashboard.overview.termAvg')}</td>
                   <td className="text-avg">{getGPA()}</td>
                 </tr>
               }
