@@ -91,11 +91,15 @@ const VerdigimDersler = () => {
   const calculateGrade = (vize, final) => {
     const vizePuan = Number(vize) || 0;
     const finalPuan = Number(final) || 0;
-    const avg = Math.round(vize * 0.4 + final * 0.6);
+    const avg = (vize * 0.4 + final * 0.6).toFixed(2);
     let letter = 'FF', colorClass = 'badge-danger';
-    if (avg >= 88) { letter = 'AA'; colorClass = 'badge-success'; }
-    else if (avg >= 74) { letter = 'BB'; colorClass = 'badge-warning'; }
+    if (avg >= 90) { letter = 'AA'; colorClass = 'badge-success'; }
+    else if (avg >= 85) { letter = 'BA'; colorClass = 'badge-success'; }
+    else if (avg >= 80) { letter = 'BB'; colorClass = 'badge-warning'; }
+    else if (avg >= 70) { letter = 'CB'; colorClass = 'badge-warning'; }
     else if (avg >= 60) { letter = 'CC'; colorClass = 'badge-blue'; }
+    else if (avg >= 55) { letter = 'DC'; colorClass = 'badge-blue'; }
+    else if (avg >= 50) { letter = 'DD'; colorClass = 'badge-blue'; }
     return { avg, letter, colorClass };
   };
 
