@@ -15,7 +15,13 @@ const studentService = {
 
   // Öğrencinin seçebileceği (havuzdaki) mevcut dersleri getirir
   getMevcutDersler: async () => {
-    const response = await axiosClient.get("api/student/available-courses/");
+    const response = await axiosClient.get("api/courses/available/");
+    return response.data;
+  },
+
+  // Aktif kayıt dönemini getirir
+  getAktifDonem: async () => {
+    const response = await axiosClient.get("api/student/enrollment-period/");
     return response.data;
   },
 
@@ -35,6 +41,12 @@ const studentService = {
   },
 
   // Öğrencinin not dökümünü (transkript) getirir
+  getTranskript: async () => {
+    const response = await axiosClient.get("api/student/transcript/");
+    return response.data;
+  },
+
+  // Öğrencinin transkriptini PDF olarak indirir
   indirTranskriptPDF: async () => {
     // PDF indireceğimiz için responseType: 'blob' eklemek zorundayız
     const response = await axiosClient.get("api/student/transcript/pdf/", { responseType: 'blob' });

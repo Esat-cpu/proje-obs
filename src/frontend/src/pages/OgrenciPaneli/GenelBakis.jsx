@@ -131,10 +131,37 @@ const GenelBakis = () => {
     }
   ];
 
-  // Backend'den gelen GPA değerini al
+  // Backend'den gelen genel GPA değerini al
   const getGPA = () => {
     if (!profileData || !profileData.gpa) return '0.00';
     return profileData.gpa;
+  };
+
+  // Harf notunu GPA'ya çevir (4.0 üzerinden)
+  const convertLetterToGPA = (harf) => {
+    const gradeMap = {
+      'AA': 4.0, 'BA': 3.5, 'BB': 3.0, 'CB': 2.5, 'CC': 2.0,
+      'DC': 1.5, 'DD': 1.0, 'FD': 0.5, 'FF': 0.0
+    };
+    return gradeMap[harf] || 0.0;
+  };
+
+  // Güncel dönem GPA'sını hesapla (4.0 üzerinden)
+  const calculateCurrentTermGPA = () => {
+    if (!currentTermGrades || currentTermGrades.length === 0) return '0.00';
+    
+    let totalWeightedGrade = 0;
+    let totalCredit = 0;
+
+    currentTermGrades.forEach(ders => {
+      if (ders.harf_notu && ders.kredi) {
+        const gradeValue = convertLetterToGPA(ders.harf_notu);
+        totalWeightedGrade += gradeValue * ders.kredi;
+        totalCredit += ders.kredi;
+      }
+    });
+
+    return totalCredit > 0 ? (totalWeightedGrade / totalCredit).toFixed(2) : '0.00';
   };
 
   return (
@@ -147,7 +174,7 @@ const GenelBakis = () => {
         </div>
         <div className="stat-card">
           <div className="icon-wrapper bg-green-soft"><Award size={24} color="#10b981" /></div>
-          <h3 className="stat-value">{getGPA()}</h3>
+          <h3 className="stat-value">{calculateCurrentTermGPA()}</h3>
           <p className="stat-label">{t('studentDashboard.overview.gpa')}</p>
         </div>
         <div className="stat-card">
@@ -176,7 +203,7 @@ const GenelBakis = () => {
               footer={
                 <tr className="table-footer-row">
                   <td colSpan="6" style={{ textAlign: 'left' }}>{t('studentDashboard.overview.termAvg')}</td>
-                  <td className="text-avg">{getGPA()}</td>
+                  <td className="text-avg">{calculateCurrentTermGPA()}</td>
                 </tr>
               }
             />
