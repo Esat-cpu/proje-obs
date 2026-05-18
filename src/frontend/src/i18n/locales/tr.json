@@ -215,5 +215,11 @@
     "departments": {
       "computerEngineering": "Bilgisayar Mühendisliği"
     }
+  },
+  "notFound": {
+    "title": "404 - Sayfa Bulunamadı",
+    "message": "Aradığınız sayfa mevcut değil veya taşınmış olabilir.",
+    "backToHome": "Ana Sayfaya Dön",
+    "backToPanel": "Panele Dön"
   }
 }
