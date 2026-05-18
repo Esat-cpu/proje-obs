@@ -41,12 +41,16 @@ const GenelBakis = () => {
   const courses = coursesData || [];
   const requests = requestsData || [];
 
+  // Kayıtları durumlarına göre filtrele
+  const bekleyenKayitlar = requests.filter(req => req.onay_durumu === 'beklemede');
+  const onaylananKayitlar = requests.filter(req => req.onay_durumu === 'onaylandi');
+
   // İstatistikleri dinamik olarak hesapla!
   const stats = {
     activeCourses: courses.length, // Ders dizisinin uzunluğu
     totalStudents: courses.reduce((toplam, course) => toplam + (course.ogrenci_sayisi || 0), 0), // Derslerdeki toplam öğrenci sayısı
-    pendingGrades: 0, // Bu endpoint henüz yok, şimdilik sabit 0
-    pendingApprovals: requests.length, // İstek dizisinin uzunluğu
+    pendingGrades: onaylananKayitlar.length, // Onaylanmış kayıtların sayısı
+    pendingApprovals: bekleyenKayitlar.length, // Bekleyen kayıtların sayısı
   };
   return (
     <div className="dashboard-container">
