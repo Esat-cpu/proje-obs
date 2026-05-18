@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, FileText, Clock, CheckCircle, XCircle, User, BookOpen, RefreshCw } from 'lucide-react';
+import { Search, FileText, Clock, CheckCircle, XCircle, User, BookOpen, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import academicianService from '../../shared/api/academicianService.js';
 
@@ -11,34 +11,32 @@ const KayitOnaylari = () => {
 
   // --- SEKME (TAB) HAFIZASI ---
   const [activeTab, setActiveTab] = useState('bekleyen');
+  
+  // --- SEÇİLİ ÖĞRENCİLER (Onaylananlar sekmesi için) ---
+  const [selectedStudents, setSelectedStudents] = useState([]);
 
-  // --- SAHTE GEÇMİŞ (MOCK DATA) ---
-  const [mockHistory, setMockHistory] = useState([
-    { id: 901, ogrenci_ad: 'Ayşe Kaya', ogrenci_no: '25100011020', onay_durumu: 'onaylandi', ders_kodu: '42', ders_ad: 'merhaba', kredi: 2, ortalama: '85.00' },
-    { id: 902, ogrenci_ad: 'Mehmet Demir', ogrenci_no: '25100011021', onay_durumu: 'reddedildi', ders_kodu: '32', ders_ad: 'algoritmalar', kredi: 3, ortalama: '45.00' },
-  ]);
-
-  // GERÇEK BACKEND VERİSİ (Sadece Bekleyenleri Getirir)
+  // GERÇEK BACKEND VERİSİ (Tüm kayıtları getirir)
   const { data: requestsData, isLoading, isError } = useQuery({
     queryKey: ['academicianRequests'],
     queryFn: academicianService.getKayitIstekleri,
   });
 
   // --- LİSTELERİ AYIRMA İŞLEMİ ---
-  const pendingRequests = requestsData || [];
-  const approvedMockRequests = mockHistory.filter(r => r.onay_durumu === 'onaylandi');
-  const rejectedMockRequests = mockHistory.filter(r => r.onay_durumu === 'reddedildi');
+  const allRequests = requestsData || [];
+  const pendingRequests = allRequests.filter(r => r.onay_durumu === 'beklemede');
+  const approvedRequests = allRequests.filter(r => r.onay_durumu === 'onaylandi');
+  const rejectedRequests = allRequests.filter(r => r.onay_durumu === 'reddedildi');
 
   // Aşağıda map() ile döneceğimiz asıl liste, aktif sekmeye göre değişir
-  const displayedRequests = 
+  const displayedRequests =
     activeTab === 'bekleyen' ? pendingRequests :
-    activeTab === 'onaylanan' ? approvedMockRequests : rejectedMockRequests;
+    activeTab === 'onaylanan' ? approvedRequests : rejectedRequests;
 
   const stats = {
-    total: pendingRequests.length + mockHistory.length,
+    total: allRequests.length,
     pending: pendingRequests.length,
-    approved: approvedMockRequests.length,
-    rejected: rejectedMockRequests.length
+    approved: approvedRequests.length,
+    rejected: rejectedRequests.length
   };
 
   // --- GERÇEK BACKEND İŞLEMLERİ (Bekleyenler) ---
@@ -64,11 +62,76 @@ const KayitOnaylari = () => {
     },
   });
 
-  // --- SAHTE İŞLEMLER (Mock verinin yerini değiştirmek için) ---
-  const toggleMockStatus = (id, currentStatus) => {
-    const newStatus = currentStatus === 'onaylandi' ? 'reddedildi' : 'onaylandi';
-    setMockHistory(prev => prev.map(item => item.id === id ? { ...item, onay_durumu: newStatus } : item));
+  // --- TOPLU REDDETME İŞLEMİ ---
+  const topluReddetMutation = useMutation({
+    mutationFn: async (kayitIdleri) => {
+      // Her bir kayıt için reddetme işlemi yap
+      const promises = kayitIdleri.map(id => academicianService.reddetKayit(id));
+      return Promise.all(promises);
+    },
+    onSuccess: () => {
+      setErrorMessage(null);
+      setSelectedStudents([]); // Seçimleri temizle
+      queryClient.invalidateQueries({ queryKey: ['academicianRequests'] });
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data?.detail || 'Toplu reddetme işleminde hata oluştu.');
+    },
+  });
+
+  // --- TOPLU ONAYLAMA İŞLEMİ ---
+  const topluOnayMutation = useMutation({
+    mutationFn: async (kayitIdleri) => {
+      // Her bir kayıt için onaylama işlemi yap
+      const promises = kayitIdleri.map(id => academicianService.onaylaKayit(id));
+      return Promise.all(promises);
+    },
+    onSuccess: () => {
+      setErrorMessage(null);
+      setSelectedStudents([]); // Seçimleri temizle
+      queryClient.invalidateQueries({ queryKey: ['academicianRequests'] });
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data?.detail || 'Toplu onaylama işleminde hata oluştu.');
+    },
+  });
+
+  // Checkbox toggle fonksiyonu
+  const toggleStudentSelection = (studentId) => {
+    setSelectedStudents(prev => {
+      if (prev.includes(studentId)) {
+        return prev.filter(id => id !== studentId);
+      } else {
+        return [...prev, studentId];
+      }
+    });
   };
+
+  // Tümünü seç/kaldır
+  const toggleSelectAll = () => {
+    if (selectedStudents.length === displayedRequests.length) {
+      setSelectedStudents([]);
+    } else {
+      setSelectedStudents(displayedRequests.map(req => req.id));
+    }
+  };
+
+  // Toplu reddetme işlemi
+  const handleBulkReject = () => {
+    if (selectedStudents.length === 0) return;
+    if (window.confirm(`${selectedStudents.length} öğrencinin kaydını reddetmek istediğinizden emin misiniz?`)) {
+      topluReddetMutation.mutate(selectedStudents);
+    }
+  };
+
+  // Toplu onaylama işlemi
+  const handleBulkApprove = () => {
+    if (selectedStudents.length === 0) return;
+    if (window.confirm(`${selectedStudents.length} öğrencinin kaydını onaylamak istediğinizden emin misiniz?`)) {
+      topluOnayMutation.mutate(selectedStudents);
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -135,19 +198,129 @@ const KayitOnaylari = () => {
         </h3>
       </div>
 
-      {/* Filtre */}
-      <div className="filter-row">
+      {/* Filtre ve Toplu İşlem Butonları */}
+      <div className="filter-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div className="search-input-wrapper">
           <Search size={18} color="var(--text-muted)" />
           <input type="text" placeholder={t('academician.approvals.searchPlaceholder', 'Öğrenci Ara...')} />
         </div>
+        
+        {/* Onaylananlar sekmesinde toplu işlem butonları */}
+        {activeTab === 'onaylanan' && displayedRequests.length > 0 && (
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button
+              onClick={toggleSelectAll}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                color: 'var(--text-main)',
+                transition: 'all 0.2s'
+              }}
+            >
+              {selectedStudents.length === displayedRequests.length ? 'Seçimi Kaldır' : 'Tümünü Seç'}
+            </button>
+            
+            {selectedStudents.length > 0 && (
+              <button
+                onClick={handleBulkReject}
+                disabled={topluReddetMutation.isPending}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#fee2e2',
+                  border: '1px solid #fca5a5',
+                  borderRadius: '6px',
+                  cursor: topluReddetMutation.isPending ? 'not-allowed' : 'pointer',
+                  fontSize: '13px',
+                  color: '#dc2626',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s',
+                  opacity: topluReddetMutation.isPending ? 0.6 : 1
+                }}
+              >
+                <Trash2 size={16} />
+                {topluReddetMutation.isPending ? 'İşleniyor...' : `Seçilenleri Reddet (${selectedStudents.length})`}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Reddedilenler sekmesinde toplu işlem butonları */}
+        {activeTab === 'reddedilen' && displayedRequests.length > 0 && (
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button
+              onClick={toggleSelectAll}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                color: 'var(--text-main)',
+                transition: 'all 0.2s'
+              }}
+            >
+              {selectedStudents.length === displayedRequests.length ? 'Seçimi Kaldır' : 'Tümünü Seç'}
+            </button>
+            
+            {selectedStudents.length > 0 && (
+              <button
+                onClick={handleBulkApprove}
+                disabled={topluOnayMutation.isPending}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#dcfce7',
+                  border: '1px solid #86efac',
+                  borderRadius: '6px',
+                  cursor: topluOnayMutation.isPending ? 'not-allowed' : 'pointer',
+                  fontSize: '13px',
+                  color: '#16a34a',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s',
+                  opacity: topluOnayMutation.isPending ? 0.6 : 1
+                }}
+              >
+                <CheckCircle size={16} />
+                {topluOnayMutation.isPending ? 'İşleniyor...' : `Seçilenleri Onayla (${selectedStudents.length})`}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Onay Kartları (Aktif sekmeye göre değişiyor) */}
       {displayedRequests.length > 0 ? (
         displayedRequests.map((req, index) => (
-          <div key={req.id || index} className="approval-card">
-            <div className="approval-card-left">
+          <div key={req.id || index} className="approval-card" style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+            
+            {/* Checkbox (Onaylananlar ve Reddedilenler sekmelerinde) */}
+            {(activeTab === 'onaylanan' || activeTab === 'reddedilen') && (
+              <div style={{ paddingTop: '20px' }}>
+                <input
+                  type="checkbox"
+                  checked={selectedStudents.includes(req.id)}
+                  onChange={() => toggleStudentSelection(req.id)}
+                  style={{
+                    width: '18px',
+                    height: '18px',
+                    cursor: 'pointer',
+                    accentColor: '#3b82f6'
+                  }}
+                />
+              </div>
+            )}
+            
+            <div className="approval-card-left" style={{ flex: 1 }}>
               <div className="student-header">
                 <User size={18} className="text-muted" />
                 <span className="student-name">{req.ogrenci_ad}</span>
@@ -202,26 +375,18 @@ const KayitOnaylari = () => {
                 </>
               )}
 
-              {/* Sekme: Onaylananlar (Fikrini değiştirip reddet) */}
+              {/* Sekme: Onaylananlar - Sadece görüntüleme */}
               {activeTab === 'onaylanan' && (
-                <button 
-                  className="btn-reject" 
-                  onClick={() => toggleMockStatus(req.id, req.onay_durumu)} 
-                  style={{ backgroundColor: '#fff0f0', color: '#ef4444', border: '1px solid #fecaca' }}
-                >
-                  <RefreshCw size={18} /> İptal Et ve Reddet
-                </button>
+                <div style={{ padding: '8px 16px', backgroundColor: '#f0fdf4', color: '#10b981', borderRadius: '6px', fontSize: '13px', fontWeight: '500' }}>
+                  ✓ Onaylandı
+                </div>
               )}
 
-              {/* Sekme: Reddedilenler (Fikrini değiştirip onayla) */}
+              {/* Sekme: Reddedilenler - Sadece görüntüleme */}
               {activeTab === 'reddedilen' && (
-                <button 
-                  className="btn-approve" 
-                  onClick={() => toggleMockStatus(req.id, req.onay_durumu)} 
-                  style={{ backgroundColor: '#f0fdf4', color: '#10b981', border: '1px solid #bbf7d0' }}
-                >
-                  <RefreshCw size={18} /> Fikrimi Değiştir, Onayla
-                </button>
+                <div style={{ padding: '8px 16px', backgroundColor: '#fff0f0', color: '#ef4444', borderRadius: '6px', fontSize: '13px', fontWeight: '500' }}>
+                  ✗ Reddedildi
+                </div>
               )}
 
             </div>
