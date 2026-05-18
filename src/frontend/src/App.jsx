@@ -10,12 +10,7 @@ const OgrenciGiris = lazy(() => import('./pages/OgrenciGiris'));
 const AkademisyenGiris = lazy(() => import('./pages/AkademisyenGiris'));
 const OgrenciPaneli = lazy(() => import('./pages/OgrenciPaneli/OgrenciPaneli'));
 const AkademisyenPaneli = lazy(() => import('./pages/AkademisyenPaneli/AkademisyenPaneli'));
-
-
-const NotFound = () => {
-  const { t } = useTranslation();
-  return <div className="page-container" style={{ padding: '24px' }}>{t('404', 'Sayfa Bulunamadı')}</div>;
-};
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 const Forbidden = () => {
   const { t } = useTranslation();
@@ -38,7 +33,15 @@ function App() {
           <span>{t('nav.home')}</span>
         </div>
       );
-    } else if (location.pathname.startsWith('/login/')) {
+    } else if (location.pathname.startsWith('/login/') || location.pathname === '/403') {
+      return (
+        <Link to="/" className="nav-brand">
+          <Home size={20} color="var(--primary-blue)" />
+          <span>{t('nav.home')}</span>
+        </Link>
+      );
+    } else {
+      // 404 ve diğer sayfalar için
       return (
         <Link to="/" className="nav-brand">
           <Home size={20} color="var(--primary-blue)" />
@@ -46,7 +49,6 @@ function App() {
         </Link>
       );
     }
-    return null;
   };
 
   return (

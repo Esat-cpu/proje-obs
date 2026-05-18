@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'; 
 import { User, Users, UserCog, GraduationCap } from 'lucide-react'; /* ikonları getir */
 import ActionCard from '../components/ui/ActionCard';
-import ejderyaLogo from './ejderya.jpg';
+
 
 const LoginHomePage = () => {
   const { t } = useTranslation(); /* useTranslation hook'u cagir nesne parcalamayla t'yi cekip al */
@@ -64,19 +64,7 @@ const LoginHomePage = () => {
             />
           ))}
         </div>
-        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
-          <img 
-            src={ejderyaLogo} 
-            alt="Ejderya" 
-            style={{ 
-              width: '50px', 
-              height: '50px', 
-              borderRadius: '50%', 
-              boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
-              objectFit: 'cover'
-            }} 
-          />
-        </div>
+        
       </main>
     </>
   );
