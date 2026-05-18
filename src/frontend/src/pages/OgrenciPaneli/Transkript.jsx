@@ -30,19 +30,38 @@ const Transcript = () => {
 
   const handleDownloadPDF = async () => {
     try {
-      const pdfBlob = await studentService.indirTranskriptPDF();
+      const response = await studentService.indirTranskriptPDF();
+
+      const pdfBlob = response.data;
+
+      // content-disposition header'ı
+      const contentDisposition = response.headers['content-disposition'];
+
+      let filename = 'transkript.pdf';
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?(.+?)"?$/);
+
+        if (match?.[1]) {
+          filename = match[1];
+        }
+      }
+
       const url = window.URL.createObjectURL(pdfBlob);
-      
-      // Yeni sekmede PDF önizlemesi aç
-      window.open(url, '_blank');
-      
-      // URL'i bir süre sonra temizle (kullanıcı PDF'i görüntüleyebilsin diye bekle)
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-      }, 100);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
     } catch (err) {
-      console.error('PDF önizleme hatası:', err);
-      alert('PDF önizlenemedi. Lütfen tekrar deneyin.');
+      console.error('PDF indirme hatası:', err);
+      alert('PDF indirilemedi. Lütfen tekrar deneyin.');
     }
   };
 

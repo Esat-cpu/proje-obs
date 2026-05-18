@@ -48,9 +48,12 @@ const studentService = {
 
   // Öğrencinin transkriptini PDF olarak indirir
   indirTranskriptPDF: async () => {
-    // PDF indireceğimiz için responseType: 'blob' eklemek zorundayız
-    const response = await axiosClient.get("api/student/transcript/pdf/", { responseType: 'blob' });
-    return response.data;
+    return await axiosClient.get(
+      "api/student/transcript/pdf/",
+      {
+        responseType: 'blob'
+      }
+    );
   },
 };
 
