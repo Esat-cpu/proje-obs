@@ -83,7 +83,7 @@ const DersKayit = () => {
   // Maksimum kredi
   const maxKredi = donemBilgisi?.max_kredi || 30;
 
-  const totalCredits = selectedCourses.reduce((sum, course) => sum + course.kredi, 0);
+  const totalCredits = selectedCourses.reduce((sum, course) => sum + (course.ders?.kredi || 0), 0);
 
   // Arama filtresi
   const filteredCourses = availableCourses.filter(course => {
