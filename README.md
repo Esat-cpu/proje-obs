@@ -31,7 +31,7 @@ cd proje-obs
 ```
 
 2.Çevre Değişkenleri:
-Proje dizininde bulunan `.env.example` dosyasını `.env` olarak kopyalayın ve gerekli değişkenleri düzenleyin.
+Proje dizininde ve `src/frontend/` dizininde bulunan `.env.example` dosyalarını `.env` olarak aynı dizinlerde kopyalayın ve gerekli değişkenleri düzenleyin.
 
 ### Backend
 
@@ -60,10 +60,8 @@ python src/backend/manage.py runserver --insecure
 cd src/frontend
 npm install
 ```
-2.Çevre Değişkenleri:
-Proje src/frontend dizininde bulunan `.env.example` dosyasını `.env` olarak sadece kopyalayın.
 
-3.Çalıştırmak için:
+2.Çalıştırmak için:
 ```bash
 npm run dev
 ```
