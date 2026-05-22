@@ -39,13 +39,9 @@ class AkademisyenDersListeView(APIView):
             akademisyen=akademisyen,
             sadece_aktif=True,
         )
-        
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(donem_dersleri, request, view=self)
-        if page is not None:
-            serializer = DonemDersiOkuSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-            
-        serializer = DonemDersiOkuSerializer(donem_dersleri, many=True)
-        return Response(serializer.data)
+        serializer = DonemDersiOkuSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 

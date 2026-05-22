@@ -202,20 +202,13 @@ class AkademisyenKayitIstekleriView(APIView):
 
     def get(self, request):
         akademisyen = request.user.akademisyen
-        kayitlar = EnrollmentService.kayit_isteklerini_listele(akademisyen)
-        
         onay_durumu = request.query_params.get("onay_durumu")
-        if onay_durumu:
-            kayitlar = kayitlar.filter(onay_durumu=onay_durumu)
-            
+        kayitlar = EnrollmentService.kayit_isteklerini_listele(akademisyen, onay_durumu=onay_durumu)
+
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(kayitlar, request, view=self)
-        if page is not None:
-            serializer = DersKaydiOkuSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-            
-        serializer = DersKaydiOkuSerializer(kayitlar, many=True)
-        return Response(serializer.data)
+        serializer = DersKaydiOkuSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -274,12 +267,8 @@ class AkademisyenDersOgrencileriView(APIView):
 
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(kayitlar, request, view=self)
-        if page is not None:
-            serializer = DersKaydiOkuSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-
-        serializer = DersKaydiOkuSerializer(kayitlar, many=True)
-        return Response(serializer.data)
+        serializer = DersKaydiOkuSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
