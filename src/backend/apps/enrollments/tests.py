@@ -466,9 +466,9 @@ class NotGuncellemeSerializerTestleri(TestCase):
         serializer = NotGuncellemeSerializer(data={"vize_notu": -1, "final_notu": 85})
         self.assertFalse(serializer.is_valid())
 
-    def test_eksik_alan_gecersiz(self):
+    def test_eksik_alan_gecerli(self):
         serializer = NotGuncellemeSerializer(data={"vize_notu": 70})
-        self.assertFalse(serializer.is_valid())
+        self.assertTrue(serializer.is_valid())
 
 
 class TranskriptKaydiSerializerTestleri(TemelKurulum):

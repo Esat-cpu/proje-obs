@@ -19,7 +19,11 @@ const Transcript = () => {
         setError(null);
       } catch (err) {
         console.error('Transkript yüklenirken hata:', err);
-        setError(err.response?.data?.detail || 'Transkript yüklenemedi');
+        if (err.response?.status === 403) {
+          setError(t('common.forbidden', 'Bu işlemi yapmak için izniniz bulunmuyor.'));
+        } else {
+          setError(err.response?.data?.detail || 'Transkript yüklenemedi');
+        }
       } finally {
         setLoading(false);
       }
@@ -61,7 +65,7 @@ const Transcript = () => {
 
     } catch (err) {
       console.error('PDF indirme hatası:', err);
-      alert('PDF indirilemedi. Lütfen tekrar deneyin.');
+      alert(t('studentDashboard.transcript.downloadError', 'PDF indirilemedi. Lütfen tekrar deneyin.'));
     }
   };
 
@@ -155,7 +159,7 @@ const Transcript = () => {
         <div>
           <h2>{t('studentDashboard.transcript.title')}</h2>
           <p>{transkriptData.ogrenci_ad} - {transkriptData.ogrenci_no}</p>
-          <p style={{ margin: 0, opacity: 0.8, fontSize: '14px' }}>{transkriptData.bolum}</p>
+          <p style={{ margin: 0, opacity: 0.8, fontSize: '14px' }}>{transkriptData.bolum === 'Bilgisayar Mühendisliği' ? t('data.departments.computerEngineering', 'Bilgisayar Mühendisliği') : transkriptData.bolum}</p>
         </div>
         <button className="btn-white" onClick={handleDownloadPDF}>
           <Download size={18} /> {t('studentDashboard.transcript.download')}
@@ -214,7 +218,7 @@ const Transcript = () => {
                     },
                     {
                       header: t('studentDashboard.transcript.name'),
-                      render: (row) => row.ders_ad || t(`data.courses.${row.ders_kodu}`) || row.ders_kodu
+                      render: (row) => t(`data.courses.${row.ders_kodu}`, row.ders_ad) || row.ders_kodu
                     },
                     {
                       header: <div style={{ textAlign: 'center' }}>{t('studentDashboard.transcript.credit')}</div>,
@@ -252,7 +256,7 @@ const Transcript = () => {
         })
       ) : (
         <div className="card-container" style={{ textAlign: 'center', padding: '40px' }}>
-          <p>{t('studentDashboard.transcript.noTerms') || 'Henüz tamamlanmış dönem bulunmuyor'}</p>
+          <p>{t('studentDashboard.transcript.noTerms', 'Henüz tamamlanmış dönem bulunmuyor')}</p>
         </div>
       )}
     </div>

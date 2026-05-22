@@ -69,7 +69,7 @@ const GenelBakis = () => {
       render: (row) => (
         <div style={{ textAlign: 'left' }}>
           <div style={{ fontWeight: '700', color: 'var(--text-main)', marginBottom: '2px' }}>{row.ders_kodu}</div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{row.ders_ad}</div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{t('data.courses.' + row.ders_kodu, row.ders_ad)}</div>
         </div>
       )
     },

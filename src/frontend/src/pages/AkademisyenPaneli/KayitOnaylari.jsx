@@ -11,6 +11,7 @@ const KayitOnaylari = () => {
 
   // --- SEKME (TAB) HAFIZASI ---
   const [activeTab, setActiveTab] = useState('bekleyen');
+  const [searchTerm, setSearchTerm] = useState('');
   
   // --- SEÇİLİ ÖĞRENCİLER (Onaylananlar sekmesi için) ---
   const [selectedStudents, setSelectedStudents] = useState([]);
@@ -28,9 +29,22 @@ const KayitOnaylari = () => {
   const rejectedRequests = allRequests.filter(r => r.onay_durumu === 'reddedildi');
 
   // Aşağıda map() ile döneceğimiz asıl liste, aktif sekmeye göre değişir
-  const displayedRequests =
+  const baseRequests =
     activeTab === 'bekleyen' ? pendingRequests :
     activeTab === 'onaylanan' ? approvedRequests : rejectedRequests;
+
+  // Arama filtresi uygula
+  const displayedRequests = searchTerm.trim()
+    ? baseRequests.filter(req => {
+        const q = searchTerm.toLowerCase();
+        return (
+          req.ogrenci_ad?.toLowerCase().includes(q) ||
+          req.ogrenci_no?.toLowerCase().includes(q) ||
+          req.ders_ad?.toLowerCase().includes(q) ||
+          req.ders_kodu?.toLowerCase().includes(q)
+        );
+      })
+    : baseRequests;
 
   const stats = {
     total: allRequests.length,
@@ -119,7 +133,7 @@ const KayitOnaylari = () => {
   // Toplu reddetme işlemi
   const handleBulkReject = () => {
     if (selectedStudents.length === 0) return;
-    if (window.confirm(`${selectedStudents.length} öğrencinin kaydını reddetmek istediğinizden emin misiniz?`)) {
+    if (window.confirm(t('academician.approvals.bulkRejectConfirm', { count: selectedStudents.length }))) {
       topluReddetMutation.mutate(selectedStudents);
     }
   };
@@ -127,7 +141,7 @@ const KayitOnaylari = () => {
   // Toplu onaylama işlemi
   const handleBulkApprove = () => {
     if (selectedStudents.length === 0) return;
-    if (window.confirm(`${selectedStudents.length} öğrencinin kaydını onaylamak istediğinizden emin misiniz?`)) {
+    if (window.confirm(t('academician.approvals.bulkApproveConfirm', { count: selectedStudents.length }))) {
       topluOnayMutation.mutate(selectedStudents);
     }
   };
@@ -192,9 +206,9 @@ const KayitOnaylari = () => {
       {/* Aktif Sekme Başlığı */}
       <div style={{ marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #e2e8f0' }}>
         <h3 style={{ margin: 0, color: '#334155' }}>
-          {activeTab === 'bekleyen' && 'Bekleyen Onay Talepleri'}
-          {activeTab === 'onaylanan' && 'Onaylanmış Öğrenciler Geçmişi'}
-          {activeTab === 'reddedilen' && 'Reddedilmiş Öğrenciler Geçmişi'}
+          {activeTab === 'bekleyen' && t('academician.approvals.pendingTitle', 'Bekleyen Onay Talepleri')}
+          {activeTab === 'onaylanan' && t('academician.approvals.approvedTitle', 'Onaylanmış Öğrenciler Geçmişi')}
+          {activeTab === 'reddedilen' && t('academician.approvals.rejectedTitle', 'Reddedilmiş Öğrenciler Geçmişi')}
         </h3>
       </div>
 
@@ -202,7 +216,12 @@ const KayitOnaylari = () => {
       <div className="filter-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div className="search-input-wrapper">
           <Search size={18} color="var(--text-muted)" />
-          <input type="text" placeholder={t('academician.approvals.searchPlaceholder', 'Öğrenci Ara...')} />
+          <input
+            type="text"
+            placeholder={t('academician.approvals.searchPlaceholder', 'Öğrenci veya ders ara...')}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         
         {/* Onaylananlar sekmesinde toplu işlem butonları */}
@@ -221,7 +240,9 @@ const KayitOnaylari = () => {
                 transition: 'all 0.2s'
               }}
             >
-              {selectedStudents.length === displayedRequests.length ? 'Seçimi Kaldır' : 'Tümünü Seç'}
+              {selectedStudents.length === displayedRequests.length 
+                ? t('academician.approvals.deselectAll', 'Seçimi Kaldır') 
+                : t('academician.approvals.selectAll', 'Tümünü Seç')}
             </button>
             
             {selectedStudents.length > 0 && (
@@ -245,7 +266,9 @@ const KayitOnaylari = () => {
                 }}
               >
                 <Trash2 size={16} />
-                {topluReddetMutation.isPending ? 'İşleniyor...' : `Seçilenleri Reddet (${selectedStudents.length})`}
+                {topluReddetMutation.isPending 
+                  ? t('common.processing', 'İşlem yapılıyor...') 
+                  : t('academician.approvals.rejectSelected', { count: selectedStudents.length })}
               </button>
             )}
           </div>
@@ -267,7 +290,9 @@ const KayitOnaylari = () => {
                 transition: 'all 0.2s'
               }}
             >
-              {selectedStudents.length === displayedRequests.length ? 'Seçimi Kaldır' : 'Tümünü Seç'}
+              {selectedStudents.length === displayedRequests.length 
+                ? t('academician.approvals.deselectAll', 'Seçimi Kaldır') 
+                : t('academician.approvals.selectAll', 'Tümünü Seç')}
             </button>
             
             {selectedStudents.length > 0 && (
@@ -291,7 +316,9 @@ const KayitOnaylari = () => {
                 }}
               >
                 <CheckCircle size={16} />
-                {topluOnayMutation.isPending ? 'İşleniyor...' : `Seçilenleri Onayla (${selectedStudents.length})`}
+                {topluOnayMutation.isPending 
+                  ? t('common.processing', 'İşlem yapılıyor...') 
+                  : t('academician.approvals.approveSelected', { count: selectedStudents.length })}
               </button>
             )}
           </div>
@@ -326,7 +353,7 @@ const KayitOnaylari = () => {
                 <span className="student-name">{req.ogrenci_ad}</span>
                 <span className="student-id">{req.ogrenci_no}</span>
                 <span className={`badge-yellow ${req.onay_durumu === 'onaylandi' ? 'bg-green-soft text-green' : req.onay_durumu === 'reddedildi' ? 'bg-red-soft text-red' : ''}`}>
-                  {req.onay_durumu.toUpperCase()}
+                  {t(`academician.approvals.${req.onay_durumu === 'beklemede' ? 'pending' : req.onay_durumu === 'onaylandi' ? 'approved' : 'rejected'}`).toUpperCase()}
                 </span>
               </div>
 
@@ -334,18 +361,18 @@ const KayitOnaylari = () => {
                 <div className="course-pill">
                   <BookOpen size={14} color="#3b82f6" />
                   <span>
-                    {req.ders_kodu} - {req.ders_ad}
+                    {req.ders_kodu} - {t('data.courses.' + req.ders_kodu, req.ders_ad)}
                   </span>
                 </div>
 
                 <div className="stat-item credits-stat">
-                  <label>{t('academician.approvals.totalCredits', 'Ders Kredisi')}</label>
+                  <label>{t('academician.approvals.courseCredit', 'Ders Kredisi')}</label>
                   <span>{req.kredi}</span>
                 </div>
 
                 <div className="stat-item gpa-stat">
                   <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)' }}>
-                    {t('academician.approvals.gpa', 'Ortalama')}
+                    {t('academician.approvals.gpa', 'GNO')}
                   </label>
                   <span className="text-green font-bold" style={{ fontSize: '14px' }}>{req.ortalama}</span>
                 </div>
@@ -378,14 +405,14 @@ const KayitOnaylari = () => {
               {/* Sekme: Onaylananlar - Sadece görüntüleme */}
               {activeTab === 'onaylanan' && (
                 <div style={{ padding: '8px 16px', backgroundColor: '#f0fdf4', color: '#10b981', borderRadius: '6px', fontSize: '13px', fontWeight: '500' }}>
-                  ✓ Onaylandı
+                  ✓ {t('academician.approvals.approved', 'Onaylandı')}
                 </div>
               )}
 
               {/* Sekme: Reddedilenler - Sadece görüntüleme */}
               {activeTab === 'reddedilen' && (
                 <div style={{ padding: '8px 16px', backgroundColor: '#fff0f0', color: '#ef4444', borderRadius: '6px', fontSize: '13px', fontWeight: '500' }}>
-                  ✗ Reddedildi
+                  ✗ {t('academician.approvals.rejected', 'Reddedildi')}
                 </div>
               )}
 
@@ -395,8 +422,8 @@ const KayitOnaylari = () => {
       ) : (
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
           {activeTab === 'bekleyen' && t('academician.approvals.noRequests', 'Henüz onay bekleyen bir kayıt talebi bulunmuyor.')}
-          {activeTab === 'onaylanan' && 'Onaylanmış öğrenci bulunmuyor.'}
-          {activeTab === 'reddedilen' && 'Reddedilmiş öğrenci bulunmuyor.'}
+          {activeTab === 'onaylanan' && t('academician.approvals.noApproved', 'Onaylanmış öğrenci bulunmuyor.')}
+          {activeTab === 'reddedilen' && t('academician.approvals.noRejected', 'Reddedilmiş öğrenci bulunmuyor.')}
         </div>
       )}
     </div>

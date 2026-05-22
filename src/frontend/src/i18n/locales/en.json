@@ -1,16 +1,17 @@
 {
   "common": {
-     "grade": "Grade",
+    "grade": "Grade",
     "loading": "Loading...",
-    "error": "An error occurred.",
+    "error": "An unexpected error occurred.",
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
     "remove": "Remove",
-    "loading": "Loading...",
-    "error": "An unexpected error occurred.",
-    "success": "Operation completed successfully."
+    "success": "Operation completed successfully.",
+    "noData": "No data found.",
+    "forbidden": "You do not have permission to perform this action.",
+    "processing": "Processing..."
   },
   "auth": {
     "loginTitle": "SIS Login",
@@ -50,6 +51,7 @@
       "pastTerm": "2024-2025 Fall Term",
       "course": "Course",
       "grade": "Grade",
+      "average": "Average",
       "termAvg": "Term Average"
     },
     "courses": {
@@ -65,6 +67,9 @@
       "title": "Course Registration",
       "subtitle": "2025-2026 Spring - Registration Period",
       "deadline": "Deadline: March 25, 2026",
+      "deadlineLabel": "Deadline",
+      "maxCreditLabel": "Maximum Credit",
+      "termRegistration": "Term - Course Registration Period",
       "maxCredit": "Max Credit: 30",
       "available": "Available Courses",
       "search": "Search course code, name or instructor...",
@@ -78,6 +83,7 @@
     "transcript": {
       "title": "Academic Transcript",
       "download": "Download PDF",
+      "downloadError": "Failed to download PDF. Please try again.",
       "gpa": "Cumulative GPA",
       "totalCredit": "Total Credit",
       "term": "Term",
@@ -88,11 +94,13 @@
       "name": "Course Name",
       "credit": "Credit",
       "letter": "Grade",
-      "value": "Points"
+      "value": "Points",
+      "noTerms": "No completed terms found"
     }
   },
   "academician": {
     "panelTitle": "Academician Panel",
+    "nameNotFound": "Name Not Found",
     "nav": {
       "overview": "Overview",
       "courses": "Grade Entry",
@@ -136,7 +144,20 @@
       "courseInfo": "Course Info",
       "currentCourses": "Current Courses",
       "totalCredits": "Total Credits",
-      "gpa": "GPA"
+      "gpa": "GPA",
+      "pendingTitle": "Pending Approval Requests",
+      "approvedTitle": "Approved Students History",
+      "rejectedTitle": "Rejected Students History",
+      "deselectAll": "Deselect All",
+      "selectAll": "Select All",
+      "rejectSelected": "Reject Selected ({{count}})",
+      "approveSelected": "Approve Selected ({{count}})",
+      "noRequests": "No pending approval requests yet.",
+      "noApproved": "No approved students found.",
+      "noRejected": "No rejected students found.",
+      "courseCredit": "Course Credit",
+      "bulkApproveConfirm": "Are you sure you want to approve course registration for {{count}} students?",
+      "bulkRejectConfirm": "Are you sure you want to reject course registration for {{count}} students?"
     },
     "table": {
       "average": "Average",
@@ -191,12 +212,27 @@
       "CS302": "Algorithm Analysis",
       "CS303": "Database Systems",
       "CS304": "Web Programming",
-      "CS401": "Advanced Algorithms"
+      "CS401": "Advanced Algorithms",
+      "CENG101": "Introduction to Computer Engineering",
+      "CENG102": "Algorithms and Programming I",
+      "CENG103": "Mathematics I",
+      "CENG104": "Physics I",
+      "CENG201": "Data Structures",
+      "CENG202": "Database Management Systems",
+      "CENG203": "Object Oriented Programming",
+      "CENG204": "Linear Algebra",
+      "CENG205": "Differential Equations",
+      "CENG301": "Operating Systems",
+      "Ceng99": "Statistics"
     },
     "titles": {
       "prof": "Prof. Dr.",
       "doc": "Assoc. Prof. Dr.",
       "asst": "Asst. Prof. Dr."
+    },
+    "seasons": {
+      "GUZ": "Fall",
+      "BAHAR": "Spring"
     },
     "terms": {
       "2023_fall": "Fall 2023-2024",

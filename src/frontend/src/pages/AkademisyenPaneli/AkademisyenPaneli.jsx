@@ -24,7 +24,7 @@ const AkademisyenPaneli = () => {
     ? "..."
     : (profileData?.user 
         ? `${profileData.unvan_goster} ${profileData.user.ad} ${profileData.user.soyad}` 
-        : "İsim Bulunamadı");
+        : t('academician.nameNotFound', 'İsim Bulunamadı'));
 
   // Bekleyen kayıt taleplerini getir
   const { data: requestsData, isError: isRequestsError } = useQuery({

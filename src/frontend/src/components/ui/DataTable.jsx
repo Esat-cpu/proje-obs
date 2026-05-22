@@ -1,7 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 // "footer" prop'unu ekledik
 const DataTable = ({ columns, data, footer }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="grades-table-container">
       <table className="grades-table">
@@ -26,7 +29,7 @@ const DataTable = ({ columns, data, footer }) => {
           ) : (
             <tr>
               <td colSpan={columns.length} style={{ textAlign: 'center', padding: '24px' }}>
-                Gösterilecek veri bulunamadı.
+                {t('common.noData', 'Gösterilecek veri bulunamadı.')}
               </td>
             </tr>
           )}

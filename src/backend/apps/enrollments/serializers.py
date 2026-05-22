@@ -20,6 +20,7 @@ class DersKayitDonemiSerializer(serializers.ModelSerializer):
 
 
 class DersKaydiOkuSerializer(serializers.ModelSerializer):
+    donem_dersi_id = serializers.IntegerField(source="donem_dersi.id", read_only=True)
     ogrenci_ad = serializers.CharField(source="ogrenci.user.tam_ad", read_only=True)
     ogrenci_no = serializers.CharField(source="ogrenci.ogr_no", read_only=True)
     ders_ad = serializers.CharField(source="donem_dersi.ders.ad", read_only=True)
@@ -35,6 +36,7 @@ class DersKaydiOkuSerializer(serializers.ModelSerializer):
         model = DersKaydi
         fields = [
             "id",
+            "donem_dersi_id",
             "ogrenci_ad", "ogrenci_no",
             "ders_ad", "ders_kodu", "kredi",
             "yil", "donem", "akademisyen_ad",
@@ -48,8 +50,8 @@ class DersKaydiOlusturSerializer(serializers.Serializer):
 
 
 class NotGuncellemeSerializer(serializers.Serializer):
-    vize_notu = serializers.IntegerField(min_value=0, max_value=100)
-    final_notu = serializers.IntegerField(min_value=0, max_value=100)
+    vize_notu = serializers.IntegerField(min_value=0, max_value=100, allow_null=True, required=False)
+    final_notu = serializers.IntegerField(min_value=0, max_value=100, allow_null=True, required=False)
 
 
 class TranskriptKaydiSerializer(serializers.ModelSerializer):

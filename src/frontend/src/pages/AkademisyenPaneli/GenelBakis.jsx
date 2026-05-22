@@ -87,13 +87,13 @@ const GenelBakis = () => {
                 <div className="course-content-left">
                   <div className="course-head">
                     <span className="course-code">{course.ders.ders_kodu}</span>
-                    <span className="course-credit">{course.ders.min_sinif}. {t('common.grade', 'Sınıf')}</span>
+                    <span className="course-credit">{t('data.classes.grade_' + course.ders.min_sinif, `${course.ders.min_sinif}. Sınıf`)}</span>
                     <span className="course-credit" style={{ backgroundColor: 'rgba(59, 111, 212, 0.1)', color: 'var(--primary-blue)' }}>
                       {course.ders.kredi} {t('studentDashboard.overview.credits', 'Kredi')}
                     </span>
                   </div>
                   <h4 className="course-name" style={{ marginTop: '8px', marginBottom: '4px', color: 'var(--text-main)' }}>
-                    {course.ders.ad}
+                    {t('data.courses.' + course.ders.ders_kodu, course.ders.ad)}
                   </h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '13px' }}>
                     <Users size={14} />

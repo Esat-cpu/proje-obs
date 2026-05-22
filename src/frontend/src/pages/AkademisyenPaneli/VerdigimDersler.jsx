@@ -61,27 +61,32 @@ const VerdigimDersler = () => {
   });
 
   const handleSaveAll = () => {
-    // Sadece üzerinde değişiklik yapılanları bir diziye çeviriyoruz
+    // Sadece üzerinde değişiklik yapılanları kontrol ediyoruz
     const isInvalid = Object.values(editedGrades).some((grade) => {
-      const vizeNum = Number(grade.vize);
-      const finalNum = Number(grade.final);
-      return (
-        grade.vize === "" || 
-        grade.final === "" || 
-        vizeNum < 0 || vizeNum > 100 || 
-        finalNum < 0 || finalNum > 100
-      );
+      if (grade.vize !== undefined && grade.vize !== "" && grade.vize !== null) {
+        const vizeNum = Number(grade.vize);
+        if (isNaN(vizeNum) || vizeNum < 0 || vizeNum > 100) return true;
+      }
+      if (grade.final !== undefined && grade.final !== "" && grade.final !== null) {
+        const finalNum = Number(grade.final);
+        if (isNaN(finalNum) || finalNum < 0 || finalNum > 100) return true;
+      }
+      return false;
     });
+
     if (isInvalid) {
-      alert("Hatalı Not Girişi! Notlar boş bırakılamaz ve 0 ile 100 arasında olmalıdır.");
-      return; // İşlemi durdur, backend'e bozuk veri yollama!
+      alert("Hatalı Not Girişi! Girilen notlar 0 ile 100 arasında olmalıdır.");
+      return;
     }
 
-    const gradesArray = Object.keys(editedGrades).map(id => ({
-      id: id,
-      vize: editedGrades[id].vize,
-      final: editedGrades[id].final
-    }));
+    const gradesArray = Object.keys(editedGrades).map(id => {
+      const g = editedGrades[id];
+      return {
+        id: id,
+        vize: (g.vize === "" || g.vize === null || g.vize === undefined) ? "" : g.vize,
+        final: (g.final === "" || g.final === null || g.final === undefined) ? "" : g.final
+      };
+    });
 
     if (gradesArray.length > 0) {
       saveGradesMutation.mutate(gradesArray);
@@ -89,9 +94,13 @@ const VerdigimDersler = () => {
   };
 
   const calculateGrade = (vize, final) => {
-    const vizePuan = Number(vize) || 0;
-    const finalPuan = Number(final) || 0;
-    const avg = (vize * 0.4 + final * 0.6).toFixed(2);
+    if (vize === null || vize === undefined || vize === "" ||
+        final === null || final === undefined || final === "") {
+      return { avg: '-', letter: '-', colorClass: '' };
+    }
+    const vizePuan = Number(vize);
+    const finalPuan = Number(final);
+    const avg = (vizePuan * 0.4 + finalPuan * 0.6).toFixed(2);
     let letter = 'FF', colorClass = 'badge-danger';
     if (avg >= 90) { letter = 'AA'; colorClass = 'badge-success'; }
     else if (avg >= 85) { letter = 'BA'; colorClass = 'badge-success'; }
@@ -115,7 +124,7 @@ const VerdigimDersler = () => {
           >
             <ChevronLeft size={18} /> {t('academician.courses.backBtn', 'Derslere Dön')}
           </button>
-          <h2 style={{ margin: 0 }}>{selectedCourse.ders?.ders_kodu} - {selectedCourse.ders?.ad}</h2>
+          <h2 style={{ margin: 0 }}>{selectedCourse.ders?.ders_kodu} - {t('data.courses.' + selectedCourse.ders?.ders_kodu, selectedCourse.ders?.ad)}</h2>
         </div>
 
         {saveErrorMessage && (
@@ -195,7 +204,9 @@ const VerdigimDersler = () => {
                     const currentVize = editedGrades[row.id]?.vize !== undefined ? editedGrades[row.id].vize : row.vize_notu;
                     const currentFinal = editedGrades[row.id]?.final !== undefined ? editedGrades[row.id].final : row.final_notu;
                     const res = calculateGrade(currentVize, currentFinal);
-                    return <span className={`badge ${res.colorClass}`}>{res.letter}</span>;
+                    return res.letter === '-' 
+                      ? <span style={{ color: 'var(--text-muted)', fontWeight: '500', paddingLeft: '8px' }}>-</span> 
+                      : <span className={`badge ${res.colorClass}`}>{res.letter}</span>;
                   }
                 }
               ]}
@@ -250,9 +261,9 @@ const VerdigimDersler = () => {
             <DataTable 
               columns={[
                 { header: t('academician.courses.code', 'Ders Kodu'), render: (row) => <strong>{row.ders?.ders_kodu}</strong> },
-                { header: t('academician.courses.name', 'Ders Adı'), render: (row) => row.ders?.ad },
-                { header: t('academician.courses.class', 'Sınıf'), render: (row) => `${row.ders?.min_sinif}. Sınıf` },
-                { header: t('academician.courses.studentCount', 'Kredi'), render: (row) => row.ders?.kredi },
+                { header: t('academician.courses.name', 'Ders Adı'), render: (row) => t('data.courses.' + row.ders?.ders_kodu, row.ders?.ad) },
+                { header: t('academician.courses.class', 'Sınıf'), render: (row) => t('data.classes.grade_' + row.ders?.min_sinif, `${row.ders?.min_sinif}. Sınıf`) },
+                { header: t('studentDashboard.overview.credits', 'Kredi'), render: (row) => row.ders?.kredi },
                 { header: '', render: (row) => (
                   <button className="btn-add" onClick={() => setSelectedCourse(row)}>{t('academician.courses.actionBtn', 'Öğrenci Listesi / Not Gir')}</button>
                 )}
@@ -264,8 +275,10 @@ const VerdigimDersler = () => {
           <div className="mobile-view" style={{ padding: '0 16px 16px' }}>
             {courses.map((course) => (
               <div key={course.id} className="mobile-grade-entry-card">
-                <h4 className="course-name">{course.ders?.ad}</h4>
-                <div className="course-info">{course.ders?.ders_kodu} • {course.ders?.min_sinif}. Sınıf • {course.ders?.kredi} Kredi</div>
+                <h4 className="course-name">{t('data.courses.' + course.ders?.ders_kodu, course.ders?.ad)}</h4>
+                <div className="course-info">
+                  {course.ders?.ders_kodu} • {t('data.classes.grade_' + course.ders?.min_sinif, `${course.ders?.min_sinif}. Sınıf`)} • {course.ders?.kredi} {t('studentDashboard.overview.credits', 'Kredi')}
+                </div>
                 <button className="btn-grade-entry-mobile" onClick={() => setSelectedCourse(course)}>
                   {t('academician.courses.actionBtn', 'Öğrenci Listesi / Not Gir')}
                 </button>
