@@ -11,7 +11,9 @@
     "success": "Operation completed successfully.",
     "noData": "No data found.",
     "forbidden": "You do not have permission to perform this action.",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "prev": "Previous",
+    "next": "Next"
   },
   "auth": {
     "loginTitle": "SIS Login",
