@@ -11,7 +11,9 @@
     "grade": "Sınıf",
     "noData": "Gösterilecek veri bulunamadı.",
     "forbidden": "Bu işlemi yapmak için izniniz bulunmuyor.",
-    "processing": "İşlem yapılıyor..."
+    "processing": "İşlem yapılıyor...",
+    "prev": "Önceki",
+    "next": "Sonraki"
   },
   "auth": {
     "loginTitle": "OBS Giriş",
