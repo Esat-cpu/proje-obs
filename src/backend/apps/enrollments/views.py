@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 
-from django.http import HttpResponse
+from django.http import FileResponse
 
 from apps.enrollments.models import DersKaydi
 from apps.enrollments.serializers import (
@@ -130,10 +130,7 @@ class OgrenciTranskriptPDFView(APIView):
         ogrenci = request.user.ogrenci
         pdf_buffer = EnrollmentService.transkript_pdf(ogrenci)
 
-        # Response
-        response = HttpResponse(pdf_buffer, content_type='application/pdf')
-        response['Content-Disposition'] = f'inline; filename="transkript_{ogrenci.ogr_no}.pdf"'
-        return response
+        return FileResponse(pdf_buffer, content_type='application/pdf', as_attachment=True, filename=f'transkript_{ogrenci.ogr_no}.pdf')
 
 
 # ─────────────────────────────────────────────────────────────────────────────
