@@ -96,7 +96,7 @@ class EnrollmentService:
         return DersKaydi.objects.filter(
             donem_dersi=donem_dersi,
             onay_durumu=DersKaydi.Durum.ONAYLANDI,
-        ).select_related("ogrenci__user")
+        ).select_related("ogrenci__user").order_by("id")
 
     @staticmethod
     def ogrenci_derslerini_listele(ogrenci, yil=None, donem=None):

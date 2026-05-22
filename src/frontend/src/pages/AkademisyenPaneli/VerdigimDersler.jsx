@@ -4,6 +4,8 @@ import { ChevronLeft } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import academicianService from '../../shared/api/academicianService.js';
+import Pagination from '../../components/ui/Pagination';
+import { PAGE_SIZE } from '../../shared/config.js';
 
 const VerdigimDersler = () => {
   const { t } = useTranslation();
@@ -13,18 +15,21 @@ const VerdigimDersler = () => {
 
   const [editedGrades, setEditedGrades] = useState({}); // { kayitId: { vize_notu: 50, final_notu: 60 } }
 
+  const [coursesPage, setCoursesPage] = useState(1);
+  const [studentsPage, setStudentsPage] = useState(1);
+
   const { data: coursesData, isLoading: isCoursesLoading, isError: isCoursesError, error: coursesError } = useQuery({
-    queryKey: ['academicianCourses'],
-    queryFn: academicianService.getDersler,
+    queryKey: ['academicianCourses', coursesPage],
+    queryFn: () => academicianService.getDersler(coursesPage),
   });
   const { data: studentsData, isLoading: isStudentsLoading, isError: isStudentsError, error: studentsError } = useQuery({
-    queryKey: ['courseStudents', selectedCourse?.id],
-    queryFn: () => academicianService.getDersOgrencileri(selectedCourse.id),
+    queryKey: ['courseStudents', selectedCourse?.id, studentsPage],
+    queryFn: () => academicianService.getDersOgrencileri(selectedCourse.id, studentsPage),
     enabled: !!selectedCourse, // Eğer selectedCourse null ise bu sorguyu bekletir
   });
 
-  const courses = coursesData || [];
-  const students = studentsData || [];
+  const courses = coursesData?.items || [];
+  const students = studentsData?.items || [];
 
   const handleGradeChange = (kayitId, type, value, row) => {
     setEditedGrades(prev => ({
@@ -120,7 +125,7 @@ const VerdigimDersler = () => {
           <button
             className="logout-btn"
             style={{ backgroundColor: '#64748b', color: 'white' }}
-            onClick={() => { setSelectedCourse(null); setEditedGrades({}); setSaveErrorMessage(null); }}
+            onClick={() => { setSelectedCourse(null); setEditedGrades({}); setSaveErrorMessage(null); setStudentsPage(1); }}
           >
             <ChevronLeft size={18} /> {t('academician.courses.backBtn', 'Derslere Dön')}
           </button>
@@ -224,6 +229,12 @@ const VerdigimDersler = () => {
                   : t('academician.courses.saveBtn', 'Notları Kaydet')}
               </button>
             </div>
+            <Pagination
+              currentPage={studentsPage}
+              totalCount={studentsData?.count || 0}
+              pageSize={PAGE_SIZE}
+              onPageChange={(p) => setStudentsPage(p)}
+            />
           </>
         )}
       </div>
@@ -284,6 +295,14 @@ const VerdigimDersler = () => {
                 </button>
               </div>
             ))}
+          </div>
+          <div style={{ padding: '0 24px 16px' }}>
+            <Pagination
+              currentPage={coursesPage}
+              totalCount={coursesData?.count || 0}
+              pageSize={PAGE_SIZE}
+              onPageChange={(p) => setCoursesPage(p)}
+            />
           </div>
         </>
       )}

@@ -293,8 +293,8 @@ class AkademisyenDersListeViewTestleri(TemelKurulum):
         self.client.force_authenticate(user=self.akademisyen.user)
         response = self.client.get("/api/academician/courses/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["ders"]["ders_kodu"], "BM101")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["ders"]["ders_kodu"], "BM101")
 
 
 class AkademisyenDersListePasifFiltresiTestleri(TemelKurulum):
@@ -314,12 +314,12 @@ class AkademisyenDersListePasifFiltresiTestleri(TemelKurulum):
         self.client.force_authenticate(user=self.akademisyen.user)
         response = self.client.get("/api/academician/courses/")
         self.assertEqual(response.status_code, 200)
-        kodlar = [dd["ders"]["ders_kodu"] for dd in response.data]
+        kodlar = [dd["ders"]["ders_kodu"] for dd in response.data["results"]]
         self.assertNotIn("BM200", kodlar)
 
     def test_sadece_aktif_dersler_listelenir(self):
         self.client.force_authenticate(user=self.akademisyen.user)
         response = self.client.get("/api/academician/courses/")
         self.assertEqual(response.status_code, 200)
-        for dd in response.data:
+        for dd in response.data["results"]:
             self.assertTrue(dd["aktiflik_durumu"])

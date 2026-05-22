@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Search, FileText, Clock, CheckCircle, XCircle, User, BookOpen, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import academicianService from '../../shared/api/academicianService.js';
+import Pagination from '../../components/ui/Pagination';
+import { PAGE_SIZE } from '../../shared/config.js';
 
 const KayitOnaylari = () => {
   const { t } = useTranslation();
@@ -16,24 +18,58 @@ const KayitOnaylari = () => {
   // --- SEÇİLİ ÖĞRENCİLER (Onaylananlar sekmesi için) ---
   const [selectedStudents, setSelectedStudents] = useState([]);
 
-  // GERÇEK BACKEND VERİSİ (Tüm kayıtları getirir)
-  const { data: requestsData, isLoading, isError } = useQuery({
-    queryKey: ['academicianRequests'],
-    queryFn: academicianService.getKayitIstekleri,
+  // --- SAYFA HAFIZASI (Her sekme için ayrı) ---
+  const [pendingPage, setPendingPage] = useState(1);
+  const [approvedPage, setApprovedPage] = useState(1);
+  const [rejectedPage, setRejectedPage] = useState(1);
+
+  // --- SEKME VE SAYFA YARDIMCILARI ---
+  const getStatusFromTab = (tab) => {
+    if (tab === 'bekleyen') return 'beklemede';
+    if (tab === 'onaylanan') return 'onaylandi';
+    return 'reddedildi';
+  };
+
+  const getPageFromTab = (tab) => {
+    if (tab === 'bekleyen') return pendingPage;
+    if (tab === 'onaylanan') return approvedPage;
+    return rejectedPage;
+  };
+
+  const setPageForTab = (tab, pageNum) => {
+    if (tab === 'bekleyen') setPendingPage(pageNum);
+    else if (tab === 'onaylanan') setApprovedPage(pageNum);
+    else setRejectedPage(pageNum);
+  };
+
+  const currentStatus = getStatusFromTab(activeTab);
+  const currentPage = getPageFromTab(activeTab);
+
+  // GERÇEK BACKEND VERİSİ (Aktif sekmeye ve sayfaya göre filtreleyerek çeker)
+  const { data: activeRequestsData, isLoading, isError } = useQuery({
+    queryKey: ['academicianRequests', activeTab, currentPage],
+    queryFn: () => academicianService.getKayitIstekleri(currentPage, currentStatus),
   });
 
-  // --- LİSTELERİ AYIRMA İŞLEMİ ---
-  const allRequests = requestsData || [];
-  const pendingRequests = allRequests.filter(r => r.onay_durumu === 'beklemede');
-  const approvedRequests = allRequests.filter(r => r.onay_durumu === 'onaylandi');
-  const rejectedRequests = allRequests.filter(r => r.onay_durumu === 'reddedildi');
+  // İSTATİSTİKLER İÇİN ARKA PLANDA TOPLAM SAYILARI ÇEKER
+  const { data: pendingRequestsCountData } = useQuery({
+    queryKey: ['academicianPendingRequestsCount'],
+    queryFn: () => academicianService.getKayitIstekleri(1, 'beklemede'),
+  });
 
-  // Aşağıda map() ile döneceğimiz asıl liste, aktif sekmeye göre değişir
-  const baseRequests =
-    activeTab === 'bekleyen' ? pendingRequests :
-    activeTab === 'onaylanan' ? approvedRequests : rejectedRequests;
+  const { data: approvedRequestsCountData } = useQuery({
+    queryKey: ['academicianApprovedRequestsCount'],
+    queryFn: () => academicianService.getKayitIstekleri(1, 'onaylandi'),
+  });
 
-  // Arama filtresi uygula
+  const { data: rejectedRequestsCountData } = useQuery({
+    queryKey: ['academicianRejectedRequestsCount'],
+    queryFn: () => academicianService.getKayitIstekleri(1, 'reddedildi'),
+  });
+
+  const baseRequests = activeRequestsData?.items || [];
+
+  // Arama filtresi uygula (Mevcut sayfadaki veriler üzerinde arama yapar)
   const displayedRequests = searchTerm.trim()
     ? baseRequests.filter(req => {
         const q = searchTerm.toLowerCase();
@@ -47,10 +83,18 @@ const KayitOnaylari = () => {
     : baseRequests;
 
   const stats = {
-    total: allRequests.length,
-    pending: pendingRequests.length,
-    approved: approvedRequests.length,
-    rejected: rejectedRequests.length
+    pending: pendingRequestsCountData?.count || 0,
+    approved: approvedRequestsCountData?.count || 0,
+    rejected: rejectedRequestsCountData?.count || 0,
+    total: (pendingRequestsCountData?.count || 0) + (approvedRequestsCountData?.count || 0) + (rejectedRequestsCountData?.count || 0)
+  };
+
+  // Tüm listeleri ve sayaçları yenileyen ortak fonksiyon
+  const invalidateAllRequests = () => {
+    queryClient.invalidateQueries({ queryKey: ['academicianRequests'] });
+    queryClient.invalidateQueries({ queryKey: ['academicianPendingRequestsCount'] });
+    queryClient.invalidateQueries({ queryKey: ['academicianApprovedRequestsCount'] });
+    queryClient.invalidateQueries({ queryKey: ['academicianRejectedRequestsCount'] });
   };
 
   // --- GERÇEK BACKEND İŞLEMLERİ (Bekleyenler) ---
@@ -58,7 +102,7 @@ const KayitOnaylari = () => {
     mutationFn: (enrollmentRequestId) => academicianService.onaylaKayit(enrollmentRequestId),
     onSuccess: () => {
       setErrorMessage(null);
-      queryClient.invalidateQueries({ queryKey: ['academicianRequests'] });
+      invalidateAllRequests();
     },
     onError: (error) => {
       setErrorMessage(error.response?.data?.detail || 'Onaylama işleminde hata oluştu.');
@@ -69,7 +113,7 @@ const KayitOnaylari = () => {
     mutationFn: (enrollmentRequestId) => academicianService.reddetKayit(enrollmentRequestId),
     onSuccess: () => {
       setErrorMessage(null);
-      queryClient.invalidateQueries({ queryKey: ['academicianRequests'] });
+      invalidateAllRequests();
     },
     onError: (error) => {
       setErrorMessage(error.response?.data?.detail || 'Reddetme işleminde hata oluştu.');
@@ -79,14 +123,13 @@ const KayitOnaylari = () => {
   // --- TOPLU REDDETME İŞLEMİ ---
   const topluReddetMutation = useMutation({
     mutationFn: async (kayitIdleri) => {
-      // Her bir kayıt için reddetme işlemi yap
       const promises = kayitIdleri.map(id => academicianService.reddetKayit(id));
       return Promise.all(promises);
     },
     onSuccess: () => {
       setErrorMessage(null);
       setSelectedStudents([]); // Seçimleri temizle
-      queryClient.invalidateQueries({ queryKey: ['academicianRequests'] });
+      invalidateAllRequests();
     },
     onError: (error) => {
       setErrorMessage(error.response?.data?.detail || 'Toplu reddetme işleminde hata oluştu.');
@@ -96,14 +139,13 @@ const KayitOnaylari = () => {
   // --- TOPLU ONAYLAMA İŞLEMİ ---
   const topluOnayMutation = useMutation({
     mutationFn: async (kayitIdleri) => {
-      // Her bir kayıt için onaylama işlemi yap
       const promises = kayitIdleri.map(id => academicianService.onaylaKayit(id));
       return Promise.all(promises);
     },
     onSuccess: () => {
       setErrorMessage(null);
       setSelectedStudents([]); // Seçimleri temizle
-      queryClient.invalidateQueries({ queryKey: ['academicianRequests'] });
+      invalidateAllRequests();
     },
     onError: (error) => {
       setErrorMessage(error.response?.data?.detail || 'Toplu onaylama işleminde hata oluştu.');
@@ -426,6 +468,19 @@ const KayitOnaylari = () => {
           {activeTab === 'reddedilen' && t('academician.approvals.noRejected', 'Reddedilmiş öğrenci bulunmuyor.')}
         </div>
       )}
+
+      <Pagination
+        currentPage={currentPage}
+        totalCount={
+          activeTab === 'bekleyen' 
+            ? stats.pending 
+            : activeTab === 'onaylanan' 
+              ? stats.approved 
+              : stats.rejected
+        }
+        pageSize={PAGE_SIZE}
+        onPageChange={(p) => setPageForTab(activeTab, p)}
+      />
     </div>
   );
 };

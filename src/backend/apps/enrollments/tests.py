@@ -645,7 +645,7 @@ class AkademisyenKayitIstekleriViewTestleri(ViewTemelKurulum):
         self.client.force_authenticate(user=self.akademisyen.user)
         response = self.client.get("/api/academician/enrollment-requests/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data["results"]), 1)
 
     def test_ogrenci_erisemez(self):
         self.client.force_authenticate(user=self.ogrenci.user)
@@ -660,7 +660,7 @@ class AkademisyenKayitIstekleriViewTestleri(ViewTemelKurulum):
         self.client.force_authenticate(user=self.akademisyen2.user)
         response = self.client.get("/api/academician/enrollment-requests/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data["results"]), 0)
 
 
 class AkademisyenKayitIstekDetayViewTestleri(ViewTemelKurulum):
@@ -733,7 +733,7 @@ class AkademisyenDersOgrencileriViewTestleri(ViewTemelKurulum):
         self.client.force_authenticate(user=self.akademisyen.user)
         response = self.client.get(f"/api/academician/courses/{self.donem_dersi.pk}/students/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data["results"]), 1)
 
     def test_baska_akademisyen_erisemez(self):
         self.client.force_authenticate(user=self.akademisyen2.user)
