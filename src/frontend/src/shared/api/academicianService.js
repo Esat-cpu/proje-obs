@@ -11,12 +11,12 @@ const academicianService = {
   getDersler: async (page = 1) => {
     const pageNum = (typeof page === 'number' || typeof page === 'string') ? page : 1;
     const response = await axiosClient.get(`api/academician/courses/?page=${pageNum}`);
-    const isPaginated = !Array.isArray(response.data);
+    const data = response.data;
     return {
-      items: isPaginated ? (response.data.results || []) : response.data,
-      next: isPaginated ? response.data.next : null,
-      previous: isPaginated ? response.data.previous : null,
-      count: isPaginated ? (response.data.count || 0) : response.data.length
+      items: data.results ?? data,
+      next: data.next ?? null,
+      previous: data.previous ?? null,
+      count: data.count ?? data.length ?? 0
     };
   },
 
@@ -28,24 +28,24 @@ const academicianService = {
       url += `&onay_durumu=${status}`;
     }
     const response = await axiosClient.get(url);
-    const isPaginated = !Array.isArray(response.data);
+    const data = response.data;
     return {
-      items: isPaginated ? (response.data.results || []) : response.data,
-      next: isPaginated ? response.data.next : null,
-      previous: isPaginated ? response.data.previous : null,
-      count: isPaginated ? (response.data.count || 0) : response.data.length
+      items: data.results ?? data,
+      next: data.next ?? null,
+      previous: data.previous ?? null,
+      count: data.count ?? data.length ?? 0
     };
   },
 
   getDersOgrencileri: async (dersId, page = 1) => {
     const pageNum = (typeof page === 'number' || typeof page === 'string') ? page : 1;
     const response = await axiosClient.get(`api/academician/courses/${dersId}/students/?page=${pageNum}`);
-    const isPaginated = !Array.isArray(response.data);
+    const data = response.data;
     return {
-      items: isPaginated ? (response.data.results || []) : response.data,
-      next: isPaginated ? response.data.next : null,
-      previous: isPaginated ? response.data.previous : null,
-      count: isPaginated ? (response.data.count || 0) : response.data.length
+      items: data.results ?? data,
+      next: data.next ?? null,
+      previous: data.previous ?? null,
+      count: data.count ?? data.length ?? 0
     };
   },
 
