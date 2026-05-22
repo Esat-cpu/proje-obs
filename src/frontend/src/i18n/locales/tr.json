@@ -9,8 +9,9 @@
     "error": "Beklenmeyen bir hata oluştu.",
     "success": "İşlem başarıyla tamamlandı.",
     "grade": "Sınıf",
-    "loading": "Yükleniyor...",
-    "error": "Veriler çekilirken hata oluştu."
+    "noData": "Gösterilecek veri bulunamadı.",
+    "forbidden": "Bu işlemi yapmak için izniniz bulunmuyor.",
+    "processing": "İşlem yapılıyor..."
   },
   "auth": {
     "loginTitle": "OBS Giriş",
@@ -50,6 +51,7 @@
       "pastTerm": "2024-2025 Güz Dönemi",
       "course": "Ders",
       "grade": "Not",
+      "average": "Ortalama",
       "termAvg": "Dönem Ortalaması"
     },
     "courses": {
@@ -65,6 +67,9 @@
       "title": "Ders Kayıt",
       "subtitle": "2025-2026 Bahar Dönemi - Ders Kayıt Dönemi",
       "deadline": "Son Tarih: 25 Mart 2026",
+      "deadlineLabel": "Son Tarih",
+      "maxCreditLabel": "Maksimum Kredi",
+      "termRegistration": "Dönemi - Ders Kayıt Dönemi",
       "maxCredit": "Maksimum Kredi: 30",
       "available": "Açılan Dersler",
       "search": "Ders kodu, isim veya öğretim görevlisi ara...",
@@ -78,6 +83,7 @@
     "transcript": {
       "title": "Akademik Transkript",
       "download": "PDF İndir",
+      "downloadError": "PDF indirilemedi. Lütfen tekrar deneyin.",
       "gpa": "Genel Not Ortalaması",
       "totalCredit": "Toplam Kredi",
       "term": "Dönem",
@@ -88,11 +94,13 @@
       "name": "Ders Adı",
       "credit": "Kredi",
       "letter": "Harf Notu",
-      "value": "Not Değeri"
+      "value": "Not Değeri",
+      "noTerms": "Henüz tamamlanmış dönem bulunmuyor"
     }
   },
   "academician": {
     "panelTitle": "Akademisyen Paneli",
+    "nameNotFound": "İsim Bulunamadı",
     "nav": {
       "overview": "Genel Bakış",
       "courses": "Not Girişi",
@@ -135,7 +143,20 @@
       "courseInfo": "Ders Bilgisi",
       "currentCourses": "Mevcut Ders Sayısı",
       "totalCredits": "Toplam Kredi",
-      "gpa": "GNO"
+      "gpa": "GNO",
+      "pendingTitle": "Bekleyen Onay Talepleri",
+      "approvedTitle": "Onaylanmış Öğrenciler Geçmişi",
+      "rejectedTitle": "Reddedilmiş Öğrenciler Geçmişi",
+      "deselectAll": "Seçimi Kaldır",
+      "selectAll": "Tümünü Seç",
+      "rejectSelected": "Seçilenleri Reddet ({{count}})",
+      "approveSelected": "Seçilenleri Onayla ({{count}})",
+      "noRequests": "Henüz onay bekleyen bir kayıt talebi bulunmuyor.",
+      "noApproved": "Onaylanmış öğrenci bulunmuyor.",
+      "noRejected": "Reddedilmiş öğrenci bulunmuyor.",
+      "courseCredit": "Ders Kredisi",
+      "bulkApproveConfirm": "{{count}} öğrencinin kaydını onaylamak istediğinizden emin misiniz?",
+      "bulkRejectConfirm": "{{count}} öğrencinin kaydını reddetmek istediğinizden emin misiniz?"
     },
     "table": {
       "average": "Ortalama",
@@ -191,12 +212,27 @@
       "CS302": "Algoritma Analizi",
       "CS303": "Veritabanı Sistemleri",
       "CS304": "Web Programlama",
-      "CS401": "İleri Algoritmalar"
+      "CS401": "İleri Algoritmalar",
+      "CENG101": "Bilgisayar Mühendisliğine Giriş",
+      "CENG102": "Algoritma ve Programlama I",
+      "CENG103": "Matematik I",
+      "CENG104": "Fizik I",
+      "CENG201": "Veri Yapıları",
+      "CENG202": "Veritabanı Yönetim Sistemleri",
+      "CENG203": "Nesne Yönelimli Programlama",
+      "CENG204": "Lineer Cebir",
+      "CENG205": "Diferansiyel Denklemler",
+      "CENG301": "İşletim Sistemleri",
+      "Ceng99": "İstatistik"
     },
     "titles": {
       "prof": "Prof. Dr.",
       "doc": "Doç. Dr.",
       "asst": "Dr. Öğr. Üyesi"
+    },
+    "seasons": {
+      "GUZ": "Güz",
+      "BAHAR": "Bahar"
     },
     "terms": {
       "2023_fall": "2023-2024 Güz Dönemi",

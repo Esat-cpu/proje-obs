@@ -136,11 +136,17 @@ class EnrollmentService:
         from reportlab.pdfbase.ttfonts import TTFont
 
         # Font
+        from django.conf import settings
+        import os
+        
+        font_path = os.path.join(settings.BASE_DIR, "fonts", "DejaVuSans.ttf")
+        font_bold_path = os.path.join(settings.BASE_DIR, "fonts", "DejaVuSans-Bold.ttf")
+
         pdfmetrics.registerFont(
-            TTFont("DejaVu", "fonts/DejaVuSans.ttf")
+            TTFont("DejaVu", font_path)
         )
         pdfmetrics.registerFont(
-            TTFont("DejaVu-Bold", "fonts/DejaVuSans-Bold.ttf")
+            TTFont("DejaVu-Bold", font_bold_path)
         )
 
         base_style = ParagraphStyle(

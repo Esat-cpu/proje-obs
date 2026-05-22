@@ -26,7 +26,9 @@ class User(AbstractUser):
         return f"{self.username} ({self.ad} {self.soyad}) - {self.role}"
 
     def tam_ad(self):
-        return f"{self.ad} {self.soyad}"
+        ad_soyad = f"{self.ad} {self.soyad}".strip()
+        return ad_soyad if ad_soyad else self.username.title()
+
 
 
 class Ogrenci(models.Model):
