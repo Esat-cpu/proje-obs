@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, BookOpen, Clock, Plus, Trash2, Info } from 'lucide-react';
 import studentService from '../../shared/api/studentService';
+import Pagination from '../../components/ui/Pagination';
 
 const DersKayit = () => {
   const { t } = useTranslation();
@@ -13,6 +14,8 @@ const DersKayit = () => {
   const [donemBilgisi, setDonemBilgisi] = useState(null);
   const [saveErrors, setSaveErrors] = useState([]);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [coursesPage, setCoursesPage] = useState(1);
+  const COURSES_PER_PAGE = 10;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,6 +100,15 @@ const DersKayit = () => {
       course.akademisyen_ad?.toLowerCase().includes(searchLower)
     );
   });
+
+  // Client-side pagination
+  const startIdx = (coursesPage - 1) * COURSES_PER_PAGE;
+  const paginatedCourses = filteredCourses.slice(startIdx, startIdx + COURSES_PER_PAGE);
+
+  // Arama değiştiğinde sayfayı sıfırla
+  useEffect(() => {
+    setCoursesPage(1);
+  }, [searchTerm]);
 
   const handleAddCourse = (course) => {
     if (!isRegistrationActive) return;
@@ -275,7 +287,7 @@ const DersKayit = () => {
           </div>
 
           <div className="reg-courses-list">
-            {filteredCourses.map((course) => (
+            {paginatedCourses.map((course) => (
               <div key={course.id} className="reg-course-card">
                 <div className="reg-course-info">
                   <div className="tags" style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
@@ -332,6 +344,12 @@ const DersKayit = () => {
                 )}
               </div>
             ))}
+            <Pagination
+              currentPage={coursesPage}
+              totalCount={filteredCourses.length}
+              pageSize={COURSES_PER_PAGE}
+              onPageChange={(p) => setCoursesPage(p)}
+            />
           </div>
         </div>
 

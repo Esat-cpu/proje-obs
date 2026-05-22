@@ -2,6 +2,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 
 from django.http import HttpResponse
 
@@ -202,6 +203,17 @@ class AkademisyenKayitIstekleriView(APIView):
     def get(self, request):
         akademisyen = request.user.akademisyen
         kayitlar = EnrollmentService.kayit_isteklerini_listele(akademisyen)
+        
+        onay_durumu = request.query_params.get("onay_durumu")
+        if onay_durumu:
+            kayitlar = kayitlar.filter(onay_durumu=onay_durumu)
+            
+        paginator = PageNumberPagination()
+        page = paginator.paginate_queryset(kayitlar, request, view=self)
+        if page is not None:
+            serializer = DersKaydiOkuSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+            
         serializer = DersKaydiOkuSerializer(kayitlar, many=True)
         return Response(serializer.data)
 
@@ -259,6 +271,12 @@ class AkademisyenDersOgrencileriView(APIView):
             kayitlar = EnrollmentService.donem_dersi_ogrenci_listesi(pk, akademisyen)
         except PermissionDenied as e:
             return Response({"detail": str(e)}, status=status.HTTP_403_FORBIDDEN)
+
+        paginator = PageNumberPagination()
+        page = paginator.paginate_queryset(kayitlar, request, view=self)
+        if page is not None:
+            serializer = DersKaydiOkuSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
 
         serializer = DersKaydiOkuSerializer(kayitlar, many=True)
         return Response(serializer.data)

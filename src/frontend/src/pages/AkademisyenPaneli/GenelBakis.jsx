@@ -7,18 +7,24 @@ import academicianService from '../../shared/api/academicianService.js';
 const GenelBakis = () => {
   const { t } = useTranslation();
   const { data: coursesData, isLoading: isCoursesLoading, isError: isCoursesError } = useQuery({
-    queryKey: ['academicianCourses'],
-    queryFn: academicianService.getDersler,
+    queryKey: ['academicianCourses', 1],
+    queryFn: () => academicianService.getDersler(1),
   });
 
-  // 2. GERÇEK VERİ: Kayıt İstekleri
-  const { data: requestsData, isLoading: isRequestsLoading, isError: isRequestsError } = useQuery({
-    queryKey: ['academicianRequests'],
-    queryFn: academicianService.getKayitIstekleri,
+  // 2. GERÇEK VERİ: Bekleyen Kayıt İstekleri
+  const { data: pendingRequestsData, isLoading: isPendingRequestsLoading, isError: isPendingRequestsError } = useQuery({
+    queryKey: ['academicianPendingRequestsCount'],
+    queryFn: () => academicianService.getKayitIstekleri(1, 'beklemede'),
+  });
+
+  // 3. GERÇEK VERİ: Onaylanmış Kayıt İstekleri (Not giriş bekleyenler)
+  const { data: approvedRequestsData, isLoading: isApprovedRequestsLoading, isError: isApprovedRequestsError } = useQuery({
+    queryKey: ['academicianApprovedRequestsCount'],
+    queryFn: () => academicianService.getKayitIstekleri(1, 'onaylandi'),
   });
 
   // Herhangi biri yükleniyorsa loading göster
-  if (isCoursesLoading || isRequestsLoading) {
+  if (isCoursesLoading || isPendingRequestsLoading || isApprovedRequestsLoading) {
     return (
       <div className='dashboard-container' style={{ display: 'flex', justifyContent: 'center', minHeight: '60vh' }}>
         <h3> {t('common.loading', 'Yükleniyor...')} </h3>
@@ -27,7 +33,7 @@ const GenelBakis = () => {
   }
   
   // Herhangi birinde hata varsa error göster
-  if (isCoursesError || isRequestsError) {
+  if (isCoursesError || isPendingRequestsError || isApprovedRequestsError) {
     return (
       <div className='dashboard-container'>
         <div style={{ padding: '20px', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px' }}>
@@ -38,19 +44,14 @@ const GenelBakis = () => {
   }
 
   // Gelen verileri al (Yoksa boş dizi olarak ayarla)
-  const courses = coursesData || [];
-  const requests = requestsData || [];
-
-  // Kayıtları durumlarına göre filtrele
-  const bekleyenKayitlar = requests.filter(req => req.onay_durumu === 'beklemede');
-  const onaylananKayitlar = requests.filter(req => req.onay_durumu === 'onaylandi');
+  const courses = coursesData?.items || [];
 
   // İstatistikleri dinamik olarak hesapla!
   const stats = {
-    activeCourses: courses.length, // Ders dizisinin uzunluğu
+    activeCourses: coursesData?.count || courses.length, // Toplam ders sayısı
     totalStudents: courses.reduce((toplam, course) => toplam + (course.ogrenci_sayisi || 0), 0), // Derslerdeki toplam öğrenci sayısı
-    pendingGrades: onaylananKayitlar.length, // Onaylanmış kayıtların sayısı
-    pendingApprovals: bekleyenKayitlar.length, // Bekleyen kayıtların sayısı
+    pendingGrades: approvedRequestsData?.count || 0, // Onaylanmış kayıtların sayısı (Not girişi bekleyenler)
+    pendingApprovals: pendingRequestsData?.count || 0, // Bekleyen kayıtların sayısı
   };
   return (
     <div className="dashboard-container">

@@ -27,7 +27,7 @@ class CoursesService:
             qs = qs.filter(donem=donem)
         if sadece_aktif:
             qs = qs.filter(aktiflik_durumu=True)
-        return qs
+        return qs.order_by("id")
 
     @staticmethod
     def akademisyen_derslerini_getir(akademisyen):

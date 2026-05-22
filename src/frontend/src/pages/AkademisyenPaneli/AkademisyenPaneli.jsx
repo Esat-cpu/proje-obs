@@ -26,16 +26,16 @@ const AkademisyenPaneli = () => {
         ? `${profileData.unvan_goster} ${profileData.user.ad} ${profileData.user.soyad}` 
         : t('academician.nameNotFound', 'İsim Bulunamadı'));
 
-  // Bekleyen kayıt taleplerini getir
+  // Bekleyen kayıt taleplerini getir (sadece sayı ve ilk sayfa)
   const { data: requestsData, isError: isRequestsError } = useQuery({
-    queryKey: ['academicianRequests'],
-    queryFn: academicianService.getKayitIstekleri,
+    queryKey: ['academicianPendingRequestsCount'],
+    queryFn: () => academicianService.getKayitIstekleri(1, 'beklemede'),
   });
 
   const hasError = isProfileError || isRequestsError;
 
   // Bekleyen talep sayısını hesapla
-  const pendingRequestCount = requestsData?.filter(r => r.onay_durumu === 'beklemede').length;
+  const pendingRequestCount = requestsData?.count || 0;
 
   const navItems = [
     {
