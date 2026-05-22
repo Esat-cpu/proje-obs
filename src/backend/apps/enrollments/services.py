@@ -69,7 +69,7 @@ class EnrollmentService:
     def kayit_isteklerini_listele(akademisyen, onay_durumu=None):
         qs = DersKaydi.objects.filter(
             donem_dersi__akademisyen=akademisyen,
-        ).select_related("ogrenci__user", "donem_dersi__ders").order_by("-id")
+        ).select_related("ogrenci__user", "donem_dersi__ders", "donem_dersi__akademisyen__user").order_by("-id")
         if onay_durumu:
             qs = qs.filter(onay_durumu=onay_durumu)
         return qs
@@ -99,7 +99,7 @@ class EnrollmentService:
         return DersKaydi.objects.filter(
             donem_dersi=donem_dersi,
             onay_durumu=DersKaydi.Durum.ONAYLANDI,
-        ).select_related("ogrenci__user").order_by("id")
+        ).select_related("ogrenci__user", "donem_dersi__ders", "donem_dersi__akademisyen__user").order_by("id")
 
     @staticmethod
     def ogrenci_derslerini_listele(ogrenci, yil=None, donem=None):
