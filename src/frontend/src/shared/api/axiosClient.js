@@ -18,16 +18,28 @@ axiosClient.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-// RESPONSE interceptor — 401 gelince token yenile
+// RESPONSE interceptor — 401 gelince token yenile (kuyruk mekanizması ile)
 let isRefreshing = false;
+let refreshSubscribers = [];
+
+// Kuyruktaki tüm istekleri yeni token ile serbest bırak
+const onRefreshed = (newToken) => {
+  refreshSubscribers.forEach((callback) => callback(newToken));
+  refreshSubscribers = [];
+};
+
+// Bekleyen isteği kuyruğa ekle
+const addRefreshSubscriber = (callback) => {
+  refreshSubscribers.push(callback);
+};
 
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Login isteği 401 aldıysa refresh deneme, hatayı direkt döndür
-    if (originalRequest.url?.includes("token")) {
+    // Login/token isteği 401 aldıysa refresh deneme, hatayı direkt döndür
+    if (originalRequest?.url?.includes("token")) {
       return Promise.reject(error);
     }
 
@@ -36,12 +48,25 @@ axiosClient.interceptors.response.use(
 
       if (!refreshToken) {
         localStorage.removeItem("access_token");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("role");
         window.location.href = "/";
         return Promise.reject(error);
       }
 
       originalRequest._retry = true;
+
+      // Zaten bir refresh devam ediyorsa → bu isteği kuyruğa al
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          addRefreshSubscriber((newToken) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            resolve(axiosClient(originalRequest));
+          });
+        });
+      }
+
+      // İlk 401 → refresh'i tetikle
       isRefreshing = true;
 
       try {
@@ -53,9 +78,14 @@ axiosClient.interceptors.response.use(
         const newRefreshToken = response.data.refresh;
         localStorage.setItem("access_token", newToken);
         if (newRefreshToken) {
-            localStorage.setItem("refreshToken", newRefreshToken);
+          localStorage.setItem("refreshToken", newRefreshToken);
         }
         axiosClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+
+        // Kuyruktaki istekleri yeni token ile gönder
+        onRefreshed(newToken);
+
+        // Bu isteği de yeni token ile tekrarla
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosClient(originalRequest);
       } catch (refreshError) {
