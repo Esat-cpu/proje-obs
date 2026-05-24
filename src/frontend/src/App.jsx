@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home } from 'lucide-react';
@@ -18,7 +18,12 @@ const Forbidden = () => {
 };
 
 function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Dil değiştiğinde tarayıcı başlığını dinamik olarak güncelle
+  useEffect(() => {
+    document.title = t('app.title', 'OBS - Öğrenci Bilgi Sistemi');
+  }, [t, i18n.language]);
   const location = useLocation();
 
   // Kullanıcının bir panelde olup olmadığını kontrol ediyoruz
