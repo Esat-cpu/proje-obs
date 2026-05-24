@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home } from 'lucide-react';
@@ -18,8 +18,13 @@ const Forbidden = () => {
 };
 
 function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
+
+  // Dil değiştiğinde sayfa başlığını güncelle
+  useEffect(() => {
+    document.title = t('app.title');
+  }, [i18n.language, t]);
 
   // Kullanıcının bir panelde olup olmadığını kontrol ediyoruz
   const isPanelRoute = location.pathname.startsWith('/student') || location.pathname.startsWith('/academician');
